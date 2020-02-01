@@ -1,0 +1,25 @@
+TOPIC
+    about_DscResource.DocGenerator
+
+SHORT DESCRIPTION
+    Functionality to help generate documentation for modules.
+
+LONG DESCRIPTION
+    Functionality to help generate documentation for modules.
+
+EXAMPLES
+    PS C:\> Get-Command -Module DscResource.DocGenerator
+
+NOTE:
+    Thank you to the contributors who contributed to this module by
+    writing code, sharing opinions, and provided feedback.
+
+TROUBLESHOOTING NOTE:
+    Go to the GitHub repository for read about issues, submit a new issue, and read
+    about new releases. https://github.com/dsccommunity/DscResource.DocGenerator
+
+SEE ALSO
+    - https://github.com/dsccommunity/DscResource.DocGenerator
+
+KEYWORDS
+    changelog, keepachangelog
