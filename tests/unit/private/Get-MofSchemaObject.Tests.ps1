@@ -19,24 +19,15 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 #endregion HEADER
 
 InModuleScope $script:moduleName {
-    $script:className = 'MSFT_MofHelperTest'
-    $script:fileName = '{0}.schema.mof' -f $script:ClassName
-    $script:tempFileName = '{0}.tmp' -f $script:fileName
-    $script:filePath = 'TestDrive:\{0}' -f $script:fileName
-    $script:tempFilePath = 'TestDrive:\{0}' -f $script:tempFileName
-
     Describe Get-MofSchemaObject {
-        Mock -CommandName Resolve-Path -MockWith {
-            [pscustomobject]@{
-                Path = $script:filePath
-            }
-        } -ParameterFilter {$Path -eq $script:fileName}
+        BeforeAll {
+            $script:className = 'MSFT_MofHelperTest'
+            $script:fileName = '{0}.schema.mof' -f $script:ClassName
+            $script:tempFileName = '{0}.tmp' -f $script:fileName
+            $script:filePath = Join-Path -Path $TestDrive -ChildPath $script:fileName
+            $script:tempFilePath = Join-Path -Path $TestDrive -ChildPath $script:tempFileName
 
-        Mock -CommandName Join-Path -MockWith {
-            $script:tempFilePath
-        }
-
-$fileContent = @"
+            $fileContent = @"
 [ClassVersion("1.0.0"), FriendlyName("MofHelperTest")]
 class MSFT_MofHelperTest : OMI_BaseResource
 {
@@ -49,118 +40,138 @@ class MSFT_MofHelperTest : OMI_BaseResource
     [Read,     Description("Test readonly integer")] Uint32 NoWrite;
 };
 "@
-        Set-Content -Path $script:filePath -Value $fileContent
+            Set-Content -Path $script:filePath -Value $fileContent
 
-        It 'Should import the class from the schema file without throwing' {
-            { Get-MofSchemaObject -FileName $script:filePath -Verbose } | Should -Not -Throw
+            Mock -CommandName Resolve-Path -MockWith {
+                [PSCustomObject]@{
+                    Path = $script:filePath
+                }
+            } -ParameterFilter {$Path -eq $script:fileName}
+
+            Mock -CommandName Join-Path -MockWith {
+                $script:tempFilePath
+            }
         }
 
-        $schema = Get-MofSchemaObject -FileName $script:filePath -Verbose
-
-        It "Should import class with ClassName $script:className" {
-            $schema.ClassName | Should -Be $script:className
+        if ($IsMacOs)
+        {
+            It 'Should throw a not implemented error' {
+                { Get-MofSchemaObject -FileName $script:filePath -Verbose } | Should -Throw 'NotImplemented'
+            }
         }
+        else
+        {
+            It 'Should import the class from the schema file without throwing' {
+                { Get-MofSchemaObject -FileName $script:filePath -Verbose } | Should -Not -Throw
+            }
 
-        It 'Should get class version' {
-            $schema.ClassVersion | Should -Be '1.0.0'
-        }
+            $schema = Get-MofSchemaObject -FileName $script:filePath -Verbose
 
-        It 'Should get class FriendlyName' {
-            $schema.FriendlyName | Should -Be 'MofHelperTest'
-        }
+            It "Should import class with ClassName $script:className" {
+                $schema.ClassName | Should -Be $script:className
+            }
 
-        It 'Should get property <PropertyName> with all correct properties' {
-            [CmdletBinding()]
-            param (
-                [Parameter()]
-                [System.String]
-                $PropertyName,
+            It 'Should get class version' {
+                $schema.ClassVersion | Should -Be '1.0.0'
+            }
 
-                [Parameter()]
-                [System.String]
-                $State,
+            It 'Should get class FriendlyName' {
+                $schema.FriendlyName | Should -Be 'MofHelperTest'
+            }
 
-                [Parameter()]
-                [System.String]
-                $DataType,
+            It 'Should get property <PropertyName> with all correct properties' {
+                [CmdletBinding()]
+                param (
+                    [Parameter()]
+                    [System.String]
+                    $PropertyName,
 
-                [Parameter()]
-                [System.Boolean]
-                $IsArray,
+                    [Parameter()]
+                    [System.String]
+                    $State,
 
-                [Parameter()]
-                [System.String]
-                $Description
+                    [Parameter()]
+                    [System.String]
+                    $DataType,
+
+                    [Parameter()]
+                    [System.Boolean]
+                    $IsArray,
+
+                    [Parameter()]
+                    [System.String]
+                    $Description
+                )
+
+                $property = $schema.Attributes.Where({$_.Name -eq $PropertyName})
+
+                $property.State | Should -Be $State
+                $property.DataType | Should -Be $DataType
+                $property.Description | Should -Be $Description
+                $property.IsArray | Should -Be $IsArray
+            } -TestCases @(
+                @{
+                    PropertyName = 'Name'
+                    State = 'Key'
+                    DataType = 'String'
+                    Description = 'Test key string property'
+                    IsArray = $false
+                }
+                @{
+                    PropertyName = 'Needed'
+                    State = 'Required'
+                    DataType = 'String'
+                    Description = 'Test required property'
+                    IsArray = $false
+                }
+                @{
+                    PropertyName = 'MultipleValues'
+                    State = 'Write'
+                    DataType = 'StringArray'
+                    Description = 'Test writeable string array'
+                    IsArray = $true
+                }
+                @{
+                    PropertyName = 'Switch'
+                    State = 'Write'
+                    DataType = 'Boolean'
+                    Description = 'Test writeable boolean'
+                    IsArray = $false
+                }
+                @{
+                    PropertyName = 'ExecuteOn'
+                    State = 'Write'
+                    DataType = 'DateTime'
+                    Description = 'Test writeable datetime'
+                    IsArray = $false
+                }
+                @{
+                    PropertyName = 'Credential'
+                    State = 'Write'
+                    DataType = 'Instance'
+                    Description = 'Test credential'
+                    IsArray = $false
+                }
+                @{
+                    PropertyName = 'NoWrite'
+                    State = 'Read'
+                    DataType = 'Uint32'
+                    Description = 'Test readonly integer'
+                    IsArray = $false
+                }
             )
 
-            $property = $schema.Attributes.Where({$_.Name -eq $PropertyName})
+            It 'Should return the proper ValueMap' {
+                $property = $schema.Attributes.Where({$_.Name -eq 'Needed'})
+                $property.ValueMap | Should -HaveCount 2
+                $property.ValueMap | Should -Contain 'Absent'
+                $property.ValueMap | Should -Contain 'Present'
+            }
 
-            $property.State | Should -Be $State
-            $property.DataType | Should -Be $DataType
-            $property.Description | Should -Be $Description
-            $property.IsArray | Should -Be $IsArray
-        } -TestCases @(
-            @{
-                PropertyName = 'Name'
-                State = 'Key'
-                DataType = 'String'
-                Description = 'Test key string property'
-                IsArray = $false
+            It 'Should return the proper EmbeddedInstance for Credential' {
+                $property = $schema.Attributes.Where({$_.Name -eq 'Credential'})
+                $property.EmbeddedInstance | Should -Be 'MSFT_Credential'
             }
-            @{
-                PropertyName = 'Needed'
-                State = 'Required'
-                DataType = 'String'
-                Description = 'Test required property'
-                IsArray = $false
-            }
-            @{
-                PropertyName = 'MultipleValues'
-                State = 'Write'
-                DataType = 'StringArray'
-                Description = 'Test writeable string array'
-                IsArray = $true
-            }
-            @{
-                PropertyName = 'Switch'
-                State = 'Write'
-                DataType = 'Boolean'
-                Description = 'Test writeable boolean'
-                IsArray = $false
-            }
-            @{
-                PropertyName = 'ExecuteOn'
-                State = 'Write'
-                DataType = 'DateTime'
-                Description = 'Test writeable datetime'
-                IsArray = $false
-            }
-            @{
-                PropertyName = 'Credential'
-                State = 'Write'
-                DataType = 'Instance'
-                Description = 'Test credential'
-                IsArray = $false
-            }
-            @{
-                PropertyName = 'NoWrite'
-                State = 'Read'
-                DataType = 'Uint32'
-                Description = 'Test readonly integer'
-                IsArray = $false
-            }
-        )
-
-        It 'Should return the proper ValueMap' {
-            $property = $schema.Attributes.Where({$_.Name -eq 'Needed'})
-            $property.ValueMap | Should -HaveCount 2
-            $property.ValueMap | Should -Contain 'Absent'
-            $property.ValueMap | Should -Contain 'Present'
-        }
-
-        It 'Should return the proper EmbeddedInstance for Credential' {
-            $property = $schema.Attributes.Where({$_.Name -eq 'Credential'})
-            $property.EmbeddedInstance | Should -Be 'MSFT_Credential'
         }
     }
 }

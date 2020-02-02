@@ -136,5 +136,6 @@ function Get-DscResourceHelpExampleContent
     $null = $exampleStringBuilder.AppendLine($exampleDescriptionStringBuilder)
     $null = $exampleStringBuilder.Append($exampleCodeStringBuilder)
 
-    return $exampleStringBuilder.ToString()
+    # ALways return CRLF as line endings to work cross platform.
+    return ($exampleStringBuilder.ToString() -replace '\r?\n', "`r`n")
 }

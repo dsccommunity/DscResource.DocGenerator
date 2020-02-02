@@ -47,3 +47,7 @@ New-DscResourcePowerShellHelp -ModulePath '.'
 After the conceptual help has been created, the user can import the module
 and for example run `Get-Help about_UserAccountControl` to get help about
 the DSC resource UserAccountControl.
+
+>**NOTE:** This cmdlet does not work on macOS and will throw an error due 
+>to the problem discussed in issue https://github.com/PowerShell/PowerShell/issues/5970
+>and issue https://github.com/PowerShell/MMI/issues/33.
