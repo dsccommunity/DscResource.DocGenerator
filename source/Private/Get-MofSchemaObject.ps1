@@ -29,13 +29,41 @@ function Get-MofSchemaObject
 
     try
     {
+        $temporaryPath = $null
+
+        # Determine the correct $env:TEMP drive
+        switch ($true)
+        {
+            (-not (Test-Path -Path variable:IsWindows) -or $IsWindows)
+            {
+                # Windows PowerShell or PowerShell 6+
+                $temporaryPath = $env:TEMP
+            }
+
+            $IsMacOS
+            {
+                $temporaryPath = $env:TMPDIR
+            }
+
+            $IsLinux
+            {
+                $temporaryPath = '/tmp'
+            }
+
+            Default
+            {
+                throw 'Unknown operating system.'
+            }
+        }
+
         #region Workaround for OMI_BaseResource inheritance not resolving.
 
         $filePath = (Resolve-Path -Path $FileName).Path
-        $tempFilePath = Join-Path -Path $env:TEMP -ChildPath "DscMofHelper_$((New-Guid).Guid).tmp"
+        $tempFilePath = Join-Path -Path $temporaryPath -ChildPath "DscMofHelper_$((New-Guid).Guid).tmp"
         $moduleName = (Split-Path -Path $filePath -Leaf).Replace('.schema.mof', $null)
         $rawContent = (Get-Content -Path $filePath -Raw) -replace "$moduleName : OMI_BaseResource", $moduleName
-        Set-Content -LiteralPath $tempFilePath -Value $rawContent -ErrorAction Stop
+
+        Set-Content -LiteralPath $tempFilePath -Value $rawContent -ErrorAction 'Stop'
 
         # .NET methods don't like PowerShell drives
         $tempFilePath = Convert-Path -Path $tempFilePath

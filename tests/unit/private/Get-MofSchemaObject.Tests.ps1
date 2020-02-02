@@ -27,16 +27,6 @@ InModuleScope $script:moduleName {
             $script:filePath = Join-Path -Path $TestDrive -ChildPath $script:fileName
             $script:tempFilePath = Join-Path -Path $TestDrive -ChildPath $script:tempFileName
 
-            Mock -CommandName Resolve-Path -MockWith {
-                [PSCustomObject]@{
-                    Path = $script:filePath
-                }
-            } -ParameterFilter {$Path -eq $script:fileName}
-
-            Mock -CommandName Join-Path -MockWith {
-                $script:tempFilePath
-            }
-
             $fileContent = @"
 [ClassVersion("1.0.0"), FriendlyName("MofHelperTest")]
 class MSFT_MofHelperTest : OMI_BaseResource
@@ -51,6 +41,16 @@ class MSFT_MofHelperTest : OMI_BaseResource
 };
 "@
             Set-Content -Path $script:filePath -Value $fileContent
+
+            Mock -CommandName Resolve-Path -MockWith {
+                [PSCustomObject]@{
+                    Path = $script:filePath
+                }
+            } -ParameterFilter {$Path -eq $script:fileName}
+
+            Mock -CommandName Join-Path -MockWith {
+                $script:tempFilePath
+            }
         }
 
         It 'Should import the class from the schema file without throwing' {
