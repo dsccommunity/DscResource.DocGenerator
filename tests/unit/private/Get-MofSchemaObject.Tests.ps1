@@ -19,24 +19,25 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 #endregion HEADER
 
 InModuleScope $script:moduleName {
-    $script:className = 'MSFT_MofHelperTest'
-    $script:fileName = '{0}.schema.mof' -f $script:ClassName
-    $script:tempFileName = '{0}.tmp' -f $script:fileName
-    $script:filePath = 'TestDrive:\{0}' -f $script:fileName
-    $script:tempFilePath = 'TestDrive:\{0}' -f $script:tempFileName
-
     Describe Get-MofSchemaObject {
-        Mock -CommandName Resolve-Path -MockWith {
-            [pscustomobject]@{
-                Path = $script:filePath
+        BeforeAll {
+            $script:className = 'MSFT_MofHelperTest'
+            $script:fileName = '{0}.schema.mof' -f $script:ClassName
+            $script:tempFileName = '{0}.tmp' -f $script:fileName
+            $script:filePath = Join-Path -Path $TestDrive -ChildPath $script:fileName
+            $script:tempFilePath = Join-Path -Path $TestDrive -ChildPath $script:tempFileName
+
+            Mock -CommandName Resolve-Path -MockWith {
+                [PSCustomObject]@{
+                    Path = $script:filePath
+                }
+            } -ParameterFilter {$Path -eq $script:fileName}
+
+            Mock -CommandName Join-Path -MockWith {
+                $script:tempFilePath
             }
-        } -ParameterFilter {$Path -eq $script:fileName}
 
-        Mock -CommandName Join-Path -MockWith {
-            $script:tempFilePath
-        }
-
-$fileContent = @"
+            $fileContent = @"
 [ClassVersion("1.0.0"), FriendlyName("MofHelperTest")]
 class MSFT_MofHelperTest : OMI_BaseResource
 {
@@ -49,7 +50,8 @@ class MSFT_MofHelperTest : OMI_BaseResource
     [Read,     Description("Test readonly integer")] Uint32 NoWrite;
 };
 "@
-        Set-Content -Path $script:filePath -Value $fileContent
+            Set-Content -Path $script:filePath -Value $fileContent
+        }
 
         It 'Should import the class from the schema file without throwing' {
             { Get-MofSchemaObject -FileName $script:filePath -Verbose } | Should -Not -Throw

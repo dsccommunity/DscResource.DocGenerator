@@ -48,15 +48,14 @@ function New-DscResourcePowerShellHelp
 
     Write-Verbose -Message ($script:localizedData.FoundMofFilesMessage -f $mofSchemas.Count, $ModulePath)
 
-    $mofSchemas | ForEach-Object {
-        $mofFileObject = $_
-
-        $result = (Get-MofSchemaObject -FileName $_.FullName) | Where-Object -FilterScript {
-            ($_.ClassName -eq $mofFileObject.Name.Replace('.schema.mof', '')) `
+    foreach ($mofSchema in $mofSchemas)
+    {
+        $result = (Get-MofSchemaObject -FileName $mofSchema.FullName) | Where-Object -FilterScript {
+            ($_.ClassName -eq $mofSchema.Name.Replace('.schema.mof', '')) `
                 -and ($null -ne $_.FriendlyName)
         }
 
-        $descriptionPath = Join-Path -Path $mofFileObject.DirectoryName -ChildPath 'readme.md'
+        $descriptionPath = Join-Path -Path $mofSchema.DirectoryName -ChildPath 'readme.md'
 
         if (Test-Path -Path $descriptionPath)
         {
@@ -86,13 +85,16 @@ function New-DscResourcePowerShellHelp
                 if ([string]::IsNullOrEmpty($property.ValueMap) -ne $true)
                 {
                     $output += "    Allowed values: "
+
                     $property.ValueMap | ForEach-Object {
                         $output += $_ + ", "
                     }
+
                     $output = $output.TrimEnd(" ")
                     $output = $output.TrimEnd(",")
                     $output += "`r`n"
                 }
+
                 $output += "    " + $property.Description
                 $output += "`r`n`r`n"
             }
@@ -132,12 +134,12 @@ function New-DscResourcePowerShellHelp
             }
             else
             {
-                $savePath = Join-Path -Path $mofFileObject.DirectoryName -ChildPath 'en-US' | Join-Path -ChildPath $outputFileName
+                $savePath = Join-Path -Path $mofSchema.DirectoryName -ChildPath 'en-US' | Join-Path -ChildPath $outputFileName
             }
 
             Write-Verbose -Message ($script:localizedData.OutputHelpDocumentMessage -f $savePath)
 
-            $output | Out-File -FilePath $savePath -Encoding ascii -Force
+            $output | Out-File -FilePath $savePath -Encoding 'ascii' -Force
         }
         else
         {

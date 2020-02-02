@@ -8,4 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add cmdlet `New-DscResourcePowerShellHelp` to generate conceptual help
-  for DSC resources. *This was moved from repo PowerShell/DscResource.Tests.* 
+  for DSC resources. *This was moved from repo PowerShell/DscResource.Tests.*
+
+### Fixed
+
+- Fixed unit tests to work cross platform.

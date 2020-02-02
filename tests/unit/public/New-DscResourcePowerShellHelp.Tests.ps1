@@ -19,6 +19,41 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 #endregion HEADER
 
 InModuleScope $script:moduleName {
+    <#
+        .NOTES
+            This stub function is created because when original Out-File is
+            mocked in PowerShell 6.x it changes the type of the Encoding
+            parameter to [System.Text.Encoding] which when called with
+            `OutFile -Encoding 'ascii'` fails with the error message
+            "Cannot process argument transformation on parameter 'Encoding'.
+            Cannot convert the "ascii" value of type "System.String" to type
+            "System.Text.Encoding".
+    #>
+    function Out-File
+    {
+        [CmdletBinding()]
+        param
+        (
+            [Parameter(ValueFromPipeline = $true)]
+            [System.String]
+            $InputObject,
+
+            [Parameter()]
+            [System.String]
+            $FilePath,
+
+            [Parameter()]
+            [System.String]
+            $Encoding,
+
+            [Parameter()]
+            [System.Management.Automation.SwitchParameter]
+            $Force
+        )
+
+        throw 'StubNotImplemented'
+    }
+
     Describe 'New-DscResourcePowerShellHelp' {
         $script:mockOutputPath = Join-Path -Path $TestDrive -ChildPath 'docs'
         $script:mockModulePath = Join-Path -Path $TestDrive -ChildPath 'module'
@@ -257,7 +292,7 @@ Configuration Example
 
                 Mock `
                     -CommandName Get-MofSchemaObject `
-                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterfilter `
+                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterFilter `
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
@@ -305,7 +340,7 @@ Configuration Example
 
                 Mock `
                     -CommandName Get-MofSchemaObject `
-                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterfilter `
+                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterFilter `
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
@@ -385,7 +420,7 @@ Configuration Example
 
                 Mock `
                     -CommandName Get-MofSchemaObject `
-                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterfilter `
+                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterFilter `
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
@@ -439,7 +474,7 @@ Configuration Example
 
                 Assert-MockCalled `
                     -CommandName Get-MofSchemaObject `
-                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterfilter `
+                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterFilter `
                     -Exactly -Times 1
 
                 Assert-MockCalled `
@@ -483,7 +518,7 @@ Configuration Example
 
                 Mock `
                     -CommandName Get-MofSchemaObject `
-                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterfilter `
+                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterFilter `
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
@@ -537,7 +572,7 @@ Configuration Example
 
                 Assert-MockCalled `
                     -CommandName Get-MofSchemaObject `
-                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterfilter `
+                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterFilter `
                     -Exactly -Times 1
 
                 Assert-MockCalled `
