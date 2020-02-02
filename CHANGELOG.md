@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2020-02-02
+
 ### Added
 
 - Add cmdlet `New-DscResourcePowerShellHelp` to generate conceptual help
