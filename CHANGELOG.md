@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- New-DscResourcePowerShellHelp
+  - Add new parameter `DestinationModulePath` to be able to set the path
+    to a built module (for example).
+
 ## [0.1.1] - 2020-02-02
 
 ### Added
