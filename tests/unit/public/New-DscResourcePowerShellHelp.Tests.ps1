@@ -56,6 +56,7 @@ InModuleScope $script:moduleName {
 
     Describe 'New-DscResourcePowerShellHelp' {
         $script:mockOutputPath = Join-Path -Path $TestDrive -ChildPath 'docs'
+        $script:mockDestinationModulePath = Join-Path -Path $TestDrive -ChildPath 'output\MyModule\1.0.0'
         $script:mockModulePath = Join-Path -Path $TestDrive -ChildPath 'module'
 
         # Schema file info
@@ -149,6 +150,7 @@ Configuration Example
         $script:mockOutputFile = Join-Path -Path $script:mockOutputPath -ChildPath "$($script:mockResourceName).md"
         $script:mockSavePath = Join-Path -Path $script:mockModulePath -ChildPath "DscResources\$($script:mockResourceName)\en-US\about_$($script:mockResourceName).help.txt"
         $script:mockOutputSavePath = Join-Path -Path $script:mockOutputPath -ChildPath "about_$($script:mockResourceName).help.txt"
+        $script:mockDestinationModulePathSavePath = Join-Path -Path $script:mockDestinationModulePath -ChildPath "DscResources\$($script:mockResourceName)\en-US\about_$($script:mockResourceName).help.txt"
         $script:mockGetContentReadme = '# Description
 
 The description of the resource.
@@ -236,6 +238,11 @@ Configuration Example
             $FilePath -eq $script:mockOutputSavePath
         }
 
+        $script:outFileDestinationModulePathInputObject_parameterFilter = {
+            $InputObject -eq $script:mockPowerShellHelpOutput -and
+            $FilePath -eq $script:mockDestinationModulePathSavePath
+        }
+
         $script:writeWarningDescription_parameterFilter = {
             $Message -eq ($script:localizedData.NoDescriptionFileFoundWarning -f $script:mockResourceName)
         }
@@ -253,6 +260,12 @@ Configuration Example
         $script:newDscResourcePowerShellHelpOutput_parameters = @{
             ModulePath = $script:mockModulePath
             OutputPath = $script:mockOutputPath
+            Verbose = $true
+        }
+
+        $script:newDscResourcePowerShellHelpDestinationModulePath_parameters = @{
+            ModulePath = $script:mockModulePath
+            DestinationModulePath = $script:mockDestinationModulePath
             Verbose = $true
         }
 
@@ -509,7 +522,105 @@ Configuration Example
             }
         }
 
-        Context 'When there is one schema found in the module folder and one example using .EXAMPLE and the OutputPath is not specified' {
+        Context 'When there is one schema found in the module folder and one example using .EXAMPLE and the DestinationModulePath is specified' {
+            BeforeAll {
+                Mock `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemSchema_parameterFilter `
+                    -MockWith { $script:mockSchemaFiles }
+
+                Mock `
+                    -CommandName Get-MofSchemaObject `
+                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterFilter `
+                    -MockWith { $script:mockGetMofSchemaObject }
+
+                Mock `
+                    -CommandName Test-Path `
+                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
+                    -MockWith { $true }
+
+                Mock `
+                    -CommandName Get-Content `
+                    -ParameterFilter $script:getContentReadme_parameterFilter `
+                    -MockWith { $script:mockGetContentReadme }
+
+                Mock `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemExample_parameterFilter `
+                    -MockWith { $script:mockExampleFiles }
+
+                Mock `
+                    -CommandName Get-DscResourceHelpExampleContent `
+                    -ParameterFilter $script:getDscResourceHelpExampleContent_parameterFilter `
+                    -MockWith { $script:mockExampleContent }
+
+                Mock `
+                    -CommandName Out-File
+
+                Mock `
+                    -CommandName Write-Warning `
+                    -ParameterFilter $script:writeWarningExample_parameterFilter
+
+                Mock `
+                    -CommandName Write-Warning `
+                    -ParameterFilter $script:writeWarningDescription_parameterFilter
+            }
+
+            It 'Should not throw an exception' {
+                { New-DscResourcePowerShellHelp @script:newDscResourcePowerShellHelpDestinationModulePath_parameters } | Should -Not -Throw
+            }
+
+            It 'Should produce the correct output' {
+                Assert-MockCalled `
+                    -CommandName Out-File `
+                    -ParameterFilter $script:outFileDestinationModulePathInputObject_parameterFilter `
+                    -Exactly -Times 1
+            }
+
+            It 'Should call the expected mocks ' {
+                Assert-MockCalled `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemSchema_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Get-MofSchemaObject `
+                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Test-Path `
+                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Get-Content `
+                    -ParameterFilter $script:getContentReadme_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemExample_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Get-DscResourceHelpExampleContent `
+                    -ParameterFilter $script:getDscResourceHelpExampleContent_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Write-Warning `
+                    -ParameterFilter $script:writeWarningExample_parameterFilter `
+                    -Exactly -Times 0
+
+                Assert-MockCalled `
+                    -CommandName Write-Warning `
+                    -ParameterFilter $script:writeWarningDescription_parameterFilter `
+                    -Exactly -Times 0
+            }
+        }
+
+        Context 'When there is one schema found in the module folder and one example using .EXAMPLE and only the parameter ModulePath is specified' {
             BeforeAll {
                 Mock `
                     -CommandName Get-ChildItem `
