@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- DscResource.DocGenerator
+  - Adding uploading coverage to Codecov.io.
+  
 ### Fixed
 
 - DscResource.Common
