@@ -1,5 +1,4 @@
 codecov:
-  notify:
   require_ci_to_pass: no
   # master should be the baseline for reporting
   branch: master
