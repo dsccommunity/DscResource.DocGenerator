@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix the description in the README.md.
+
 ## [0.2.0] - 2020-02-06
 
 ### Added
@@ -29,3 +33,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed unit tests to work cross platform.
 - Fix status badges in README.md.
+- Fix the description in the README.md.
