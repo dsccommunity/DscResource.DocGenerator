@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix the description in the README.md.
 
+## [0.2.0] - 2020-02-06
+
+### Added
+
+- New-DscResourcePowerShellHelp
+  - Add new parameter `DestinationModulePath` to be able to set the path
+    to a built module (for example) ([issue #9](https://github.com/dsccommunity/DscResource.DocGenerator/issues/9)).
+
+### Fixes
+
+- New-DscResourcePowerShellHelp
+  - Fixed comment-based help for the parameter `OutputPath` ([issue #8](https://github.com/dsccommunity/DscResource.DocGenerator/issues/8)).
+
 ## [0.1.1] - 2020-02-02
 
 ### Added

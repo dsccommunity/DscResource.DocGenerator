@@ -1,30 +1,58 @@
 <#
     .SYNOPSIS
-        New-DscResourcePowerShellHelp generates PowerShell compatible help files for a DSC
-        resource module
+        New-DscResourcePowerShellHelp generates PowerShell compatible help files
+        for a DSC resource module
 
     .DESCRIPTION
-        The New-DscResourcePowerShellHelp cmdlet will review all of the MOF based resources
-        in a specified module directory and will inject PowerShell help files for each resource.
-        These help files include details on the property types for each resource, as well as a text
-        description and examples where they exist.
+        The New-DscResourcePowerShellHelp cmdlet will review all of the MOF based
+        resources in a specified module directory and will inject PowerShell help
+        files for each resource. These help files include details on the property
+        types for each resource, as well as a text description and examples where
+        they exist.
 
-        The help files are output to the OutputPath directory if specified, or if not, they are
-        output to the releveant resource's 'en-US' directory.
+        The help files are output to the OutputPath directory if specified. If not,
+        they are output to the relevant resource's 'en-US' directory either in the
+        path set by 'ModulePath' or to 'DestinationModulePath' if set.
 
-        A README.md with a text description must exist in the resource's subdirectory for the
-        help file to be generated.
+        A README.md with a text description must exist in the resource's subdirectory
+        for the help file to be generated. To get examples added to the conceptual
+        help the examples must be present in an individual resource example folder,
+        e.g. 'Examples/Resources/<ResourceName>/1-Example.ps1'. Prefixing the value
+        with a number will sort the examples in that order.
 
-        These help files can then be read by passing the name of the resource as a parameter to Get-Help.
+        These help files can then be read by passing the name of the resource as a
+        parameter to Get-Help.
 
     .PARAMETER ModulePath
-        The path to the root of the DSC resource module (where the PSD1 file is found, not the folder for
-        each individual DSC resource)
+        The path to the root of the DSC resource module (where the PSD1 file is
+        found). In this path the folder DSCResources must be present.
+
+    .PARAMETER DestinationModulePath
+        The destination module path can be used to set the path where module is
+        built before being deployed. This must be set to the root of the built
+        module, e.g 'c:\repos\ModuleName\output\ModuleName\1.0.0'.
+        If OutputPath is also used at the same time that will override this path.
+
+    .PARAMETER OutputPath
+        The output path can be used to set the path where all the generated files
+        will be saved (all files to the same path).
 
     .EXAMPLE
+        New-DscResourcePowerShellHelp -ModulePath C:\repos\SharePointDsc
+
         This example shows how to generate help for a specific module
 
-        New-DscResourcePowerShellHelp -ModulePath C:\repos\SharePointDsc
+    .EXAMPLE
+        New-DscResourcePowerShellHelp -ModulePath C:\repos\SharePointDsc -DestinationModulePath C:\repos\SharePointDsc\output\SharePointDsc\1.0.0
+
+        This example shows how to generate help for a specific module and output
+        the result to a built module.
+
+    .EXAMPLE
+        New-DscResourcePowerShellHelp -ModulePath C:\repos\SharePointDsc -OutputPath C:\repos\SharePointDsc\en-US
+
+        This example shows how to generate help for a specific module and output
+        all the generated files to the same output path.
 
     .NOTES
         Line endings are hard-coded to CRLF to handle different platforms similar.
@@ -37,6 +65,10 @@ function New-DscResourcePowerShellHelp
         [Parameter(Mandatory = $true)]
         [System.String]
         $ModulePath,
+
+        [Parameter()]
+        [System.String]
+        $DestinationModulePath,
 
         [Parameter()]
         [System.String]
@@ -126,15 +158,30 @@ function New-DscResourcePowerShellHelp
                 Write-Warning -Message ($script:localizedData.NoExampleFileFoundWarning -f $result.FriendlyName)
             }
 
-            # Output to $OutputPath if specified or the resource 'en-US' directory if not.
             $outputFileName = "about_$($result.FriendlyName).help.txt"
-            if ($OutputPath)
+
+            if ($PSBoundParameters.ContainsKey('OutputPath'))
             {
+                # Output to $OutputPath if specified.
                 $savePath = Join-Path -Path $OutputPath -ChildPath $outputFileName
+            }
+            elseif ($PSBoundParameters.ContainsKey('DestinationModulePath'))
+            {
+                # Output to the resource 'en-US' directory in the DestinationModulePath.
+                $null = $mofSchema.DirectoryName -match '(.+)(DSCResources|DSCClassResources)(.+)'
+                $resourceRelativePath = $matches[3]
+                $dscRootFolderName = $matches[2]
+
+                $savePath = Join-Path -Path $DestinationModulePath -ChildPath $dscRootFolderName |
+                    Join-Path -ChildPath $resourceRelativePath |
+                        Join-Path -ChildPath 'en-US' |
+                            Join-Path -ChildPath $outputFileName
             }
             else
             {
-                $savePath = Join-Path -Path $mofSchema.DirectoryName -ChildPath 'en-US' | Join-Path -ChildPath $outputFileName
+                # Output to the resource 'en-US' directory in the ModulePath.
+                $savePath = Join-Path -Path $mofSchema.DirectoryName -ChildPath 'en-US' |
+                    Join-Path -ChildPath $outputFileName
             }
 
             Write-Verbose -Message ($script:localizedData.OutputHelpDocumentMessage -f $savePath)
@@ -147,4 +194,3 @@ function New-DscResourcePowerShellHelp
         }
     }
 }
-
