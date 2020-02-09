@@ -73,7 +73,7 @@ ModuleBuildTasks:
     - 'Task.*'
 ```
 
-Then the build task can be used. FOr example like this when a repository
+Then the build task can be used. For example like this when a repository
 is based on the [Sampler](https://github.com/gaelcolas/Sampler) project.
 
 ```yaml
