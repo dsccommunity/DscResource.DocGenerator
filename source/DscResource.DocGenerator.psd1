@@ -24,9 +24,7 @@
     PowerShellVersion = '5.0'
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = @(
-        'New-DscResourcePowerShellHelp'
-    )
+    FunctionsToExport = @()
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
     CmdletsToExport   = @()
@@ -35,7 +33,9 @@
     VariablesToExport = @()
 
     # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-    AliasesToExport   = @()
+    AliasesToExport   = @(
+        'Task.Generate_Conceptual_Help'
+    )
 
     # DSC resources to export from this module
     DscResourcesToExport = @()
