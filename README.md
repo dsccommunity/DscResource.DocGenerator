@@ -72,3 +72,19 @@ ModuleBuildTasks:
   DscResource.DocGenerator:
     - 'Task.*'
 ```
+
+Then the build task can be used. FOr example like this when a repository
+is based on the [Sampler](https://github.com/gaelcolas/Sampler) project.
+
+```yaml
+BuildWorkflow:
+  '.':
+    - build
+
+  build:
+    - Clean
+    - Build_Module_ModuleBuilder
+    - Build_NestedModules_ModuleBuilder
+    - Create_changelog_release_output
+    - Generate_Conceptual_Help
+```
