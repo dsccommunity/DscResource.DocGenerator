@@ -12,4 +12,4 @@
         https://github.com/nightroman/Invoke-Build/tree/master/Tasks/Import.
 #>
 
-Set-Alias -Name 'Task.Generate_Conceptual_Help' -Value "$PSScriptRoot/tasks/Generate.Conceptual.Help.build.ps1"
+Set-Alias -Name 'Task.Generate_Conceptual_Help' -Value "$PSScriptRoot/tasks/Generate_Conceptual_Help.build.ps1"

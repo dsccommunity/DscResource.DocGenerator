@@ -18,15 +18,23 @@ Remove-Module -Name $script:moduleName -Force -ErrorAction 'SilentlyContinue'
 Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 #endregion HEADER
 
-Describe 'Generate.Conceptual.Help.build' {
+Describe 'Generate_Conceptual_Help' {
     BeforeAll {
         Mock -CommandName New-DscResourcePowerShellHelp
+    }
 
-        $buildScript = Get-Command -Name 'Task.Generate_Conceptual_Help' -Module $script:projectName
+    It 'Should run the build script alias' {
+        $buildTaskName = 'Generate_Conceptual_Help'
+        $buildScriptAliasName = 'Task.{0}' -f $buildTaskName
+
+        $script:buildScript = Get-Command -Name $buildScriptAliasName -Module $script:projectName
+
+        $script:buildScript.Name | Should -Be $buildScriptAliasName
+        $script:buildScript.ReferencedCommand | Should -Be ('{0}.build.ps1' -f $buildTaskName)
     }
 
     It 'Should dot-source the build script without throwing' {
-        { . $buildScript } | Should -Not -Throw
+        { . $script:buildScript } | Should -Not -Throw
     }
 
     It 'Should run the build task without throwing' {
@@ -36,7 +44,7 @@ Describe 'Generate.Conceptual.Help.build' {
                 SourcePath = $TestDrive
             }
 
-            Invoke-Build -Task 'Generate_Conceptual_Help' -File $buildScript.Definition @taskParameters
+            Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @taskParameters
         } | Should -Not -Throw
 
         Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -Exactly -Times 1 -Scope It
