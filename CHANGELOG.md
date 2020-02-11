@@ -5,6 +5,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added build task `Generate_Conceptual_Help` that runs the cmdlet
+  `New-DscResourcePowerShellHelp`. The build task is primarily meant to
+  be run by the project [Sampler's](https://github.com/gaelcolas/Sampler)
+  `build.ps1`. To make the task available for `Invoke-Build` in a repository
+  that is based on [Sampler](https://github.com/gaelcolas/Sampler) add this
+  module to required modules, and then in the `build.yaml` add the following.
+  ```yaml
+  ModuleBuildTasks:
+    DscResource.DocGenerator:
+      - 'Task.*'
+  ```
+  
 ### Fixed
 
 - Fix the description in the README.md.

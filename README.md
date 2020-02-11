@@ -24,7 +24,7 @@ full release to [PowerShell Gallery](https://www.powershellgallery.com/).
 Please check out the DSC Community [contributing guidelines](https://dsccommunity.org/guidelines/contributing).
 This repository align to the [DSC Community Style Guidelines](https://dsccommunity.org/styleguidelines).
 
-## Cmdlet
+## Cmdlets
 
 Refer to the comment-based help for more information about these helper
 functions.
@@ -51,3 +51,40 @@ the DSC resource UserAccountControl.
 >**NOTE:** This cmdlet does not work on macOS and will throw an error due 
 >to the problem discussed in issue https://github.com/PowerShell/PowerShell/issues/5970
 >and issue https://github.com/PowerShell/MMI/issues/33.
+
+## Tasks
+
+### `Generate_Conceptual_Help`
+
+This build task runs the cmdlet `New-DscResourcePowerShellHelp`. This is
+an `Invoke-Build` task. The build task is primarily meant to be run by
+the project [Sampler's](https://github.com/gaelcolas/Sampler) `build.ps1`
+which wraps `Invoke-Build` and has the configuration file (`build.yaml`) to
+control its behavior.
+
+To make the task available for the cmdlet `Invoke-Build` in a repository
+that is based on the [Sampler](https://github.com/gaelcolas/Sampler) project,
+add this module to the file `RequiredModules.psd1`, and then in the
+file `build.yaml` add the following:
+
+```yaml
+ModuleBuildTasks:
+  DscResource.DocGenerator:
+    - 'Task.*'
+```
+
+Then the build task can be used. For example like this when a repository
+is based on the [Sampler](https://github.com/gaelcolas/Sampler) project.
+
+```yaml
+BuildWorkflow:
+  '.':
+    - build
+
+  build:
+    - Clean
+    - Build_Module_ModuleBuilder
+    - Build_NestedModules_ModuleBuilder
+    - Create_changelog_release_output
+    - Generate_Conceptual_Help
+```

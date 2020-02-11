@@ -23,24 +23,45 @@
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion = '5.0'
 
-    # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = @(
-        'New-DscResourcePowerShellHelp'
-    )
+    <#
+        Functions to export from this module, for best performance, do not use
+        wildcards and do not delete the entry, use an empty array if there are
+        no functions to export.
 
-    # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
+        This will be automatically update by the build pipeline.
+    #>
+    FunctionsToExport = @()
+
+    <#
+        Cmdlets to export from this module, for best performance, do not use
+        wildcards and do not delete the entry, use an empty array if there are
+        no cmdlets to export.
+    #>
     CmdletsToExport   = @()
 
     # Variables to export from this module
     VariablesToExport = @()
 
-    # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-    AliasesToExport   = @()
+    <#
+        Aliases to export from this module, for best performance, do not use
+        wildcards and do not delete the entry, use an empty array if there are
+        no aliases to export.
+
+        This must be set to the aliases to export since there is no way to tell
+        the module builder (build pipeline) which aliases to add.
+    #>
+    AliasesToExport   = @(
+        'Task.Generate_Conceptual_Help'
+    )
 
     # DSC resources to export from this module
     DscResourcesToExport = @()
 
-    # Private data to pass to the module specified in RootModule/ModuleToProcess. This may also contain a PSData hashtable with additional module metadata used by PowerShell.
+    <#
+        Private data to pass to the module specified in RootModule/ModuleToProcess.
+        This may also contain a PSData hashtable with additional module metadata
+        used by PowerShell.
+    #>
     PrivateData       = @{
         PSData = @{
             # Tags applied to this module. These help with module discovery in online galleries.
