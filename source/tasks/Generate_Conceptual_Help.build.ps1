@@ -27,7 +27,7 @@
         The build info object from ModuleBuilder. Defaults to an empty hashtable.
 
     .NOTES
-        This is a build task is primarily meant to be run by Invoke-Build but
+        This is a build task that is primarily meant to be run by Invoke-Build but
         wrapped by the Sampler project's build.ps1 (https://github.com/gaelcolas/Sampler).
 #>
 param

@@ -3,7 +3,7 @@
         This is the alias to the build task Generate_Conceptual_Help's script file.
 
     .DESCRIPTION
-        This make available the alias 'Task.Generate_Conceptual_Help' that is
+        This makes available the alias 'Task.Generate_Conceptual_Help' that is
         exported in the module manifest so that the build task can be correctly
         imported using for example Invoke-Build.
 

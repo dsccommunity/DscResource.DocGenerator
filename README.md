@@ -59,13 +59,13 @@ the DSC resource UserAccountControl.
 This build task runs the cmdlet `New-DscResourcePowerShellHelp`. This is
 an `Invoke-Build` task. The build task is primarily meant to be run by
 the project [Sampler's](https://github.com/gaelcolas/Sampler) `build.ps1`
-which wraps `Invoke-Build` and have configuration file (`build.yaml`) to
+which wraps `Invoke-Build` and has the configuration file (`build.yaml`) to
 control its behavior.
 
 To make the task available for the cmdlet `Invoke-Build` in a repository
 that is based on the [Sampler](https://github.com/gaelcolas/Sampler) project,
 add this module to the file `RequiredModules.psd1`, and then in the
-file `build.yaml` add the following.
+file `build.yaml` add the following:
 
 ```yaml
 ModuleBuildTasks:
