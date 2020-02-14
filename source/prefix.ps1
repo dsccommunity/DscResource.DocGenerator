@@ -23,3 +23,21 @@ if (-not ([System.Management.Automation.PSTypeName]'HelpExampleBlockType').Type)
 '@
     Add-Type -TypeDefinition $typeDefinition
 }
+
+<#
+    Define enumeration for use by wiki example generation to determine the type of
+    block that a text line is within.
+#>
+if (-not ([System.Management.Automation.PSTypeName]'WikiExampleBlockType').Type)
+{
+    $typeDefinition = @'
+    public enum WikiExampleBlockType
+    {
+        None,
+        PSScriptInfo,
+        Configuration,
+        ExampleCommentHeader
+    }
+'@
+    Add-Type -TypeDefinition $typeDefinition
+}
