@@ -129,8 +129,6 @@ function New-DscResourceWikiPage
 
             Write-Verbose -Message ($script:localizedData.OutputWikiPageMessage -f $savePath)
 
-            Write-Verbose ($output.ToString() -replace '\r?\n', "`r`n")
-
             $null = Out-File `
                 -InputObject ($output.ToString() -replace '\r?\n', "`r`n") `
                 -FilePath $savePath `
