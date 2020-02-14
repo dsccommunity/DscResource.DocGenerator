@@ -141,5 +141,6 @@ function Get-DscResourceWikiExampleContent
     $null = $exampleStringBuilder.Append($exampleCodeStringBuilder)
     $null = $exampleStringBuilder.Append('```')
 
-    return $exampleStringBuilder.ToString()
+    # ALways return CRLF as line endings to work cross platform.
+    return ($exampleStringBuilder.ToString() -replace '\r?\n', "`r`n")
 }

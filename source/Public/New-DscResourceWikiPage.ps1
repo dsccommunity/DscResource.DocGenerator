@@ -38,7 +38,7 @@ function New-DscResourceWikiPage
     $mofSearchPath = Join-Path -Path $ModulePath -ChildPath '\**\*.schema.mof'
     $mofSchemaFiles = Get-ChildItem -Path $mofSearchPath -Recurse
 
-    Write-Verbose -Message ($script:localizedData.FoundMofFilesMessage -f $mofSchemas.Count, $ModulePath)
+    Write-Verbose -Message ($script:localizedData.FoundMofFilesMessage -f $mofSchemaFiles.Count, $ModulePath)
 
     # Loop through all the Schema files found in the modules folder
     foreach ($mofSchemaFile in $mofSchemaFiles)
@@ -53,7 +53,7 @@ function New-DscResourceWikiPage
 
         if (Test-Path -Path $descriptionPath)
         {
-            Write-Verbose -Message ($script:localizedData.GenerateWikiPageMessage -f $result.FriendlyName)
+            Write-Verbose -Message ($script:localizedData.GenerateWikiPageMessage -f $mofSchema.FriendlyName)
 
             $output = New-Object -TypeName System.Text.StringBuilder
             $null = $output.AppendLine("# $($mofSchema.FriendlyName)")
@@ -124,10 +124,13 @@ function New-DscResourceWikiPage
                 Write-Warning -Message ($script:localizedData.NoExampleFileFoundWarning -f $mofSchema.FriendlyName)
             }
 
+            $outputFileName = "$($mofSchema.FriendlyName).md"
+            $savePath = Join-Path -Path $OutputPath -ChildPath $outputFileName
+
             Write-Verbose -Message ($script:localizedData.OutputWikiPageMessage -f $savePath)
             $null = Out-File `
                 -InputObject $output.ToString() `
-                -FilePath (Join-Path -Path $OutputPath -ChildPath "$($mofSchema.FriendlyName).md") `
+                -FilePath $savePath `
                 -Encoding utf8 `
                 -Force
         }
