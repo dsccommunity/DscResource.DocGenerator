@@ -36,7 +36,7 @@ function New-DscResourceWikiPage
     )
 
     $mofSearchPath = Join-Path -Path $ModulePath -ChildPath '\**\*.schema.mof'
-    $mofSchemaFiles = Get-ChildItem -Path $mofSearchPath -Recurse
+    $mofSchemaFiles = @(Get-ChildItem -Path $mofSearchPath -Recurse)
 
     Write-Verbose -Message ($script:localizedData.FoundMofFilesMessage -f $mofSchemaFiles.Count, $ModulePath)
 
@@ -100,9 +100,9 @@ function New-DscResourceWikiPage
 
             $exampleSearchPath = "\Examples\Resources\$($mofSchema.FriendlyName)\*.ps1"
             $examplesPath = (Join-Path -Path $ModulePath -ChildPath $exampleSearchPath)
-            $exampleFiles = Get-ChildItem -Path $examplesPath -ErrorAction SilentlyContinue
+            $exampleFiles = @(Get-ChildItem -Path $examplesPath -ErrorAction SilentlyContinue)
 
-            if ($null -ne $exampleFiles)
+            if ($exampleFiles.Count -gt 0)
             {
                 $null = $output.AppendLine('## Examples')
                 $exampleCount = 1
@@ -128,8 +128,11 @@ function New-DscResourceWikiPage
             $savePath = Join-Path -Path $OutputPath -ChildPath $outputFileName
 
             Write-Verbose -Message ($script:localizedData.OutputWikiPageMessage -f $savePath)
+
+            Write-Verbose ($output.ToString() -replace '\r?\n', "`r`n")
+
             $null = Out-File `
-                -InputObject $output.ToString() `
+                -InputObject ($output.ToString() -replace '\r?\n', "`r`n") `
                 -FilePath $savePath `
                 -Encoding utf8 `
                 -Force
