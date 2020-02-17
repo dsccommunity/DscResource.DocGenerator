@@ -21,6 +21,22 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 Describe 'Generate_Conceptual_Help' {
     BeforeAll {
         Mock -CommandName New-DscResourcePowerShellHelp
+
+        # Stub function for the executable GitVersion.
+        function gitversion
+        {
+            # Make sure to throw if this stub is called.
+            throw 'GitVersion Mock: Not Implemented'
+        }
+
+        Mock -CommandName gitversion -MockWith {
+            # Mock the JSON object that GitVersion returns.
+            return '
+            {
+                "MajorMinorPatch":"99.1.1"
+            }
+            '
+        }
     }
 
     It 'Should run the build script alias' {
@@ -38,15 +54,17 @@ Describe 'Generate_Conceptual_Help' {
     }
 
     It 'Should run the build task without throwing' {
-        {
-            $taskParameters = @{
-                ProjectName = 'MyModule'
-                SourcePath = $TestDrive
-            }
+        $mockTaskParameters = @{
+            ProjectName = 'MyModule'
+            SourcePath = $TestDrive
+        }
 
-            Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @taskParameters
+        {
+            Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @mockTaskParameters
         } | Should -Not -Throw
 
-        Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -Exactly -Times 1 -Scope It
+        Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -ParameterFilter {
+            $DestinationModulePath -eq ('{0}\output\{1}\99.1.1' -f $script:projectPath, $mockTaskParameters.ProjectName)
+        } -Exactly -Times 1 -Scope It
     }
 }
