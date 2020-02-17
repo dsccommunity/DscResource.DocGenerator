@@ -28,15 +28,6 @@ Describe 'Generate_Conceptual_Help' {
             # Make sure to throw if this stub is called.
             throw 'GitVersion Mock: Not Implemented'
         }
-
-        Mock -CommandName gitversion -MockWith {
-            # Mock the JSON object that GitVersion returns.
-            return '
-            {
-                "MajorMinorPatch":"99.1.1"
-            }
-            '
-        }
     }
 
     It 'Should run the build script alias' {
@@ -53,18 +44,54 @@ Describe 'Generate_Conceptual_Help' {
         { . $script:buildScript } | Should -Not -Throw
     }
 
-    It 'Should run the build task without throwing' {
-        $mockTaskParameters = @{
-            ProjectName = 'MyModule'
-            SourcePath = $TestDrive
+    Context 'When the executable gitversion is available' {
+        BeforeAll {
+            Mock -CommandName gitversion -MockWith {
+                # Mock the JSON object that GitVersion returns.
+                return '
+                {
+                    "MajorMinorPatch":"99.1.1"
+                }
+                '
+            }
         }
 
-        {
-            Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @mockTaskParameters
-        } | Should -Not -Throw
+        It 'Should run the build task with the correct destination module path and without throwing' {
+            $mockTaskParameters = @{
+                ProjectName = 'MyModule'
+                SourcePath = $TestDrive
+            }
 
-        Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -ParameterFilter {
-            $DestinationModulePath -eq ('{0}\output\{1}\99.1.1' -f $script:projectPath, $mockTaskParameters.ProjectName)
-        } -Exactly -Times 1 -Scope It
+            {
+                Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @mockTaskParameters
+            } | Should -Not -Throw
+
+            Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -ParameterFilter {
+                $DestinationModulePath -eq ('{0}\output\{1}\99.1.1' -f $script:projectPath, $mockTaskParameters.ProjectName)
+            } -Exactly -Times 1 -Scope It
+        }
+    }
+
+    Context 'When the executable gitversion is not available' {
+        BeforeAll {
+            Mock -CommandName gitversion -MockWith {
+                throw
+            }
+        }
+
+        It 'Should run the build task with the correct destination module path and without throwing' {
+            $mockTaskParameters = @{
+                ProjectName = 'MyModule'
+                SourcePath = $TestDrive
+            }
+
+            {
+                Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @mockTaskParameters
+            } | Should -Not -Throw
+
+            Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -ParameterFilter {
+                $DestinationModulePath -eq ('{0}\output\{1}\0.0.1' -f $script:projectPath, $mockTaskParameters.ProjectName)
+            } -Exactly -Times 1 -Scope It
+        }
     }
 }
