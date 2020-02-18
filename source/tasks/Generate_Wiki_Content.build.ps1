@@ -18,11 +18,6 @@
         The path to the source folder name. Defaults to the same path where the
         module manifest is found.
 
-    .PARAMETER ModuleVersion
-        The module version of the build module. Defaults to the semantic version
-        returned by GitVersion. If GitVersion is not present, the default is
-        version '0.0.1'.
-
     .PARAMETER BuildInfo
         The build info object from ModuleBuilder. Defaults to an empty hashtable.
 
@@ -82,20 +77,6 @@ param
     ),
 
     [Parameter()]
-    [System.String]
-    $ModuleVersion = (property ModuleVersion $(
-            try
-            {
-                (gitversion | ConvertFrom-Json -ErrorAction Stop).InformationalVersion
-            }
-            catch
-            {
-                Write-Verbose "Error attempting to use GitVersion $($_), falling back to default of '0.0.1'."
-                '0.0.1'
-            }
-        )),
-
-    [Parameter()]
     $BuildInfo = (property BuildInfo @{ })
 )
 
@@ -114,7 +95,6 @@ task Generate_Wiki_Content {
 
     "`tProject Path            = $ProjectPath"
     "`tProject Name            = $ProjectName"
-    "`tModule Version          = $ModuleVersion"
     "`tSource Path             = $SourcePath"
     "`tWiki Output Path        = $wikiOutputPath"
 
