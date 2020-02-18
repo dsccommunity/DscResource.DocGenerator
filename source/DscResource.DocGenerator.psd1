@@ -51,7 +51,8 @@
         the module builder (build pipeline) which aliases to add.
     #>
     AliasesToExport   = @(
-        'Task.Generate_Conceptual_Help'
+        'Task.Generate_Conceptual_Help',
+        'Task.Generate_Wiki_Content'
     )
 
     # DSC resources to export from this module
