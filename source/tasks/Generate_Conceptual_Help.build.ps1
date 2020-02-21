@@ -83,8 +83,8 @@ param
     ),
 
     [Parameter()]
-    [System.String]
-    $ModuleVersionFolder = (property ModuleVersionFolder $(
+    [string]
+    $ModuleVersion = (property ModuleVersion $(
             try
             {
                 (gitversion | ConvertFrom-Json -ErrorAction Stop).NuGetVersionV2
