@@ -88,3 +88,7 @@ BuildWorkflow:
     - Create_changelog_release_output
     - Generate_Conceptual_Help
 ```
+
+>**NOTE:** If the module the task is used in is using the project [Sampler's](https://github.com/gaelcolas/Sampler)
+>`build.ps1` then version 0.102.1 of [Sampler](https://github.com/gaelcolas/Sampler)
+>is required.
