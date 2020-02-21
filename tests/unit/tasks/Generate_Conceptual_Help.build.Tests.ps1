@@ -30,6 +30,16 @@ Describe 'Generate_Conceptual_Help' {
         }
     }
 
+    BeforeEach {
+        <#
+            Make sure we didn't inherit a value for this parameter from the
+            parent scope or a prior test. If this variable is set to a value
+            by the build pipeline then this test would fail. This row make sure
+            we always start clean.
+        #>
+        $ModuleVersion = $null
+    }
+
     It 'Should run the build script alias' {
         $buildTaskName = 'Generate_Conceptual_Help'
         $buildScriptAliasName = 'Task.{0}' -f $buildTaskName
@@ -44,13 +54,40 @@ Describe 'Generate_Conceptual_Help' {
         { . $script:buildScript } | Should -Not -Throw
     }
 
+    Context 'When the property ModuleVersion uses a value from the parent scope' {
+        BeforeAll {
+            # This mocks the alias 'property' for the parameter 'ModuleVersion'.
+            Mock -Command Get-BuildProperty -MockWith {
+                return '99.1.1-preview0001'
+            } -ParameterFilter {
+                $Name -eq 'ModuleVersion'
+            }
+        }
+
+        It 'Should run the build task with the correct destination module path and without throwing' {
+            $mockTaskParameters = @{
+                ProjectName = 'MyModule'
+                SourcePath = $TestDrive
+            }
+
+            {
+                Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @mockTaskParameters
+            } | Should -Not -Throw
+
+            Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -ParameterFilter {
+                $DestinationModulePath -eq ('{0}\output\{1}\99.1.1' -f $script:projectPath, $mockTaskParameters.ProjectName)
+            } -Exactly -Times 1 -Scope It
+        }
+    }
+
     Context 'When the executable gitversion is available' {
         BeforeAll {
+            # This mocks the executable gitversion.
             Mock -CommandName gitversion -MockWith {
                 # Mock the JSON object that GitVersion returns.
                 return '
                 {
-                    "MajorMinorPatch":"99.1.1"
+                    "NuGetVersionV2":"99.1.1-preview0001"
                 }
                 '
             }
@@ -74,6 +111,7 @@ Describe 'Generate_Conceptual_Help' {
 
     Context 'When the executable gitversion is not available' {
         BeforeAll {
+            # This mocks the executable gitversion.
             Mock -CommandName gitversion -MockWith {
                 throw
             }

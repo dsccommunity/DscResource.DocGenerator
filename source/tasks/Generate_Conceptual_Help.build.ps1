@@ -82,11 +82,11 @@ param
     ),
 
     [Parameter()]
-    [System.String]
-    $ModuleVersionFolder = (property ModuleVersionFolder $(
+    [string]
+    $ModuleVersion = (property ModuleVersion $(
             try
             {
-                (gitversion | ConvertFrom-Json -ErrorAction Stop).MajorMinorPatch
+                (gitversion | ConvertFrom-Json -ErrorAction Stop).NuGetVersionV2
             }
             catch
             {
@@ -106,11 +106,15 @@ task Generate_Conceptual_Help {
         $OutputDirectory = Join-Path -Path $ProjectPath -ChildPath $OutputDirectory
     }
 
+    $ModuleVersionFolder, $PreReleaseString = $ModuleVersion -split '\-', 2
+
     $builtModulePath = Join-Path -Path (Join-Path -Path $OutputDirectory -ChildPath $ProjectName) -ChildPath $ModuleVersionFolder
 
     "`tProject Path            = $ProjectPath"
     "`tProject Name            = $ProjectName"
+    "`tModule Version          = $ModuleVersion"
     "`tModule Version Folder   = $ModuleVersionFolder"
+    "`tPrerelease String       = $PreReleaseString"
     "`tSource Path             = $SourcePath"
     "`tBuilt Module Path       = $builtModulePath"
 
