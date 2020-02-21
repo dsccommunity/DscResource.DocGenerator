@@ -62,6 +62,7 @@ Describe 'Generate_Conceptual_Help' {
             } -ParameterFilter {
                 $Name -eq 'ModuleVersion'
             }
+
             $mockTaskParameters = @{
                 ProjectName = 'MyModule'
                 SourcePath = $TestDrive
