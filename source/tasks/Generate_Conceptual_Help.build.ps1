@@ -83,7 +83,7 @@ param
     ),
 
     [Parameter()]
-    [string]
+    [System.String]
     $ModuleVersion = (property ModuleVersion $(
             try
             {
