@@ -18,10 +18,11 @@
         The path to the source folder name. Defaults to the same path where the
         module manifest is found.
 
-    .PARAMETER ModuleVersionFolder
-        The module version folder name of the build module, e.g. 'MyModule/99.1.1'.
-        Defaults to the property MajorMinorPatch returned by GitVersion. If
-        GitVersion is not present, the parameter defaults to version '0.0.1'.
+    .PARAMETER ModuleVersion
+        The module version of the build module, e.g. '99.1.1-preview0001'. Defaults
+        to using the value from parent scope, if that is not available it defaults
+        to the property NuGetVersionV2 returned by GitVersion. If GitVersion is not
+        present, the parameter defaults to version '0.0.1'.
 
     .PARAMETER BuildInfo
         The build info object from ModuleBuilder. Defaults to an empty hashtable.
