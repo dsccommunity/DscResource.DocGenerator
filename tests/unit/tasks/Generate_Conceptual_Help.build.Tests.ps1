@@ -62,20 +62,24 @@ Describe 'Generate_Conceptual_Help' {
             } -ParameterFilter {
                 $Name -eq 'ModuleVersion'
             }
-        }
 
-        It 'Should run the build task with the correct destination module path and without throwing' {
             $mockTaskParameters = @{
                 ProjectName = 'MyModule'
                 SourcePath = $TestDrive
             }
 
+            $mockExpectedDestinationModulePath = Join-Path -Path $script:projectPath -ChildPath 'output' |
+                Join-Path -ChildPath $mockTaskParameters.ProjectName |
+                    Join-Path -ChildPath '99.1.1'
+        }
+
+        It 'Should run the build task with the correct destination module path and without throwing' {
             {
                 Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @mockTaskParameters
             } | Should -Not -Throw
 
             Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -ParameterFilter {
-                $DestinationModulePath -eq ('{0}\output\{1}\99.1.1' -f $script:projectPath, $mockTaskParameters.ProjectName)
+                $DestinationModulePath -eq $mockExpectedDestinationModulePath
             } -Exactly -Times 1 -Scope It
         }
     }
@@ -91,6 +95,15 @@ Describe 'Generate_Conceptual_Help' {
                 }
                 '
             }
+
+            $mockTaskParameters = @{
+                ProjectName = 'MyModule'
+                SourcePath = $TestDrive
+            }
+
+            $mockExpectedDestinationModulePath = Join-Path -Path $script:projectPath -ChildPath 'output' |
+                Join-Path -ChildPath $mockTaskParameters.ProjectName |
+                    Join-Path -ChildPath '99.1.1'
         }
 
         It 'Should run the build task with the correct destination module path and without throwing' {
@@ -104,7 +117,7 @@ Describe 'Generate_Conceptual_Help' {
             } | Should -Not -Throw
 
             Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -ParameterFilter {
-                $DestinationModulePath -eq ('{0}\output\{1}\99.1.1' -f $script:projectPath, $mockTaskParameters.ProjectName)
+                $DestinationModulePath -eq $mockExpectedDestinationModulePath
             } -Exactly -Times 1 -Scope It
         }
     }
@@ -115,6 +128,15 @@ Describe 'Generate_Conceptual_Help' {
             Mock -CommandName gitversion -MockWith {
                 throw
             }
+
+            $mockTaskParameters = @{
+                ProjectName = 'MyModule'
+                SourcePath = $TestDrive
+            }
+
+            $mockExpectedDestinationModulePath = Join-Path -Path $script:projectPath -ChildPath 'output' |
+                Join-Path -ChildPath $mockTaskParameters.ProjectName |
+                    Join-Path -ChildPath '0.0.1'
         }
 
         It 'Should run the build task with the correct destination module path and without throwing' {
@@ -128,7 +150,7 @@ Describe 'Generate_Conceptual_Help' {
             } | Should -Not -Throw
 
             Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -ParameterFilter {
-                $DestinationModulePath -eq ('{0}\output\{1}\0.0.1' -f $script:projectPath, $mockTaskParameters.ProjectName)
+                $DestinationModulePath -eq $mockExpectedDestinationModulePath
             } -Exactly -Times 1 -Scope It
         }
     }
