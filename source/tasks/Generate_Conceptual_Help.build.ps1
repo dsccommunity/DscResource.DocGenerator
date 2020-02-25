@@ -19,9 +19,10 @@
         module manifest is found.
 
     .PARAMETER ModuleVersion
-        The module version of the build module. Defaults to the semantic version
-        returned by GitVersion. If GitVersion is not present, the default is
-        version '0.0.1'.
+        The module version of the build module, e.g. '99.1.1-preview0001'. Defaults
+        to using the value from parent scope, if that is not available it defaults
+        to the property NuGetVersionV2 returned by GitVersion. If GitVersion is not
+        present, the parameter defaults to version '0.0.1'.
 
     .PARAMETER BuildInfo
         The build info object from ModuleBuilder. Defaults to an empty hashtable.
@@ -86,11 +87,11 @@ param
     $ModuleVersion = (property ModuleVersion $(
             try
             {
-                (gitversion | ConvertFrom-Json -ErrorAction Stop).InformationalVersion
+                (gitversion | ConvertFrom-Json -ErrorAction Stop).NuGetVersionV2
             }
             catch
             {
-                Write-Verbose "Error attempting to use GitVersion $($_), falling back to default of '0.0.1'."
+                Write-Verbose -Message "Error attempting to use GitVersion $($_), falling back to default of '0.0.1'."
                 '0.0.1'
             }
         )),
@@ -106,11 +107,15 @@ task Generate_Conceptual_Help {
         $OutputDirectory = Join-Path -Path $ProjectPath -ChildPath $OutputDirectory
     }
 
-    $builtModulePath = Join-Path -Path (Join-Path -Path $OutputDirectory -ChildPath $ProjectName) -ChildPath $ModuleVersion
+    $ModuleVersionFolder, $PreReleaseString = $ModuleVersion -split '\-', 2
+
+    $builtModulePath = Join-Path -Path (Join-Path -Path $OutputDirectory -ChildPath $ProjectName) -ChildPath $ModuleVersionFolder
 
     "`tProject Path            = $ProjectPath"
     "`tProject Name            = $ProjectName"
     "`tModule Version          = $ModuleVersion"
+    "`tModule Version Folder   = $ModuleVersionFolder"
+    "`tPrerelease String       = $PreReleaseString"
     "`tSource Path             = $SourcePath"
     "`tBuilt Module Path       = $builtModulePath"
 
