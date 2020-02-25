@@ -91,8 +91,8 @@ param
             }
             catch
             {
-                Write-Verbose -Message "Error attempting to use GitVersion $($_), falling back to default of '0.0.1'."
-                '0.0.1'
+                Write-Verbose -Message "Error attempting to use GitVersion $($_)."
+                ''
             }
         )),
 
@@ -107,6 +107,13 @@ task Generate_Conceptual_Help {
         $OutputDirectory = Join-Path -Path $ProjectPath -ChildPath $OutputDirectory
     }
 
+    $getModuleVersionParameters = @{
+        OutputDirectory = $OutputDirectory
+        ProjectName     = $ProjectName
+        ModuleVersion   = $ModuleVersion
+    }
+
+    $ModuleVersion = Get-ModuleVersion @getModuleVersionParameters
     $ModuleVersionFolder, $PreReleaseString = $ModuleVersion -split '\-', 2
 
     $builtModulePath = Join-Path -Path (Join-Path -Path $OutputDirectory -ChildPath $ProjectName) -ChildPath $ModuleVersionFolder

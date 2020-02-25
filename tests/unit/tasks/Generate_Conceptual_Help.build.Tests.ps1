@@ -107,11 +107,6 @@ Describe 'Generate_Conceptual_Help' {
         }
 
         It 'Should run the build task with the correct destination module path and without throwing' {
-            $mockTaskParameters = @{
-                ProjectName = 'MyModule'
-                SourcePath = $TestDrive
-            }
-
             {
                 Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @mockTaskParameters
             } | Should -Not -Throw
@@ -129,6 +124,10 @@ Describe 'Generate_Conceptual_Help' {
                 throw
             }
 
+            Mock -CommandName Get-ModuleVersion -MockWith {
+                return '1.0.0'
+            }
+
             $mockTaskParameters = @{
                 ProjectName = 'MyModule'
                 SourcePath = $TestDrive
@@ -136,15 +135,10 @@ Describe 'Generate_Conceptual_Help' {
 
             $mockExpectedDestinationModulePath = Join-Path -Path $script:projectPath -ChildPath 'output' |
                 Join-Path -ChildPath $mockTaskParameters.ProjectName |
-                    Join-Path -ChildPath '0.0.1'
+                    Join-Path -ChildPath '1.0.0'
         }
 
         It 'Should run the build task with the correct destination module path and without throwing' {
-            $mockTaskParameters = @{
-                ProjectName = 'MyModule'
-                SourcePath = $TestDrive
-            }
-
             {
                 Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @mockTaskParameters
             } | Should -Not -Throw

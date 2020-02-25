@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixes the build task `Generate_Conceptual_Help` to use the correct
   module version folder name for the built module path ([issue #17](https://github.com/dsccommunity/DscResource.DocGenerator/issues/17)).
+- Fixes the build task `Generate_Conceptual_Help` to correctly evaluate
+  the module version ([issue #21](https://github.com/dsccommunity/DscResource.DocGenerator/issues/21)).
 
 ## [0.3.0] - 2020-02-11
 
