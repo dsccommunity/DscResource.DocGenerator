@@ -36,7 +36,7 @@ Get-Help -Name <CmdletName> -Detailed
 ### `New-DscResourcePowerShellHelp`
 
 Generates conceptual help based on the mof-based DSC resources and their
-examples  in a DSC module. This currently only creates english (culture en-US)
+examples in a DSC module. This currently only creates english (culture en-US)
 conceptual help.
 
 ```powershell
@@ -52,20 +52,27 @@ the DSC resource UserAccountControl.
 >to the problem discussed in issue https://github.com/PowerShell/PowerShell/issues/5970
 >and issue https://github.com/PowerShell/MMI/issues/33.
 
+### `New-DscResourceWikiPage`
+
+Generate documentation that can be manually uploaded to the GitHub repository 
+Wiki.
+
+```powershell
+cd c:\source\MyDscModule
+New-DscResourceWikiPage -ModulePath '.' -OutputPath '.\output\WikiContent'
+```
+
 ## Tasks
 
-### `Generate_Conceptual_Help`
+These are `Invoke-Build` tasks. The build tasks are primarily meant to be
+run by the project [Sampler's](https://github.com/gaelcolas/Sampler)
+`build.ps1` which wraps `Invoke-Build` and has the configuration file
+(`build.yaml`) to control its behavior.
 
-This build task runs the cmdlet `New-DscResourcePowerShellHelp`. This is
-an `Invoke-Build` task. The build task is primarily meant to be run by
-the project [Sampler's](https://github.com/gaelcolas/Sampler) `build.ps1`
-which wraps `Invoke-Build` and has the configuration file (`build.yaml`) to
-control its behavior.
-
-To make the task available for the cmdlet `Invoke-Build` in a repository
+To make the tasks available for the cmdlet `Invoke-Build` in a repository
 that is based on the [Sampler](https://github.com/gaelcolas/Sampler) project,
-add this module to the file `RequiredModules.psd1`, and then in the
-file `build.yaml` add the following:
+add this module to the file `RequiredModules.psd1` and then in the file
+`build.yaml` add the following:
 
 ```yaml
 ModuleBuildTasks:
@@ -73,8 +80,12 @@ ModuleBuildTasks:
     - 'Task.*'
 ```
 
-Then the build task can be used. For example like this when a repository
-is based on the [Sampler](https://github.com/gaelcolas/Sampler) project.
+### `Generate_Conceptual_Help`
+
+This build task runs the cmdlet `New-DscResourcePowerShellHelp`.
+
+Below is an example how the build task can be used when a repository is
+based on the [Sampler](https://github.com/gaelcolas/Sampler) project.
 
 ```yaml
 BuildWorkflow:
@@ -92,3 +103,23 @@ BuildWorkflow:
 >**NOTE:** If the task is used in a module that is using the project [Sampler's](https://github.com/gaelcolas/Sampler)
 >`build.ps1` then version 0.102.1 of [Sampler](https://github.com/gaelcolas/Sampler)
 >is required.
+
+### `Generate_Wiki_Content`
+
+This build task runs the cmdlet `New-DscResourceWikiPage`.
+
+Below is an example how the build task can be used when a repository is
+based on the [Sampler](https://github.com/gaelcolas/Sampler) project.
+
+```yaml
+BuildWorkflow:
+  '.':
+    - build
+
+  build:
+    - Clean
+    - Build_Module_ModuleBuilder
+    - Build_NestedModules_ModuleBuilder
+    - Create_changelog_release_output
+    - Generate_Wiki_Content
+```
