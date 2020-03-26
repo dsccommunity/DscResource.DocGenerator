@@ -27,7 +27,7 @@ InModuleScope $script:moduleName {
             $script:filePath = Join-Path -Path $TestDrive -ChildPath $script:fileName
             $script:tempFilePath = Join-Path -Path $TestDrive -ChildPath $script:tempFileName
 
-            $fileContent = @"
+            $script:fileContent = @"
 [ClassVersion("1.0.0"), FriendlyName("MofHelperTest")]
 class MSFT_MofHelperTest : OMI_BaseResource
 {
@@ -40,7 +40,7 @@ class MSFT_MofHelperTest : OMI_BaseResource
     [Read,     Description("Test readonly integer")] Uint32 NoWrite;
 };
 "@
-            Set-Content -Path $script:filePath -Value $fileContent
+            Set-Content -Path $script:filePath -Value $script:fileContent
 
             Mock -CommandName Resolve-Path -MockWith {
                 [PSCustomObject]@{
@@ -171,6 +171,25 @@ class MSFT_MofHelperTest : OMI_BaseResource
             It 'Should return the proper EmbeddedInstance for Credential' {
                 $property = $schema.Attributes.Where({$_.Name -eq 'Credential'})
                 $property.EmbeddedInstance | Should -Be 'MSFT_Credential'
+            }
+
+            Context 'When the schema is formatted differently but still valid' {
+                BeforeAll {
+                    # Regression test for https://github.com/dsccommunity/DscResource.Test/issues/65.
+                    $script:fileContent = @"
+[ClassVersion("1.0.0.0"), FriendlyName("MofHelperTest")]
+class MSFT_MofHelperTest: OMI_BaseResource
+{
+    [Key,      Description("Test key string property")] String Name;
+};
+"@
+
+                    Set-Content -Path $script:filePath -Value $fileContent -Force
+                }
+
+                It 'Should import the class from the schema file without throwing' {
+                    { Get-MofSchemaObject -FileName $script:filePath -Verbose } | Should -Not -Throw
+                }
             }
         }
     }
