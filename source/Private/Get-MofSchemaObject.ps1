@@ -60,8 +60,7 @@ function Get-MofSchemaObject
 
     $filePath = (Resolve-Path -Path $FileName).Path
     $tempFilePath = Join-Path -Path $temporaryPath -ChildPath "DscMofHelper_$((New-Guid).Guid).tmp"
-    $moduleName = (Split-Path -Path $filePath -Leaf).Replace('.schema.mof', $null)
-    $rawContent = (Get-Content -Path $filePath -Raw) -replace "$moduleName : OMI_BaseResource", $moduleName
+    $rawContent = (Get-Content -Path $filePath -Raw) -replace '\s*:\s*OMI_BaseResource'
 
     Set-Content -LiteralPath $tempFilePath -Value $rawContent -ErrorAction 'Stop'
 

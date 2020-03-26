@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix missing documentation in the README.md for the cmdlet `New-DscResourceWikiPage`
   and the build task `Generate_Wiki_Content` ([issue #20](https://github.com/dsccommunity/DscResource.DocGenerator/issues/20)).
+- The function `Get-MofSchemaObject` did not correctly create the temporary
+  schema file depending on the formatting of the schema.
 
 ## [0.4.0] - 2020-02-25
 
