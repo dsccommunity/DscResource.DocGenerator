@@ -174,9 +174,10 @@ class MSFT_MofHelperTest : OMI_BaseResource
             }
 
             Context 'When the schema is formatted differently but still valid' {
-                BeforeAll {
-                    # Regression test for https://github.com/dsccommunity/DscResource.Test/issues/65.
-                    $script:fileContent = @"
+                Context 'When the colon is not prefix with whitespace' {
+                    BeforeAll {
+                        # Regression test for https://github.com/dsccommunity/DscResource.Test/issues/65.
+                        $script:fileContent = @"
 [ClassVersion("1.0.0.0"), FriendlyName("MofHelperTest")]
 class MSFT_MofHelperTest: OMI_BaseResource
 {
@@ -184,11 +185,50 @@ class MSFT_MofHelperTest: OMI_BaseResource
 };
 "@
 
-                    Set-Content -Path $script:filePath -Value $fileContent -Force
+                        Set-Content -Path $script:filePath -Value $fileContent -Force
+                    }
+
+                    It 'Should import the class from the schema file without throwing' {
+                        { Get-MofSchemaObject -FileName $script:filePath -Verbose } | Should -Not -Throw
+                    }
                 }
 
-                It 'Should import the class from the schema file without throwing' {
-                    { Get-MofSchemaObject -FileName $script:filePath -Verbose } | Should -Not -Throw
+                Context 'When the colon is suffixed with two whitespaces' {
+                    BeforeAll {
+                        # Regression test for https://github.com/dsccommunity/DscResource.Test/issues/65.
+                        $script:fileContent = @"
+[ClassVersion("1.0.0.0"), FriendlyName("MofHelperTest")]
+class MSFT_MofHelperTest :  OMI_BaseResource
+{
+    [Key,      Description("Test key string property")] String Name;
+};
+"@
+
+                        Set-Content -Path $script:filePath -Value $fileContent -Force
+                    }
+
+                    It 'Should import the class from the schema file without throwing' {
+                        { Get-MofSchemaObject -FileName $script:filePath -Verbose } | Should -Not -Throw
+                    }
+                }
+
+                Context 'When the colon is neither prefixed or suffixed by whitespace' {
+                    BeforeAll {
+                        # Regression test for https://github.com/dsccommunity/DscResource.Test/issues/65.
+                        $script:fileContent = @"
+[ClassVersion("1.0.0.0"), FriendlyName("MofHelperTest")]
+class MSFT_MofHelperTest :  OMI_BaseResource
+{
+    [Key,      Description("Test key string property")] String Name;
+};
+"@
+
+                        Set-Content -Path $script:filePath -Value $fileContent -Force
+                    }
+
+                    It 'Should import the class from the schema file without throwing' {
+                        { Get-MofSchemaObject -FileName $script:filePath -Verbose } | Should -Not -Throw
+                    }
                 }
             }
         }
