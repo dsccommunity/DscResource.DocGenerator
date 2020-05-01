@@ -18,12 +18,6 @@
         The path to the source folder name. Defaults to the same path where the
         module manifest is found.
 
-    .PARAMETER ModuleVersion
-        The module version of the build module, e.g. '99.1.1-preview0001'. Defaults
-        to using the value from parent scope, if that is not available it defaults
-        to the property NuGetVersionV2 returned by GitVersion. If GitVersion is not
-        present, the parameter defaults to version '0.0.1'.
-
     .PARAMETER BuildInfo
         The build info object from ModuleBuilder. Defaults to an empty hashtable.
 
@@ -83,20 +77,6 @@ param
     ),
 
     [Parameter()]
-    [System.String]
-    $ModuleVersion = (property ModuleVersion $(
-            try
-            {
-                (gitversion | ConvertFrom-Json -ErrorAction Stop).NuGetVersionV2
-            }
-            catch
-            {
-                Write-Verbose -Message "Error attempting to use GitVersion $($_)."
-                ''
-            }
-        )),
-
-    [Parameter()]
     $BuildInfo = (property BuildInfo @{ })
 )
 
@@ -107,20 +87,19 @@ task Generate_Conceptual_Help {
         $OutputDirectory = Join-Path -Path $ProjectPath -ChildPath $OutputDirectory
     }
 
-    $getModuleVersionParameters = @{
+    $getBuiltModuleVersionParameters = @{
         OutputDirectory = $OutputDirectory
         ProjectName     = $ProjectName
-        ModuleVersion   = $ModuleVersion
     }
 
-    $ModuleVersion = Get-ModuleVersion @getModuleVersionParameters
-    $ModuleVersionFolder, $PreReleaseString = $ModuleVersion -split '\-', 2
+    $moduleVersion = Get-BuiltModuleVersion @getBuiltModuleVersionParameters
+    $ModuleVersionFolder, $PreReleaseString = $moduleVersion -split '\-', 2
 
     $builtModulePath = Join-Path -Path (Join-Path -Path $OutputDirectory -ChildPath $ProjectName) -ChildPath $ModuleVersionFolder
 
     "`tProject Path            = $ProjectPath"
     "`tProject Name            = $ProjectName"
-    "`tModule Version          = $ModuleVersion"
+    "`tModule Version          = $moduleVersion"
     "`tModule Version Folder   = $ModuleVersionFolder"
     "`tPrerelease String       = $PreReleaseString"
     "`tSource Path             = $SourcePath"
