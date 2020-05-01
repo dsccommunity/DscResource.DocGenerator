@@ -5,6 +5,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added helper function `Split-ModuleVersion` that is required by the helper
+  function `Get-BuiltModuleVersion`.
+
+### Changed
+
+- Replaced the helper function `Get-ModuleVersion` with the helper function
+  `Get-BuiltModuleVersion`.
+
 ## [0.5.0] - 2020-03-28
 
 ### Fixed
