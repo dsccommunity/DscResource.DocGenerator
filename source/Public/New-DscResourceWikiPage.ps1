@@ -49,9 +49,9 @@ function New-DscResourceWikiPage
                     -and ($null -ne $_.FriendlyName)
             }
 
-        $descriptionPath = Join-Path -Path $mofSchemaFile.DirectoryName -ChildPath 'readme.md'
+        [System.Array]$readmeFile = Get-ChildItem -Path $mofSchemaFile.DirectoryName | Where-Object -FilterScript { $_.Name -like 'readme.md' }
 
-        if (Test-Path -Path $descriptionPath)
+        if ($readmeFile.Count -eq 1)
         {
             Write-Verbose -Message ($script:localizedData.GenerateWikiPageMessage -f $mofSchema.FriendlyName)
 
@@ -91,7 +91,7 @@ function New-DscResourceWikiPage
                 $null = $output.AppendLine('|')
             }
 
-            $descriptionContent = Get-Content -Path $descriptionPath -Raw
+            $descriptionContent = Get-Content -Path $readmeFile.FullName -Raw
 
             # Change the description H1 header to an H2
             $descriptionContent = $descriptionContent -replace '# Description', '## Description'
@@ -134,6 +134,10 @@ function New-DscResourceWikiPage
                 -FilePath $savePath `
                 -Encoding utf8 `
                 -Force
+        }
+        elseif ($readmeFile.Count -gt 1)
+        {
+            Write-Warning -Message ($script:localizedData.MultipleDescriptionFileFoundWarning -f $mofSchema.FriendlyName, $readmeFile.Count)
         }
         else
         {
