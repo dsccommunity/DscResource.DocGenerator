@@ -147,6 +147,7 @@ Configuration Example
 
         # General mock values
         $script:mockReadmePath = Join-Path -Path $script:mockSchemaFolder -ChildPath 'readme.md'
+        $script:mockReadmeFolder = $script:mockSchemaFolder
         $script:mockOutputFile = Join-Path -Path $script:mockOutputPath -ChildPath "$($script:mockResourceName).md"
         $script:mockSavePath = Join-Path -Path $script:mockOutputPath -ChildPath "$($script:mockResourceName).md"
         $script:mockDestinationModulePathSavePath = Join-Path -Path $script:mockDestinationModulePath -ChildPath "DscResources\$($script:mockResourceName)\en-US\about_$($script:mockResourceName).help.txt"
@@ -197,6 +198,10 @@ Configuration Example
             $Path -eq $script:expectedSchemaPath
         }
 
+        $script:getChildItemDescription_parameterFilter = {
+            $Path -eq $script:mockReadmeFolder
+        }
+
         $script:getChildItemExample_parameterFilter = {
             $Path -eq $script:expectedExamplePath
         }
@@ -235,6 +240,10 @@ Configuration Example
             $Message -eq ($script:localizedData.NoDescriptionFileFoundWarning -f $script:mockResourceName)
         }
 
+        $script:writeWarningMultipleDescription_parameterFilter = {
+            $Message -eq ($script:localizedData.MultipleDescriptionFileFoundWarning -f $script:mockResourceName, 2)
+        }
+
         $script:writeWarningExample_parameterFilter = {
             $Message -eq ($script:localizedData.NoExampleFileFoundWarning -f $script:mockResourceName)
         }
@@ -257,7 +266,7 @@ Configuration Example
             Verbose = $true
         }
 
-        Context 'When there is no schemas found in the module folder' {
+        Context 'When there are no schemas found in the module folder' {
             BeforeAll {
                 Mock `
                     -CommandName Get-ChildItem `
@@ -297,9 +306,9 @@ Configuration Example
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
-                    -MockWith { $false }
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemDescription_parameterFilter `
+                    -MockWith { $null }
 
                 Mock `
                     -CommandName Out-File `
@@ -321,8 +330,68 @@ Configuration Example
                     -Exactly -Times 1
 
                 Assert-MockCalled `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemDescription_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
                     -CommandName Write-Warning `
                     -ParameterFilter $script:writeWarningDescription_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Out-File `
+                    -ParameterFilter $script:outFile_parameterFilter `
+                    -Exactly -Times 0
+            }
+        }
+
+        Context 'When there are multiple resource descriptions found' {
+            BeforeAll {
+                Mock `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemSchema_parameterFilter `
+                    -MockWith { $script:mockSchemaFiles }
+
+                Mock `
+                    -CommandName Get-MofSchemaObject `
+                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterFilter `
+                    -MockWith { $script:mockGetMofSchemaObject }
+
+                Mock `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemDescription_parameterFilter `
+                    -MockWith { return @(
+                                    @{ Name = 'README.MD'; FullName = $script:mockReadmePath },
+                                    @{ Name = 'Readme.md'; FullName = $script:mockReadmePath }) }
+
+                Mock `
+                    -CommandName Out-File `
+                    -ParameterFilter $script:outFile_parameterFilter
+
+                Mock `
+                    -CommandName Write-Warning `
+                    -ParameterFilter $script:writeWarningMultipleDescription_parameterFilter
+            }
+
+            It 'Should not throw an exception' {
+                { New-DscResourceWikiPage @script:newDscResourceWikiPageOutput_parameters } | Should -Not -Throw
+            }
+
+            It 'Should call the expected mocks ' {
+                Assert-MockCalled `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemSchema_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemDescription_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Write-Warning `
+                    -ParameterFilter $script:writeWarningMultipleDescription_parameterFilter `
                     -Exactly -Times 1
 
                 Assert-MockCalled `
@@ -345,9 +414,9 @@ Configuration Example
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
-                    -MockWith { $true }
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemDescription_parameterFilter `
+                    -MockWith { return @(@{ Name = 'README.MD'; FullName = $script:mockReadmePath }) }
 
                 Mock `
                     -CommandName Get-Content `
@@ -378,6 +447,11 @@ Configuration Example
                 Assert-MockCalled `
                     -CommandName Get-ChildItem `
                     -ParameterFilter $script:getChildItemSchema_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemDescription_parameterFilter `
                     -Exactly -Times 1
 
                 Assert-MockCalled `
@@ -425,9 +499,10 @@ Configuration Example
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
-                    -MockWith { $true }
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemDescription_parameterFilter `
+                    -MockWith { return @(@{ Name = 'README.MD'; FullName = $script:mockReadmePath }) }
+
 
                 Mock `
                     -CommandName Get-Content `
@@ -479,8 +554,8 @@ Configuration Example
                     -Exactly -Times 1
 
                 Assert-MockCalled `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemDescription_parameterFilter `
                     -Exactly -Times 1
 
                 Assert-MockCalled `
@@ -523,9 +598,9 @@ Configuration Example
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
-                    -MockWith { $true }
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemDescription_parameterFilter `
+                    -MockWith { return @(@{ Name = 'README.MD'; FullName = $script:mockReadmePath }) }
 
                 Mock `
                     -CommandName Get-Content `
@@ -577,8 +652,8 @@ Configuration Example
                     -Exactly -Times 1
 
                 Assert-MockCalled `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemDescription_parameterFilter `
                     -Exactly -Times 1
 
                 Assert-MockCalled `

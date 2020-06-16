@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed issue with `New-DscResourceWikiPage` where Test-Path was case sensitive
+  on Linux machines and therefore didn't find some Readme.md files.
+
 ## [0.5.1] - 2020-05-01
 
 ### Added
