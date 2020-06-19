@@ -2,7 +2,7 @@
 ####################################################
 #          ModuleBuilder Configuration             #
 ####################################################
-CopyDirectories:
+CopyPaths:
   - en-US
   - tasks
 Encoding: UTF8
@@ -33,6 +33,7 @@ BuildWorkflow:
     - Build_Module_ModuleBuilder
     - Build_NestedModules_ModuleBuilder
     - Create_changelog_release_output
+    - Generate_Wiki_Content
 
   pack:
     - build
@@ -48,6 +49,7 @@ BuildWorkflow:
   publish:
     - Publish_release_to_GitHub
     - publish_module_to_gallery
+    - Publish_GitHub_Wiki_Content
 
 
 ####################################################
@@ -79,6 +81,8 @@ Resolve-Dependency:
 ModuleBuildTasks:
   Sampler:
     - '*.build.Sampler.ib.tasks'
+  DscResource.DocGenerator:
+    - 'Task.*'
 
 TaskHeader: |
   param($Path)
@@ -90,10 +94,10 @@ TaskHeader: |
   Write-Build DarkGray "  $Path"
   Write-Build DarkGray "  $($Task.InvocationInfo.ScriptName):$($Task.InvocationInfo.ScriptLineNumber)"
   ""
+
 GitHubConfig:
   GitHubFilesToAdd:
     - 'CHANGELOG.md'
-  GitHubConfigUserName: johlju
-  GitHubConfigUserEmail: johan.ljunggren@shamn.se
+  GitHubConfigUserName: dscbot
+  GitHubConfigUserEmail: dsccommunity@outlook.com
   UpdateChangelogOnPrerelease: false
-

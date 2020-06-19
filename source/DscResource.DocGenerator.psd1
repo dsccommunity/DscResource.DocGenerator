@@ -52,7 +52,8 @@
     #>
     AliasesToExport   = @(
         'Task.Generate_Conceptual_Help',
-        'Task.Generate_Wiki_Content'
+        'Task.Generate_Wiki_Content',
+        'Task.Publish_GitHub_Wiki_Content'
     )
 
     # DSC resources to export from this module

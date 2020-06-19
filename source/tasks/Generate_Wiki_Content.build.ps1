@@ -77,10 +77,11 @@ param
     ),
 
     [Parameter()]
+    [System.Collections.Hashtable]
     $BuildInfo = (property BuildInfo @{ })
 )
 
-# Synopsis: This task generates conceptual help for DSC resources.
+# Synopsis: This task generates wiki documentation for the DSC resources.
 task Generate_Wiki_Content {
     if (-not (Split-Path -IsAbsolute $OutputDirectory))
     {

@@ -77,6 +77,7 @@ param
     ),
 
     [Parameter()]
+    [System.Collections.Hashtable]
     $BuildInfo = (property BuildInfo @{ })
 )
 
