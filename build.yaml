@@ -81,8 +81,6 @@ Resolve-Dependency:
 ModuleBuildTasks:
   Sampler:
     - '*.build.Sampler.ib.tasks'
-  DscResource.DocGenerator:
-    - 'Task.*'
 
 TaskHeader: |
   param($Path)
