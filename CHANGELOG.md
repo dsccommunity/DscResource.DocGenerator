@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Update the documentation style in the README.md.
 - The repository is using the latest version of the module ModuleBuilder.
 - The repository was pinned to use version 4.10.1 of the module Pester
   since this repository does not support Pester 5 tests yet.
