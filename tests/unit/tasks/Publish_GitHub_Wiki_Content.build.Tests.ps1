@@ -20,6 +20,13 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 
 Describe 'Publish_GitHub_Wiki_Content' {
     BeforeAll {
+        <#
+            The build task only run if this is set. This sets the variable in the
+            parent scope so Invoke-Build can use it. This way we don't mess with
+            any real environment variables.
+        #>
+        $GitHubToken = 'anytoken'
+
         Mock -CommandName Publish-WikiContent
 
         Mock -CommandName Test-Path -MockWith {
@@ -29,6 +36,10 @@ Describe 'Publish_GitHub_Wiki_Content' {
         Mock -CommandName Get-BuiltModuleVersion -MockWith {
             return '1.0.0'
         }
+    }
+
+    AfterAll {
+        Remove-Variable -Name 'GitHubToken'
     }
 
     It 'Should run the build script alias' {
