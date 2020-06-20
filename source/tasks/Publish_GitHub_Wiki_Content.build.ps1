@@ -63,7 +63,7 @@ param
                     $(
                         try
                         {
-                            Test-ModuleManifest $_.FullName -ErrorAction Stop
+                            Test-ModuleManifest -Path $_.FullName -ErrorAction 'Stop'
                         }
                         catch
                         {
@@ -83,7 +83,7 @@ param
                     $(
                         try
                         {
-                            Test-ModuleManifest $_.FullName -ErrorAction Stop
+                            Test-ModuleManifest -Path $_.FullName -ErrorAction 'Stop'
                         }
                         catch
                         {
