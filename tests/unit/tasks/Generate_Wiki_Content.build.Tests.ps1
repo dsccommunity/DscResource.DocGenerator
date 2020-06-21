@@ -21,6 +21,16 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 Describe 'Generate_Wiki_Content' {
     BeforeAll {
         Mock -CommandName New-DscResourceWikiPage
+        Mock -CommandName Copy-Item
+        Mock -CommandName Set-WikiModuleVersion
+
+        Mock -CommandName Get-BuiltModuleVersion -MockWith {
+            return '1.0.0-preview1'
+        }
+
+        Mock -CommandName Test-Path -MockWith {
+            return $true
+        }
     }
 
     It 'Should run the build script alias' {

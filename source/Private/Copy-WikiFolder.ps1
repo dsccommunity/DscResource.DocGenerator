@@ -31,24 +31,13 @@ function Copy-WikiFolder
         $DestinationPath,
 
         [Parameter()]
-        [System.String]
-        $WikiSourcePath,
-
-        [Parameter()]
         [System.Management.Automation.SwitchParameter]
         $Force
     )
 
-    $pathsToCopy = @($Path)
+    Write-Verbose -Message ($localizedData.CopyWikiFoldersMessage -f ($Path -join ''', '''))
 
-    if ($PSBoundParameters.ContainsKey('WikiSourcePath'))
-    {
-        $pathsToCopy += $WikiSourcePath
-    }
-
-    Write-Verbose -Message ($localizedData.CopyWikiFoldersMessage -f ($pathsToCopy -join ''', '''))
-
-    $wikiFiles = Get-ChildItem -Path $pathsToCopy
+    $wikiFiles = Get-ChildItem -Path $Path
 
     foreach ($file in $wikiFiles)
     {

@@ -29,7 +29,6 @@ InModuleScope $script:moduleName {
                 Mock -CommandName New-WikiSidebar
                 Mock -CommandName New-WikiFooter
                 Mock -CommandName Remove-Item
-                Mock -CommandName Set-WikiModuleVersion
 
                 Mock -CommandName Invoke-Git -MockWith {
                     return 0
@@ -46,7 +45,6 @@ InModuleScope $script:moduleName {
                     GitHubAccessToken  = 'token'
                     GitUserEmail       = 'user@host.com'
                     GitUserName        = 'User'
-                    WikiSourcePath     = '.\WikiSource'
                     GlobalCoreAutoCrLf = 'true'
                 }
 
@@ -71,8 +69,6 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName New-WikiSidebar -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName New-WikiFooter -Exactly -Times 1 -Scope It
-
-                Assert-MockCalled -CommandName Set-WikiModuleVersion -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Set-Location -Exactly -Times 1 -Scope It
 
@@ -162,7 +158,6 @@ InModuleScope $script:moduleName {
                     GitHubAccessToken  = 'token'
                     GitUserEmail       = 'user@host.com'
                     GitUserName        = 'User'
-                    WikiSourcePath     = '.\WikiSource'
                     GlobalCoreAutoCrLf = 'true'
                 }
 
@@ -187,8 +182,6 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName New-WikiSidebar -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName New-WikiFooter -Exactly -Times 1 -Scope It
-
-                Assert-MockCalled -CommandName Set-WikiModuleVersion -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Set-Location -Exactly -Times 1 -Scope It
 

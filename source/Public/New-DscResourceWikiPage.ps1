@@ -17,7 +17,9 @@
         not the folder for and individual DSC resource)
 
     .EXAMPLE
-        New-DscResourceWikiPage -ModulePath C:\repos\SharePointdsc -OutputPath C:\repos\SharePointDsc\en-US
+        New-DscResourceWikiPage `
+            -ModulePath C:\repos\SharePointDsc\source `
+            -OutputPath C:\repos\SharePointDsc\output\WikiContent
 
         This example shows how to generate help for a specific module
 #>

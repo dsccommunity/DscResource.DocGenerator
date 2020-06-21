@@ -33,10 +33,6 @@
     .PARAMETER GitUserName
         The user name to use for the Git commit.
 
-    .PARAMETER WikiSourcePath
-        The name of the folder that contains any Wiki source files that should
-        also be published.
-
     .EXAMPLE
         Publish-WikiContent `
             -Path '.\output\WikiContent' `
@@ -90,11 +86,6 @@ function Publish-WikiContent
         $GitUserName,
 
         [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [System.String]
-        $WikiSourcePath,
-
-        [Parameter()]
         [ValidateSet('true','false','input')]
         [System.String]
         $GlobalCoreAutoCrLf
@@ -133,17 +124,10 @@ function Publish-WikiContent
             Force = $true
         }
 
-        if ($PSBoundParameters.ContainsKey('WikiSourcePath'))
-        {
-            $copyWikiFileParameters['WikiSourcePath'] = $WikiSourcePath
-        }
-
         Copy-WikiFolder @copyWikiFileParameters
 
         New-WikiSidebar -ModuleName $ModuleName -Path $tempPath
         New-WikiFooter -Path $tempPath
-
-        Set-WikiModuleVersion -Path (Join-Path -Path $tempPath -ChildPath 'Home.md') -ModuleVersion $ModuleVersion
 
         Set-Location -Path $tempPath
 

@@ -16,6 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   module version number will be updated prior to pushing to the Wiki.
   This is done by the the build task `Publish_GitHub_Wiki_Content`.
 
+### Removed
+
+- The parameter `WikiSourcePath` was removed from the function `Copy-WikiFolder`.
+- The parameter `WikiSourcePath` was removed from the function `Publish-WikiContent`.
+- The parameter `WikiSourceFolderName` was removed from the build task
+  `Publish_GitHub_Wiki_Content`.
+
 ### Changed
 
 - Update the documentation style in the README.md.
@@ -23,6 +30,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The repository was pinned to use version 4.10.1 of the module Pester
   since this repository does not support Pester 5 tests yet.
 - Updated `build.ps1` to be able to dogfood build tasks.
+- Moved the Wiki source logic from `Publish-WikiContent` to the build task
+  `Generate_Wiki_Content` to align with the other tasks that creates a
+  build artifact that should be deployed. `Publish-WikiContent` no longer
+  changes the build artifact during publishing. The build task 
+  `Generate_Wiki_Content` now first generates documentation for any existing
+  DSC resources and next it if the Wiki source folder (defaults to `WikiSource`)
+  exist in the source folder all those files will be copies to the
+  Wiki output folder (defaults to `output/WikiOutput`). If there is a
+  markdown file called `Home.md` then any module version placeholders
+  will be replaced by the built module version.
+- The function `Publish-WikiContent` will no longer call the function
+  `Set-WikiModuleVersion` (it is now done by the task `Generate_Wiki_Content`).
+- The `Set-WikiModuleVersion` was made a public function to be able to
+  use it in the build task `Generate_Wiki_Content`.
 
 ### Fixed
 
@@ -30,6 +51,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   on Linux machines and therefore didn't find some Readme.md files.
 - Minor style and documentation updates to the build tasks `Generate_Wiki_Content`
   and `Generate_Conceptual_Help`.
+- Fixed example in comment-based help form cmdlet `New-DscResourceWikiPage`.
+- Fixed a problem in the build task `Publish_GitHub_Wiki_Content` that
+  made the Wiki output path to not shown correctly.
 
 ## [0.5.1] - 2020-05-01
 
