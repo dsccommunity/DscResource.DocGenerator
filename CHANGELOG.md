@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The parameter `WikiSourcePath` was removed from the function `Publish-WikiContent`.
 - The parameter `WikiSourceFolderName` was removed from the build task
   `Publish_GitHub_Wiki_Content`.
+- The function `Publish-WikiContent` will no longer call the function
+  `Set-WikiModuleVersion` (it is now done by the task `Generate_Wiki_Content`).
 
 ### Changed
 
@@ -33,15 +35,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved the Wiki source logic from `Publish-WikiContent` to the build task
   `Generate_Wiki_Content` to align with the other tasks that creates a
   build artifact that should be deployed. `Publish-WikiContent` no longer
-  changes the build artifact during publishing. The build task 
+  changes the build artifact during publishing. The build task
   `Generate_Wiki_Content` now first generates documentation for any existing
-  DSC resources and next it if the Wiki source folder (defaults to `WikiSource`)
-  exist in the source folder all those files will be copies to the
-  Wiki output folder (defaults to `output/WikiOutput`). If there is a
-  markdown file called `Home.md` then any module version placeholders
+  DSC resources. Secondly if the Wiki source folder (defaults to `WikiSource`)
+  exist in the source folder then the content of that folder will be copied
+  to the Wiki output folder (defaults to `output/WikiOutput`). If there is a
+  markdown file called `Home.md` then any module version placeholders (`#.#.#`)
   will be replaced by the built module version.
-- The function `Publish-WikiContent` will no longer call the function
-  `Set-WikiModuleVersion` (it is now done by the task `Generate_Wiki_Content`).
 - The `Set-WikiModuleVersion` was made a public function to be able to
   use it in the build task `Generate_Wiki_Content`.
 
