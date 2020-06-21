@@ -241,11 +241,14 @@ BuildWorkflow:
 
 ### `Generate_Wiki_Content`
 
-This build task runs the cmdlet `New-DscResourceWikiPage`.
+This build task runs the cmdlet `New-DscResourceWikiPage` to build
+documentation for DSC resource. It will also copy the content of the
+wiki source folder if it exist (`WikiSourceFolderName` defaults to
+`WikiSource`).
 
-if the `Home.md` is present in the `WikiSourcePath` and it contain
-on or more entries of `#.#.#`  that will be replaced with the module version
-specified in `ModuleVersion`.
+if the `Home.md` is present in the folder specified in `WikiSourceFolderName`
+all module version placeholders (`#.#.#`) will be replaced with the built
+module version.
 
 Below is an example how the build task can be used when a repository is
 based on the [Sampler](https://github.com/gaelcolas/Sampler) project.
