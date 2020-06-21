@@ -242,7 +242,7 @@ BuildWorkflow:
 ### `Generate_Wiki_Content`
 
 This build task runs the cmdlet `New-DscResourceWikiPage` to build
-documentation for DSC resource. It will also copy the content of the
+documentation for DSC resources. It will also copy the content of the
 wiki source folder if it exist (`WikiSourceFolderName` defaults to
 `WikiSource`).
 
