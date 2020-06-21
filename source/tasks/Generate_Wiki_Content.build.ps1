@@ -29,6 +29,12 @@
     .NOTES
         This is a build task that is primarily meant to be run by Invoke-Build but
         wrapped by the Sampler project's build.ps1 (https://github.com/gaelcolas/Sampler).
+
+        The function Set-WikiModuleVersion needed to be made a public function
+        for the build task to find it. Set-WikiModuleVersion function does not
+        need to be public so if there is a way found in the future that makes it
+        possible to have it as a private function then this code should refactored
+        to make that happen.
 #>
 param
 (
