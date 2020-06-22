@@ -19,7 +19,7 @@
         module manifest is found.
 
     .PARAMETER WikiSourceFolderName
-        The name of the folder that contain the source markdown files (e.g. 'Home.md')
+        The name of the folder that contains the source markdown files (e.g. 'Home.md')
         to publish to the wiki. The name should be relative to the SourcePath.
         Defaults to 'WikiSource'.
 
@@ -98,8 +98,6 @@ param
 
 # Synopsis: This task generates wiki documentation for the DSC resources.
 task Generate_Wiki_Content {
-    #Import-Module -Name 'DscResource.DocGenerator' -Force
-
     if (-not (Split-Path -IsAbsolute $OutputDirectory))
     {
         $OutputDirectory = Join-Path -Path $ProjectPath -ChildPath $OutputDirectory

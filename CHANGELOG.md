@@ -38,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   changes the build artifact during publishing. The build task
   `Generate_Wiki_Content` now first generates documentation for any existing
   DSC resources. Secondly if the Wiki source folder (defaults to `WikiSource`)
-  exist in the source folder then the content of that folder will be copied
+  exists in the source folder then the content of that folder will be copied
   to the Wiki output folder (defaults to `output/WikiOutput`). If there is a
   markdown file called `Home.md` then any module version placeholders (`#.#.#`)
   will be replaced by the built module version.
