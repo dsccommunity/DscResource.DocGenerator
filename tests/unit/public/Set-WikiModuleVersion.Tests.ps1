@@ -50,7 +50,11 @@ InModuleScope $script:moduleName {
 
                     [Parameter()]
                     [System.Management.Automation.SwitchParameter]
-                    $Force
+                    $Force,
+
+                    [Parameter()]
+                    [System.Management.Automation.SwitchParameter]
+                    $NoNewLine
                 )
 
                 throw 'StubNotImplemented'

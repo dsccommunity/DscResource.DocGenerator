@@ -21,13 +21,6 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 Describe 'Generate_Conceptual_Help' {
     BeforeAll {
         Mock -CommandName New-DscResourcePowerShellHelp
-
-        # Stub function for the executable GitVersion.
-        function gitversion
-        {
-            # Make sure to throw if this stub is called.
-            throw 'GitVersion Mock: Not Implemented'
-        }
     }
 
     BeforeEach {

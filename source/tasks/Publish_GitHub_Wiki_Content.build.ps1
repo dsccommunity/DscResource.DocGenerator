@@ -22,11 +22,6 @@
         The name of the folder that contain the content to publish to the wiki.
         The name should be relative to the OutputDirectory. Defaults to 'WikiContent'.
 
-    .PARAMETER WikiSourceFolderName
-        The name of the folder that contain the source markdown files to publish to
-        the wiki, e.g. 'Home.md'. The name should be relative to the SourcePath.
-        Defaults to 'WikiSource'.
-
     .PARAMETER GitHubToken
         The token to use to push a commit and tag to the wiki repository. Defaults
         to an empty string.
@@ -101,10 +96,6 @@ param
 
     [Parameter()]
     [System.String]
-    $WikiSourceFolderName = (property WikiSourceFolderName 'WikiSource'),
-
-    [Parameter()]
-    [System.String]
     $GitHubToken = (property GitHubToken ''),
 
     [Parameter()]
@@ -160,16 +151,19 @@ task Publish_GitHub_Wiki_Content -if ($GitHubToken) {
         throw 'Could not parse owner and repository from the git remote origin URL.'
     }
 
+    $wikiOutputPath = Join-Path -Path $OutputDirectory -ChildPath $WikiContentFolderName
+
     "`tProject Path            = $ProjectPath"
     "`tProject Name            = $ProjectName"
     "`tModule Version          = $moduleVersion"
     "`tSource Path             = $SourcePath"
     "`tRepository Owner Name   = $ownerName"
     "`tRepository Name         = $repositoryName"
+    "`tOutput Directory        = $OutputDirectory"
     "`tWiki Output Path        = $wikiOutputPath"
 
     $publishWikiContentParameters = @{
-        Path = Join-Path -Path $OutputDirectory -ChildPath $WikiContentFolderName
+        Path = $wikiOutputPath
         OwnerName = $ownerName
         RepositoryName = $repositoryName
         ModuleName = $ProjectName
@@ -177,15 +171,6 @@ task Publish_GitHub_Wiki_Content -if ($GitHubToken) {
         GitHubAccessToken = $GitHubToken
         GitUserEmail = $GitHubConfigUserEmail
         GitUserName = $GitHubConfigUserName
-    }
-
-    $wikiSourcePath = Join-Path -Path $SourcePath -ChildPath $WikiSourceFolderName
-
-    if (Test-Path -Path $wikiSourcePath)
-    {
-        $publishWikiContentParameters['WikiSourcePath'] = $wikiSourcePath
-
-        "`tWiki Source Path        = $wikiSourcePath"
     }
 
     Write-Build Magenta "Publishing Wiki content."

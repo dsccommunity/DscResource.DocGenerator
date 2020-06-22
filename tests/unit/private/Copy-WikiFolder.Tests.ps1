@@ -24,7 +24,6 @@ InModuleScope $script:moduleName {
             $mockCopyWikiFileParameters = @{
                 Path            = "$TestDrive\TestModule"
                 DestinationPath = $TestDrive
-                WikiSourcePath  = 'WikiSource'
             }
 
             $mockFileInfo = @(
