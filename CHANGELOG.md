@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Update README.md with the correct build task name; 'Publish_GitHub_Wiki_Content'.
+
 ## [0.6.0] - 2020-06-22
 
 ### Added

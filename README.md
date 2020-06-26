@@ -275,7 +275,7 @@ environment variable, or if passed to the build task.
 Below is an example how the build task can be used when a repository is
 based on the [Sampler](https://github.com/gaelcolas/Sampler) project.
 
->**NOTE:* This task is meant to be run after the task `Generate_Wiki_Content`
+>**NOTE:** This task is meant to be run after the task `Generate_Wiki_Content`
 >that is normally run in the build phase. But this task can be used to upload
 >any content to a Wiki.
 
@@ -294,5 +294,5 @@ BuildWorkflow:
   publish:
     - Publish_release_to_GitHub
     - publish_module_to_gallery
-    - Publish_Wiki_Content
+    - Publish_GitHub_Wiki_Content
 ```
