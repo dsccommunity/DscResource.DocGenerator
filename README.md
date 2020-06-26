@@ -294,5 +294,5 @@ BuildWorkflow:
   publish:
     - Publish_release_to_GitHub
     - publish_module_to_gallery
-    - Publish_Wiki_Content
+    - Publish_GitHub_Wiki_Content
 ```
