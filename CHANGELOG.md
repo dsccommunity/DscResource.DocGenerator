@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Update README.md with the correct build task name; 'Publish_GitHub_Wiki_Content'.
+- Fixed wiki generation to correctly describe embedded instances in
+  parameters and made new section for each embedded instances with
+  their parameters.
+
+### Changed
+
+- The regular expression for `minor-version-bump-message` in the file
+  `GitVersion.yml` was changed to only raise minor version when the
+  commit message contain the word `add`, `adds`, `minor`, `feature`,
+  or `features`.
 
 ## [0.6.0] - 2020-06-22
 

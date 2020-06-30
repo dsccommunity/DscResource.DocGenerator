@@ -87,43 +87,46 @@ function Get-MofSchemaObject
         Remove-Item -LiteralPath $tempFilePath -Force
     }
 
-    $attributes = foreach ($property in $class.CimClassProperties)
+    foreach ($currentCimClass in $class)
     {
-        $state = switch ($property.flags)
+        $attributes = foreach ($property in $currentCimClass.CimClassProperties)
         {
-            { $_ -band [Microsoft.Management.Infrastructure.CimFlags]::Key }
+            $state = switch ($property.flags)
             {
-                'Key'
+                { $_ -band [Microsoft.Management.Infrastructure.CimFlags]::Key }
+                {
+                    'Key'
+                }
+                { $_ -band [Microsoft.Management.Infrastructure.CimFlags]::Required }
+                {
+                    'Required'
+                }
+                { $_ -band [Microsoft.Management.Infrastructure.CimFlags]::ReadOnly }
+                {
+                    'Read'
+                }
+                default
+                {
+                    'Write'
+                }
             }
-            { $_ -band [Microsoft.Management.Infrastructure.CimFlags]::Required }
-            {
-                'Required'
-            }
-            { $_ -band [Microsoft.Management.Infrastructure.CimFlags]::ReadOnly }
-            {
-                'Read'
-            }
-            default
-            {
-                'Write'
+
+            @{
+                Name             = $property.Name
+                State            = $state
+                DataType         = $property.CimType
+                ValueMap         = $property.Qualifiers.Where( { $_.Name -eq 'ValueMap' }).Value
+                IsArray          = $property.CimType -gt 16
+                Description      = $property.Qualifiers.Where( { $_.Name -eq 'Description' }).Value
+                EmbeddedInstance = $property.Qualifiers.Where( { $_.Name -eq 'EmbeddedInstance' }).Value
             }
         }
 
         @{
-            Name             = $property.Name
-            State            = $state
-            DataType         = $property.CimType
-            ValueMap         = $property.Qualifiers.Where( { $_.Name -eq 'ValueMap' }).Value
-            IsArray          = $property.CimType -gt 16
-            Description      = $property.Qualifiers.Where( { $_.Name -eq 'Description' }).Value
-            EmbeddedInstance = $property.Qualifiers.Where( { $_.Name -eq 'EmbeddedInstance' }).Value
+            ClassName    = $currentCimClass.CimClassName
+            Attributes   = $attributes
+            ClassVersion = $currentCimClass.CimClassQualifiers.Where( { $_.Name -eq 'ClassVersion' }).Value
+            FriendlyName = $currentCimClass.CimClassQualifiers.Where( { $_.Name -eq 'FriendlyName' }).Value
         }
-    }
-
-    @{
-        ClassName    = $class.CimClassName
-        Attributes   = $attributes
-        ClassVersion = $class.CimClassQualifiers.Where( { $_.Name -eq 'ClassVersion' }).Value
-        FriendlyName = $class.CimClassQualifiers.Where( { $_.Name -eq 'FriendlyName' }).Value
     }
 }

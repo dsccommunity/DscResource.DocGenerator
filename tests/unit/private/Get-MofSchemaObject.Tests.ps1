@@ -231,6 +231,36 @@ class MSFT_MofHelperTest :  OMI_BaseResource
                     }
                 }
             }
+
+            Context 'When the resource is using embedded instances' {
+                BeforeAll {
+                    # Regression test for https://github.com/dsccommunity/DscResource.Test/issues/65.
+                    $script:fileContent = @"
+[ClassVersion("1.0.0.0"), FriendlyName("MofHelperTest")]
+class MSFT_MofHelperTest :  OMI_BaseResource
+{
+    [Key, EmbeddedInstance("DSCTEST_TestEmbeddedInstance"), Description("Test key embedded instance property")] String Name;
+};
+
+[ClassVersion("1.0.0"), FriendlyName("TestEmbeddedInstance")]
+class DSCTEST_TestEmbeddedInstance
+{
+    [Key, Description("Test key string property")] String Name;
+};
+
+"@
+
+                    Set-Content -Path $script:filePath -Value $fileContent -Force
+                }
+
+                It 'Should import the classes from the schema file without throwing' {
+                    $result = Get-MofSchemaObject -FileName $script:filePath -Verbose
+
+                    $result | Should -HaveCount 2
+                    $result.ClassName | Should -Contain 'MSFT_MofHelperTest'
+                    $result.ClassName | Should -Contain 'DSCTEST_TestEmbeddedInstance'
+                }
+            }
         }
     }
 }
