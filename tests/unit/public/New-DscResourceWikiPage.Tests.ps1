@@ -687,8 +687,15 @@ Configuration Example
 
         Context 'When the schema is using an embedded instance' {
             BeforeAll {
+                <#
+                    This is the mocked embedded schema that is to be returned
+                    together with the resource schema (which is mocked above)
+                    for the mocked function Get-MofSchemaObject.
+                #>
                 $script:mockEmbeddedSchemaObject = @{
                     ClassName    = 'DSC_EmbeddedInstance'
+                    ClassVersion = '1.0.0'
+                    FriendlyName = 'EmbeddedInstance'
                     Attributes   = @(
                         @{
                             State            = 'Key'
@@ -727,8 +734,6 @@ Configuration Example
                             EmbeddedInstance = ''
                         }
                     )
-                    ClassVersion = '1.0.0'
-                    FriendlyName = 'MyResource'
                 }
 
                 $mockWikiContentOutput = "# MyResource
