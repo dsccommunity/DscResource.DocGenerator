@@ -234,7 +234,6 @@ class MSFT_MofHelperTest :  OMI_BaseResource
 
             Context 'When the resource is using embedded instances' {
                 BeforeAll {
-                    # Regression test for https://github.com/dsccommunity/DscResource.Test/issues/65.
                     $script:fileContent = @"
 [ClassVersion("1.0.0.0"), FriendlyName("MofHelperTest")]
 class MSFT_MofHelperTest :  OMI_BaseResource
