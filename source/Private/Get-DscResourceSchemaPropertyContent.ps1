@@ -24,7 +24,7 @@
                 }
             )
 
-        This example parses a MOF schema file.
+        Returns the parameter content based on the passed array of parameter metadata.
 #>
 function Get-DscResourceSchemaPropertyContent
 {
