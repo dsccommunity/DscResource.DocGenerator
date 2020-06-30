@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update README.md with the correct build task name; 'Publish_GitHub_Wiki_Content'.
 - Fixed wiki generation to correctly describe embedded instances in
   parameters and made new section for each embedded instances with
-  their parameters.
+  their parameters ([issue #37](https://github.com/dsccommunity/DscResource.DocGenerator/issues/37))
 
 ### Changed
 
