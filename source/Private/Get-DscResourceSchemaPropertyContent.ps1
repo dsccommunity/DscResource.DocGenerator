@@ -12,7 +12,17 @@
         the property Attributes.
 
     .EXAMPLE
-        $mof = Get-MofSchemaObject -FileName C:\repos\SharePointDsc\DSCRescoures\MSFT_SPSite\MSFT_SPSite.schema.mof
+        $content = Get-DscResourceSchemaPropertyContent -Property @(
+                @{
+                    Name             = 'StringProperty'
+                    DataType         = 'String'
+                    IsArray          = $false
+                    State            = 'Key'
+                    Description      = 'Any description'
+                    EmbeddedInstance = $null
+                    ValueMap         = $null
+                }
+            )
 
         This example parses a MOF schema file.
 #>
