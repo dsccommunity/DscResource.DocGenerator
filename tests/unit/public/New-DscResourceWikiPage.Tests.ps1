@@ -74,6 +74,7 @@ InModuleScope $script:moduleName {
                 BaseName      = $script:mockSchemaBaseName
             }
         )
+
         $script:mockGetMofSchemaObject = @{
             ClassName    = 'MSFT_MyResource'
             Attributes   = @(
@@ -127,6 +128,7 @@ InModuleScope $script:moduleName {
                 FullName  = $script:mockExampleFilePath
             }
         )
+
         $script:mockExampleContent = '.EXAMPLE 1
 
 Example description.
@@ -162,10 +164,10 @@ Second row of description.
 
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
-| **Id** | Key | String | Id Description ||
-| **Enum** | Write | String | Enum Description. |Value1, Value2, Value3|
-| **Int** | Required | Uint32 | Int Description. ||
-| **Read** | Read | String | Read Description. ||
+| **Id** | Key | String | Id Description | |
+| **Enum** | Write | String | Enum Description. | Value1, Value2, Value3 |
+| **Int** | Required | Uint32 | Int Description. | |
+| **Read** | Read | String | Read Description. | |
 
 ## Description
 
@@ -637,6 +639,208 @@ Configuration Example
                 Assert-MockCalled `
                     -CommandName Out-File `
                     -ParameterFilter $script:outFileInputObject_parameterFilter `
+                    -Exactly -Times 1
+            }
+
+            It 'Should call the expected mocks ' {
+                Assert-MockCalled `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemSchema_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Get-MofSchemaObject `
+                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemDescription_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Get-Content `
+                    -ParameterFilter $script:getContentReadme_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemExample_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Get-DscResourceWikiExampleContent `
+                    -ParameterFilter $script:getDscResourceWikiExampleContent_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Write-Warning `
+                    -ParameterFilter $script:writeWarningExample_parameterFilter `
+                    -Exactly -Times 0
+
+                Assert-MockCalled `
+                    -CommandName Write-Warning `
+                    -ParameterFilter $script:writeWarningDescription_parameterFilter `
+                    -Exactly -Times 0
+            }
+        }
+
+        Context 'When the schema is using an embedded instance' {
+            BeforeAll {
+                <#
+                    This is the mocked embedded schema that is to be returned
+                    together with the resource schema (which is mocked above)
+                    for the mocked function Get-MofSchemaObject.
+                #>
+                $script:mockEmbeddedSchemaObject = @{
+                    ClassName    = 'DSC_EmbeddedInstance'
+                    ClassVersion = '1.0.0'
+                    FriendlyName = 'EmbeddedInstance'
+                    Attributes   = @(
+                        @{
+                            State            = 'Key'
+                            DataType         = 'String'
+                            ValueMap         = @()
+                            IsArray          = $false
+                            Name             = 'EmbeddedId'
+                            Description      = 'Id Description'
+                            EmbeddedInstance = ''
+                        },
+                        @{
+                            State            = 'Write'
+                            DataType         = 'String'
+                            ValueMap         = @( 'Value1', 'Value2', 'Value3' )
+                            IsArray          = $false
+                            Name             = 'EmbeddedEnum'
+                            Description      = 'Enum Description.'
+                            EmbeddedInstance = ''
+                        },
+                        @{
+                            State            = 'Required'
+                            DataType         = 'Uint32'
+                            ValueMap         = @()
+                            IsArray          = $false
+                            Name             = 'EmbeddedInt'
+                            Description      = 'Int Description.'
+                            EmbeddedInstance = ''
+                        },
+                        @{
+                            State            = 'Read'
+                            DataType         = 'String'
+                            ValueMap         = @()
+                            IsArray          = $false
+                            Name             = 'EmbeddedRead'
+                            Description      = 'Read Description.'
+                            EmbeddedInstance = ''
+                        }
+                    )
+                }
+
+                $mockWikiContentOutput = "# MyResource
+
+## Parameters
+
+| Parameter | Attribute | DataType | Description | Allowed Values |
+| --- | --- | --- | --- | --- |
+| **Id** | Key | String | Id Description | |
+| **Enum** | Write | String | Enum Description. | Value1, Value2, Value3 |
+| **Int** | Required | Uint32 | Int Description. | |
+| **Read** | Read | String | Read Description. | |
+
+### DSC_EmbeddedInstance
+
+#### Parameters
+
+| Parameter | Attribute | DataType | Description | Allowed Values |
+| --- | --- | --- | --- | --- |
+| **EmbeddedId** | Key | String | Id Description | |
+| **EmbeddedEnum** | Write | String | Enum Description. | Value1, Value2, Value3 |
+| **EmbeddedInt** | Required | Uint32 | Int Description. | |
+| **EmbeddedRead** | Read | String | Read Description. | |
+
+## Description
+
+The description of the resource.
+Second row of description.
+
+## Examples
+
+.EXAMPLE 1
+
+Example description.
+
+Configuration Example
+{
+    Import-DSCResource -ModuleName MyModule
+    Node localhost
+    {
+        MyResource Something
+        {
+            Id    = 'MyId'
+            Enum  = 'Value1'
+            Int   = 1
+        }
+    }
+}
+" -replace '\r?\n', "`r`n"
+
+                Mock `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemSchema_parameterFilter `
+                    -MockWith { $script:mockSchemaFiles }
+
+                Mock `
+                    -CommandName Get-MofSchemaObject `
+                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterFilter `
+                    -MockWith {
+                        return @(
+                            $script:mockGetMofSchemaObject
+                            $script:mockEmbeddedSchemaObject
+                        )
+                    }
+
+                Mock `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemDescription_parameterFilter `
+                    -MockWith { return @(@{ Name = 'README.MD'; FullName = $script:mockReadmePath }) }
+
+                Mock `
+                    -CommandName Get-Content `
+                    -ParameterFilter $script:getContentReadme_parameterFilter `
+                    -MockWith { $script:mockGetContentReadme }
+
+                Mock `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemExample_parameterFilter `
+                    -MockWith { $script:mockExampleFiles }
+
+                Mock `
+                    -CommandName Get-DscResourceWikiExampleContent `
+                    -ParameterFilter $script:getDscResourceWikiExampleContent_parameterFilter `
+                    -MockWith { $script:mockExampleContent }
+
+                Mock `
+                    -CommandName Out-File
+
+                Mock `
+                    -CommandName Write-Warning `
+                    -ParameterFilter $script:writeWarningExample_parameterFilter
+
+                Mock `
+                    -CommandName Write-Warning `
+                    -ParameterFilter $script:writeWarningDescription_parameterFilter
+            }
+
+            It 'Should not throw an exception' {
+                { New-DscResourceWikiPage @script:newDscResourceWikiPageOutput_parameters } | Should -Not -Throw
+            }
+
+            It 'Should produce the correct output' {
+                Assert-MockCalled `
+                    -CommandName Out-File `
+                    -ParameterFilter {
+                        $InputObject -eq $mockWikiContentOutput
+                    } `
                     -Exactly -Times 1
             }
 

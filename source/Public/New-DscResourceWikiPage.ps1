@@ -45,52 +45,65 @@ function New-DscResourceWikiPage
     # Loop through all the Schema files found in the modules folder
     foreach ($mofSchemaFile in $mofSchemaFiles)
     {
-        $mofSchema = Get-MofSchemaObject -FileName $mofSchemaFile.FullName |
+        $mofSchemas = Get-MofSchemaObject -FileName $mofSchemaFile.FullName
+
+        $dscResourceName = $mofSchemaFile.Name.Replace('.schema.mof', '')
+
+        <#
+            In a resource with one or more embedded instances (CIM classes) this
+            will get the main resource CIM class.
+        #>
+        $resourceSchema = $mofSchemas |
             Where-Object -FilterScript {
-                ($_.ClassName -eq $mofSchemaFile.Name.Replace('.schema.mof', '')) `
-                    -and ($null -ne $_.FriendlyName)
+                ($_.ClassName -eq $dscResourceName) -and ($null -ne $_.FriendlyName)
             }
 
-        [System.Array]$readmeFile = Get-ChildItem -Path $mofSchemaFile.DirectoryName | Where-Object -FilterScript { $_.Name -like 'readme.md' }
+        [System.Array] $readmeFile = Get-ChildItem -Path $mofSchemaFile.DirectoryName |
+            Where-Object -FilterScript {
+                $_.Name -like 'readme.md'
+            }
 
         if ($readmeFile.Count -eq 1)
         {
-            Write-Verbose -Message ($script:localizedData.GenerateWikiPageMessage -f $mofSchema.FriendlyName)
+            Write-Verbose -Message ($script:localizedData.GenerateWikiPageMessage -f $resourceSchema.FriendlyName)
 
             $output = New-Object -TypeName System.Text.StringBuilder
-            $null = $output.AppendLine("# $($mofSchema.FriendlyName)")
+
+            $null = $output.AppendLine("# $($resourceSchema.FriendlyName)")
             $null = $output.AppendLine('')
             $null = $output.AppendLine('## Parameters')
             $null = $output.AppendLine('')
-            $null = $output.AppendLine('| Parameter | Attribute | DataType | Description | Allowed Values |')
-            $null = $output.AppendLine('| --- | --- | --- | --- | --- |')
 
-            foreach ($property in $mofSchema.Attributes)
+            $propertyContent = Get-DscResourceSchemaPropertyContent -Property $resourceSchema.Attributes
+
+            foreach ($line in $propertyContent)
             {
-                # If the attribute is an array, add [] to the DataType string
-                $dataType = $property.DataType
+                $null = $output.AppendLine($line)
+            }
 
-                if ($property.IsArray)
-                {
-                    $dataType = $dataType.ToString() + '[]'
+            <#
+                In a resource with one or more embedded instances (CIM classes) this
+                will get the embedded instances (CIM classes).
+            #>
+            $embeddedSchemas = $mofSchemas |
+                Where-Object -FilterScript {
+                    ($_.ClassName -ne $dscResourceName)
                 }
 
-                if ($property.EmbeddedInstance -eq 'MSFT_Credential')
+            foreach ($embeddedSchema in $embeddedSchemas)
+            {
+                $null = $output.AppendLine()
+                $null = $output.AppendLine("### $($embeddedSchema.ClassName)")
+                $null = $output.AppendLine('')
+                $null = $output.AppendLine('#### Parameters')
+                $null = $output.AppendLine('')
+
+                $propertyContent = Get-DscResourceSchemaPropertyContent -Property $embeddedSchema.Attributes
+
+                foreach ($line in $propertyContent)
                 {
-                    $dataType = 'PSCredential'
+                    $null = $output.AppendLine($line)
                 }
-
-                $null = $output.Append("| **$($property.Name)** " + `
-                        "| $($property.State) " + `
-                        "| $dataType " + `
-                        "| $($property.Description) |")
-
-                if ([string]::IsNullOrEmpty($property.ValueMap) -ne $true)
-                {
-                    $null = $output.Append(($property.ValueMap -Join ', '))
-                }
-
-                $null = $output.AppendLine('|')
             }
 
             $descriptionContent = Get-Content -Path $readmeFile.FullName -Raw
@@ -100,7 +113,7 @@ function New-DscResourceWikiPage
             $null = $output.AppendLine()
             $null = $output.AppendLine($descriptionContent)
 
-            $exampleSearchPath = "\Examples\Resources\$($mofSchema.FriendlyName)\*.ps1"
+            $exampleSearchPath = "\Examples\Resources\$($resourceSchema.FriendlyName)\*.ps1"
             $examplesPath = (Join-Path -Path $ModulePath -ChildPath $exampleSearchPath)
             $exampleFiles = @(Get-ChildItem -Path $examplesPath -ErrorAction SilentlyContinue)
 
@@ -111,7 +124,7 @@ function New-DscResourceWikiPage
 
                 foreach ($exampleFile in $exampleFiles)
                 {
-                    Write-Verbose -Message "Adding Example file '$($exampleFile.Name)' to wiki page for $($mofSchema.FriendlyName)"
+                    Write-Verbose -Message "Adding Example file '$($exampleFile.Name)' to wiki page for $($resourceSchema.FriendlyName)"
 
                     $exampleContent = Get-DscResourceWikiExampleContent `
                         -ExamplePath $exampleFile.FullName `
@@ -123,10 +136,10 @@ function New-DscResourceWikiPage
             }
             else
             {
-                Write-Warning -Message ($script:localizedData.NoExampleFileFoundWarning -f $mofSchema.FriendlyName)
+                Write-Warning -Message ($script:localizedData.NoExampleFileFoundWarning -f $resourceSchema.FriendlyName)
             }
 
-            $outputFileName = "$($mofSchema.FriendlyName).md"
+            $outputFileName = "$($resourceSchema.FriendlyName).md"
             $savePath = Join-Path -Path $OutputPath -ChildPath $outputFileName
 
             Write-Verbose -Message ($script:localizedData.OutputWikiPageMessage -f $savePath)
@@ -139,11 +152,11 @@ function New-DscResourceWikiPage
         }
         elseif ($readmeFile.Count -gt 1)
         {
-            Write-Warning -Message ($script:localizedData.MultipleDescriptionFileFoundWarning -f $mofSchema.FriendlyName, $readmeFile.Count)
+            Write-Warning -Message ($script:localizedData.MultipleDescriptionFileFoundWarning -f $resourceSchema.FriendlyName, $readmeFile.Count)
         }
         else
         {
-            Write-Warning -Message ($script:localizedData.NoDescriptionFileFoundWarning -f $mofSchema.FriendlyName)
+            Write-Warning -Message ($script:localizedData.NoDescriptionFileFoundWarning -f $resourceSchema.FriendlyName)
         }
     }
 }
