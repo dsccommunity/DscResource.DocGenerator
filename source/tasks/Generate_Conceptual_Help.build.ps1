@@ -98,15 +98,38 @@ task Generate_Conceptual_Help {
 
     $builtModulePath = Join-Path -Path (Join-Path -Path $OutputDirectory -ChildPath $ProjectName) -ChildPath $ModuleVersionFolder
 
-    "`tProject Path            = $ProjectPath"
-    "`tProject Name            = $ProjectName"
-    "`tModule Version          = $moduleVersion"
-    "`tModule Version Folder   = $ModuleVersionFolder"
-    "`tPrerelease String       = $PreReleaseString"
-    "`tSource Path             = $SourcePath"
-    "`tBuilt Module Path       = $builtModulePath"
+    "`tProject Path                  = $ProjectPath"
+    "`tProject Name                  = $ProjectName"
+    "`tModule Version                = $moduleVersion"
+    "`tModule Version Folder         = $ModuleVersionFolder"
+    "`tPrerelease String             = $PreReleaseString"
+    "`tSource Path                   = $SourcePath"
+    "`tBuilt Module Path             = $builtModulePath"
+
+    $configParameterName = 'MarkdownCodeRegularExpression'
+
+    if (-not (Get-Variable -Name $configParameterName -ValueOnly -ErrorAction 'SilentlyContinue'))
+    {
+        # Variable is not set in context, try to use value from $BuildInfo.
+        $configParameterValue = $BuildInfo.'DscResource.DocGenerator'.Generate_Conceptual_Help.$configParameterName
+
+        <#
+            Always set the value. It will be set to $null if the parameter does
+            not exist in the variable $BuildInfo.
+
+            Always setting this variable is a workaround because the the parameter
+            MarkdownCodeRegularExpression's default value that uses 'property'
+            will wrongly return a collection of 1 where item 1 has a blank value.
+        #>
+        Set-Variable -Name $configParameterName -Value $configParameterValue
+    }
+
+    if ($MarkdownCodeRegularExpression)
+    {
+        "`tMarkdownCodeRegularExpression = RegEx: {0}" -f ($MarkdownCodeRegularExpression -join ' | RegEx: ')
+    }
 
     Write-Build Magenta "Generating conceptual help for all DSC resources based on source."
 
-    New-DscResourcePowerShellHelp -ModulePath $SourcePath -DestinationModulePath $builtModulePath
+    New-DscResourcePowerShellHelp -ModulePath $SourcePath -DestinationModulePath $builtModulePath -MarkdownCodeRegularExpression $MarkdownCodeRegularExpression
 }

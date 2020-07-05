@@ -37,6 +37,12 @@
         The output path can be used to set the path where all the generated files
         will be saved (all files to the same path).
 
+    .PARAMETER MarkdownCodeRegularExpression
+        An array of regular expressions that should be used to parse the parameter
+        descriptions in the schema MOF. Each regular expression must be written
+        so that the capture group 0 is the full match and the capture group 1 is
+        the text that should be kept.
+
     .EXAMPLE
         New-DscResourcePowerShellHelp -ModulePath C:\repos\SharePointDsc
 
@@ -72,7 +78,11 @@ function New-DscResourcePowerShellHelp
 
         [Parameter()]
         [System.String]
-        $OutputPath
+        $OutputPath,
+
+        [Parameter()]
+        [System.String[]]
+        $MarkdownCodeRegularExpression = @()
     )
 
     $mofSearchPath = (Join-Path -Path $ModulePath -ChildPath '\**\*.schema.mof')
@@ -127,7 +137,29 @@ function New-DscResourcePowerShellHelp
                     $output += "`r`n"
                 }
 
-                $output += "    " + $property.Description
+                $propertyDescription = $property.Description
+
+                if ($MarkdownCodeRegularExpression.Count -gt 0)
+                {
+                    foreach ($parseRegularExpression in $MarkdownCodeRegularExpression)
+                    {
+                        $allMatches = $propertyDescription | Select-String -Pattern $parseRegularExpression -AllMatches
+
+                        foreach ($regularExpressionMatch in $allMatches.Matches)
+                        {
+                            <#
+                                Always assume the group 0 is the full match and
+                                the group 1 contain what we should replace with.
+                            #>
+                            $propertyDescription = $propertyDescription -replace @(
+                                [RegEx]::Escape($regularExpressionMatch.Groups[0].Value),
+                                $regularExpressionMatch.Groups[1].Value
+                            )
+                        }
+                    }
+                }
+
+                $output += "    " + $propertyDescription
                 $output += "`r`n`r`n"
             }
 
@@ -174,8 +206,8 @@ function New-DscResourcePowerShellHelp
 
                 $savePath = Join-Path -Path $DestinationModulePath -ChildPath $dscRootFolderName |
                     Join-Path -ChildPath $resourceRelativePath |
-                        Join-Path -ChildPath 'en-US' |
-                            Join-Path -ChildPath $outputFileName
+                    Join-Path -ChildPath 'en-US' |
+                    Join-Path -ChildPath $outputFileName
             }
             else
             {
