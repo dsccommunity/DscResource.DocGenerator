@@ -18,6 +18,14 @@
         The path to the source folder name. Defaults to the same path where the
         module manifest is found.
 
+    .PARAMETER MarkdownCodeRegularExpression
+        An array with regular expressions that will be used to remove markdown code
+        from the schema mof property descriptions. The regular expressions must be
+        written so that capture group 0 returns the full match and the capture group
+        1 returns the text that should be kept. For example the regular expression
+        \`(.+?)\` will find `$true` which will be replaced to $true since that is
+        what will be returned by capture group 1.
+
     .PARAMETER BuildInfo
         The build info object from ModuleBuilder. Defaults to an empty hashtable.
 
@@ -75,6 +83,10 @@ param
                 }).Directory.FullName
         )
     ),
+
+    [Parameter()]
+    [System.String]
+    $MarkdownCodeRegularExpression = (property MarkdownCodeRegularExpression @()),
 
     [Parameter()]
     [System.Collections.Hashtable]
