@@ -249,7 +249,7 @@ For example the regular expression `` \`(.+?)\` `` will find `` `$true` ``
 which will be replaced to `$true` since that is what will be returned by
 capture group 1.
 
-Below is some example regular expression for the most comment markdown code.
+Below is some example regular expressions for the most common markdown code.
 
 ```yaml
 DscResource.DocGenerator:
