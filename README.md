@@ -246,8 +246,8 @@ possible to configure regular expressions to remove the markdown code.
 The regular expressions must be written so that capture group 0 returns 
 the full match and the capture group 1 returns the text that should be kept. 
 For example the regular expression `` \`(.+?)\` `` will find `` `$true` ``
-which will be replaced to `$true` since that is what will returned by capture
-group 1.
+which will be replaced to `$true` since that is what will be returned by
+capture group 1.
 
 Below is some example regular expression for the most comment markdown code.
 
