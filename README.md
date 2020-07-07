@@ -251,6 +251,9 @@ capture group 1.
 
 Below is some example regular expressions for the most common markdown code.
 
+>**NOTE:** Each regular expression must be able to find multiple matches
+>on the same row.
+
 ```yaml
 DscResource.DocGenerator:
   Generate_Conceptual_Help:
