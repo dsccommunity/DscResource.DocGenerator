@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The build task `Generate_Conceptual_Help` can now remove markdown code
   from the schema MOF parameter descriptions if markdown code is used to
   improve the Wiki documentation.
-  
+
 ## [0.6.1] - 2020-07-01
   
 ### Fixed
