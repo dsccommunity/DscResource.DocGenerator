@@ -43,6 +43,11 @@ After the conceptual help has been created, the user can import the module
 and for example run `Get-Help about_UserAccountControl` to get help about
 the DSC resource UserAccountControl.
 
+It is possible to pass a array of regular expressions that should be used
+to parse the parameter descriptions in the schema MOF. The regular expression
+must be written so that the capture group 0 is the full match and the
+capture group 1 is the text that should be kept.
+
 >**NOTE:** This cmdlet does not work on macOS and will throw an error due 
 >to the problem discussed in issue https://github.com/PowerShell/PowerShell/issues/5970
 >and issue https://github.com/PowerShell/MMI/issues/33.
@@ -52,7 +57,8 @@ the DSC resource UserAccountControl.
 <!-- markdownlint-disable MD013 - Line length -->
 ```plaintext
 New-DscResourcePowerShellHelp [-ModulePath] <string> [[-DestinationModulePath] <string>] 
-  [[-OutputPath] <string>] [<CommonParameters>]
+  [[-OutputPath] <string>] [[-MarkdownCodeRegularExpression] <string[]>]
+  [<CommonParameters>]
 ```
 <!-- markdownlint-enable MD013 - Line length -->
 
@@ -70,7 +76,7 @@ New-DscResourcePowerShellHelp -ModulePath '.'
 
 ### `New-DscResourceWikiPage`
 
-Generate documentation that can be manually uploaded to the GitHub repository 
+Generate documentation that can be manually uploaded to the GitHub repository
 Wiki.
 
 #### Syntax
@@ -235,6 +241,31 @@ BuildWorkflow:
     - Generate_Conceptual_Help
 ```
 
+If the schema mof property descriptions contain markdown code then it is
+possible to configure regular expressions to remove the markdown code.
+The regular expressions must be written so that capture group 0 returns 
+the full match and the capture group 1 returns the text that should be kept. 
+For example the regular expression `` \`(.+?)\` `` will find `` `$true` ``
+which will be replaced to `$true` since that is what will be returned by
+capture group 1.
+
+Below is some example regular expressions for the most common markdown code.
+
+>**NOTE:** Each regular expression must be able to find multiple matches
+>on the same row.
+
+```yaml
+DscResource.DocGenerator:
+  Generate_Conceptual_Help:
+    MarkdownCodeRegularExpression:
+      - '\`(.+?)\`' # Match inline code-block
+      - '\\(\\)' # Match escaped backslash
+      - '\[[^\[]+\]\((.+?)\)' # Match markdown URL
+      - '_(.+?)_' # Match Italic (underscore)
+      - '\*\*(.+?)\*\*' # Match bold
+      - '\*(.+?)\*' # Match Italic (asterisk)
+```
+
 >**NOTE:** If the task is used in a module that is using the project [Sampler's](https://github.com/gaelcolas/Sampler)
 >`build.ps1` then version 0.102.1 of [Sampler](https://github.com/gaelcolas/Sampler)
 >is required.
@@ -249,6 +280,11 @@ wiki source folder if it exist (`WikiSourceFolderName` defaults to
 if the `Home.md` is present in the folder specified in `WikiSourceFolderName`
 all module version placeholders (`#.#.#`) will be replaced with the built
 module version.
+
+It is possible to use markdown code in the schema MOF parameter descriptions
+if no conceptual help is generated or the generation of conceptual help
+is configured to parse markdown code. See the task [`Generate_Conceptual_Help`](#generate_conceptual_help)
+for more information.
 
 Below is an example how the build task can be used when a repository is
 based on the [Sampler](https://github.com/gaelcolas/Sampler) project.

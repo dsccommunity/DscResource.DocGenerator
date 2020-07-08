@@ -92,7 +92,7 @@ InModuleScope $script:moduleName {
                     ValueMap         = @( 'Value1', 'Value2', 'Value3' )
                     IsArray          = $false
                     Name             = 'Enum'
-                    Description      = 'Enum Description.'
+                    Description      = 'Enum Description. Test inline code-block `$true`.'
                     EmbeddedInstance = ''
                 },
                 @{
@@ -170,7 +170,7 @@ Second row of description.
 .PARAMETER Enum
     Write - String
     Allowed values: Value1, Value2, Value3
-    Enum Description.
+    Enum Description. Test inline code-block `$true`.
 
 .PARAMETER Int
     Required - Uint32
@@ -673,6 +673,152 @@ Configuration Example
                     -CommandName Out-File `
                     -ParameterFilter $script:outFileInputObject_parameterFilter `
                     -Exactly -Times 1
+            }
+
+            It 'Should call the expected mocks ' {
+                Assert-MockCalled `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemSchema_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Get-MofSchemaObject `
+                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Test-Path `
+                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Get-Content `
+                    -ParameterFilter $script:getContentReadme_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemExample_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Get-DscResourceHelpExampleContent `
+                    -ParameterFilter $script:getDscResourceHelpExampleContent_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Write-Warning `
+                    -ParameterFilter $script:writeWarningExample_parameterFilter `
+                    -Exactly -Times 0
+
+                Assert-MockCalled `
+                    -CommandName Write-Warning `
+                    -ParameterFilter $script:writeWarningDescription_parameterFilter `
+                    -Exactly -Times 0
+            }
+        }
+
+        Context 'When markdown code should be parsed.' {
+            BeforeAll {
+                $mockExpectedFileOutput = '.NAME
+    MyResource
+
+.DESCRIPTION
+    The description of the resource.
+    Second row of description.
+
+.PARAMETER Id
+    Key - String
+    Id Description
+
+.PARAMETER Enum
+    Write - String
+    Allowed values: Value1, Value2, Value3
+    Enum Description. Test inline code-block $true.
+
+.PARAMETER Int
+    Required - Uint32
+    Int Description.
+
+.PARAMETER Read
+    Read - String
+    Read Description.
+
+.EXAMPLE 1
+
+Example description.
+
+Configuration Example
+{
+    Import-DSCResource -ModuleName MyModule
+    Node localhost
+    {
+        MyResource Something
+        {
+            Id    = ''MyId''
+            Enum  = ''Value1''
+            Int   = 1
+        }
+    }
+}
+' -replace '\r?\n', "`r`n"
+
+                Mock `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemSchema_parameterFilter `
+                    -MockWith { $script:mockSchemaFiles }
+
+                Mock `
+                    -CommandName Get-MofSchemaObject `
+                    -ParameterFilter $script:getMofSchemaObjectSchema_parameterFilter `
+                    -MockWith { $script:mockGetMofSchemaObject }
+
+                Mock `
+                    -CommandName Test-Path `
+                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
+                    -MockWith { $true }
+
+                Mock `
+                    -CommandName Get-Content `
+                    -ParameterFilter $script:getContentReadme_parameterFilter `
+                    -MockWith { $script:mockGetContentReadme }
+
+                Mock `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemExample_parameterFilter `
+                    -MockWith { $script:mockExampleFiles }
+
+                Mock `
+                    -CommandName Get-DscResourceHelpExampleContent `
+                    -ParameterFilter $script:getDscResourceHelpExampleContent_parameterFilter `
+                    -MockWith { $script:mockExampleContent }
+
+                Mock `
+                    -CommandName Out-File
+
+                Mock `
+                    -CommandName Write-Warning `
+                    -ParameterFilter $script:writeWarningExample_parameterFilter
+
+                Mock `
+                    -CommandName Write-Warning `
+                    -ParameterFilter $script:writeWarningDescription_parameterFilter
+            }
+
+            It 'Should not throw an exception' {
+                {
+                    New-DscResourcePowerShellHelp -MarkdownCodeRegularExpression @(
+                        '\`(.+?)\`'
+                    ) @script:newDscResourcePowerShellHelpOutput_parameters
+                } | Should -Not -Throw
+            }
+
+            It 'Should produce the correct output' {
+                Assert-MockCalled `
+                    -CommandName Out-File `
+                    -ParameterFilter {
+                        $InputObject -eq $mockExpectedFileOutput
+                    } -Exactly -Times 1
             }
 
             It 'Should call the expected mocks ' {
