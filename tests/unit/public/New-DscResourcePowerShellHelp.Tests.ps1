@@ -310,7 +310,7 @@ Configuration Example
 
                 Mock `
                     -CommandName Get-ChildItem `
-                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter
 
                 Mock `
                     -CommandName Out-File `
@@ -397,6 +397,11 @@ Configuration Example
                     -Exactly -Times 1
 
                 Assert-MockCalled `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
                     -CommandName Get-Content `
                     -ParameterFilter $script:getContentReadme_parameterFilter `
                     -Exactly -Times 1
@@ -441,9 +446,14 @@ Configuration Example
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
-                    -MockWith { $true }
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
+                    -MockWith {
+                        return [PSCustomObject] @{
+                            Name = 'README.md'
+                            FullName = Join-Path -Path $script:mockReadmePath -ChildPath 'README.md'
+                        }
+                     }
 
                 Mock `
                     -CommandName Get-Content `
@@ -495,8 +505,8 @@ Configuration Example
                     -Exactly -Times 1
 
                 Assert-MockCalled `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
                     -Exactly -Times 1
 
                 Assert-MockCalled `
@@ -539,9 +549,14 @@ Configuration Example
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
-                    -MockWith { $true }
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
+                    -MockWith {
+                        return [PSCustomObject] @{
+                            Name = 'README.md'
+                            FullName = Join-Path -Path $script:mockReadmePath -ChildPath 'README.md'
+                        }
+                     }
 
                 Mock `
                     -CommandName Get-Content `
@@ -593,8 +608,8 @@ Configuration Example
                     -Exactly -Times 1
 
                 Assert-MockCalled `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
                     -Exactly -Times 1
 
                 Assert-MockCalled `
@@ -637,9 +652,14 @@ Configuration Example
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
-                    -MockWith { $true }
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
+                    -MockWith {
+                        return [PSCustomObject] @{
+                            Name = 'README.md'
+                            FullName = Join-Path -Path $script:mockReadmePath -ChildPath 'README.md'
+                        }
+                     }
 
                 Mock `
                     -CommandName Get-Content `
@@ -691,8 +711,8 @@ Configuration Example
                     -Exactly -Times 1
 
                 Assert-MockCalled `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
                     -Exactly -Times 1
 
                 Assert-MockCalled `
@@ -778,9 +798,14 @@ Configuration Example
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
-                    -MockWith { $true }
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
+                    -MockWith {
+                        return [PSCustomObject] @{
+                            Name = 'README.md'
+                            FullName = Join-Path -Path $script:mockReadmePath -ChildPath 'README.md'
+                        }
+                     }
 
                 Mock `
                     -CommandName Get-Content `
@@ -837,8 +862,8 @@ Configuration Example
                     -Exactly -Times 1
 
                 Assert-MockCalled `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
                     -Exactly -Times 1
 
                 Assert-MockCalled `
