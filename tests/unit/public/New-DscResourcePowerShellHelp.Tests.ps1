@@ -360,6 +360,7 @@ Configuration Example
                     -ParameterFilter $script:getChildItemReadme_parameterFilter `
                     -MockWith {
                         return [PSCustomObject] @{
+                            # This is intentionally using the upper-case 'README.md'.
                             Name = 'README.md'
                             FullName = Join-Path -Path $script:mockReadmePath -ChildPath 'README.md'
                         }
@@ -450,6 +451,7 @@ Configuration Example
                     -ParameterFilter $script:getChildItemReadme_parameterFilter `
                     -MockWith {
                         return [PSCustomObject] @{
+                            # This is intentionally using the upper-case 'README.md'.
                             Name = 'README.md'
                             FullName = Join-Path -Path $script:mockReadmePath -ChildPath 'README.md'
                         }
@@ -553,6 +555,7 @@ Configuration Example
                     -ParameterFilter $script:getChildItemReadme_parameterFilter `
                     -MockWith {
                         return [PSCustomObject] @{
+                            # This is intentionally using the upper-case 'README.md'.
                             Name = 'README.md'
                             FullName = Join-Path -Path $script:mockReadmePath -ChildPath 'README.md'
                         }
@@ -656,8 +659,9 @@ Configuration Example
                     -ParameterFilter $script:getChildItemReadme_parameterFilter `
                     -MockWith {
                         return [PSCustomObject] @{
-                            Name = 'README.md'
-                            FullName = Join-Path -Path $script:mockReadmePath -ChildPath 'README.md'
+                            # This is intentionally using the lower-case 'readme.md'.
+                            Name = 'readme.md'
+                            FullName = Join-Path -Path $script:mockReadmePath -ChildPath 'readme.md'
                         }
                      }
 
