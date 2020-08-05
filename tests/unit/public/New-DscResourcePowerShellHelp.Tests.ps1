@@ -146,7 +146,7 @@ Configuration Example
 }'
 
         # General mock values
-        $script:mockReadmePath = Join-Path -Path $script:mockSchemaFolder -ChildPath 'readme.md'
+        $script:mockReadmePath = $script:mockSchemaFolder
         $script:mockOutputFile = Join-Path -Path $script:mockOutputPath -ChildPath "$($script:mockResourceName).md"
         $script:mockSavePath = Join-Path -Path $script:mockModulePath -ChildPath "DscResources\$($script:mockResourceName)\en-US\about_$($script:mockResourceName).help.txt"
         $script:mockOutputSavePath = Join-Path -Path $script:mockOutputPath -ChildPath "about_$($script:mockResourceName).help.txt"
@@ -212,12 +212,12 @@ Configuration Example
             $Filename -eq $script:mockSchemaFilePath
         }
 
-        $script:getTestPathReadme_parameterFilter = {
+        $script:getChildItemReadme_parameterFilter = {
             $Path -eq $script:mockReadmePath
         }
 
         $script:getContentReadme_parameterFilter = {
-            $Path -eq $script:mockReadmePath
+            $Path -eq (Join-Path -Path $script:mockReadmePath -ChildPath 'README.md')
         }
 
         $script:getDscResourceHelpExampleContent_parameterFilter = {
@@ -309,9 +309,8 @@ Configuration Example
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
-                    -MockWith { $false }
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter
 
                 Mock `
                     -CommandName Out-File `
@@ -357,9 +356,15 @@ Configuration Example
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
-                    -MockWith { $true }
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
+                    -MockWith {
+                        return [PSCustomObject] @{
+                            # This is intentionally using the upper-case 'README.md'.
+                            Name = 'README.md'
+                            FullName = Join-Path -Path $script:mockReadmePath -ChildPath 'README.md'
+                        }
+                     }
 
                 Mock `
                     -CommandName Get-Content `
@@ -390,6 +395,11 @@ Configuration Example
                 Assert-MockCalled `
                     -CommandName Get-ChildItem `
                     -ParameterFilter $script:getChildItemSchema_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
                     -Exactly -Times 1
 
                 Assert-MockCalled `
@@ -437,9 +447,15 @@ Configuration Example
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
-                    -MockWith { $true }
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
+                    -MockWith {
+                        return [PSCustomObject] @{
+                            # This is intentionally using the upper-case 'README.md'.
+                            Name = 'README.md'
+                            FullName = Join-Path -Path $script:mockReadmePath -ChildPath 'README.md'
+                        }
+                     }
 
                 Mock `
                     -CommandName Get-Content `
@@ -491,8 +507,8 @@ Configuration Example
                     -Exactly -Times 1
 
                 Assert-MockCalled `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
                     -Exactly -Times 1
 
                 Assert-MockCalled `
@@ -535,9 +551,15 @@ Configuration Example
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
-                    -MockWith { $true }
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
+                    -MockWith {
+                        return [PSCustomObject] @{
+                            # This is intentionally using the upper-case 'README.md'.
+                            Name = 'README.md'
+                            FullName = Join-Path -Path $script:mockReadmePath -ChildPath 'README.md'
+                        }
+                     }
 
                 Mock `
                     -CommandName Get-Content `
@@ -589,8 +611,8 @@ Configuration Example
                     -Exactly -Times 1
 
                 Assert-MockCalled `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
                     -Exactly -Times 1
 
                 Assert-MockCalled `
@@ -633,9 +655,15 @@ Configuration Example
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
-                    -MockWith { $true }
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
+                    -MockWith {
+                        return [PSCustomObject] @{
+                            # This is intentionally using the lower-case 'readme.md'.
+                            Name = 'readme.md'
+                            FullName = Join-Path -Path $script:mockReadmePath -ChildPath 'readme.md'
+                        }
+                     }
 
                 Mock `
                     -CommandName Get-Content `
@@ -687,8 +715,8 @@ Configuration Example
                     -Exactly -Times 1
 
                 Assert-MockCalled `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
                     -Exactly -Times 1
 
                 Assert-MockCalled `
@@ -774,9 +802,14 @@ Configuration Example
                     -MockWith { $script:mockGetMofSchemaObject }
 
                 Mock `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
-                    -MockWith { $true }
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
+                    -MockWith {
+                        return [PSCustomObject] @{
+                            Name = 'README.md'
+                            FullName = Join-Path -Path $script:mockReadmePath -ChildPath 'README.md'
+                        }
+                     }
 
                 Mock `
                     -CommandName Get-Content `
@@ -833,8 +866,8 @@ Configuration Example
                     -Exactly -Times 1
 
                 Assert-MockCalled `
-                    -CommandName Test-Path `
-                    -ParameterFilter $script:getTestPathReadme_parameterFilter `
+                    -CommandName Get-ChildItem `
+                    -ParameterFilter $script:getChildItemReadme_parameterFilter `
                     -Exactly -Times 1
 
                 Assert-MockCalled `

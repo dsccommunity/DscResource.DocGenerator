@@ -97,10 +97,16 @@ function New-DscResourcePowerShellHelp
                 -and ($null -ne $_.FriendlyName)
         }
 
-        $descriptionPath = Join-Path -Path $mofSchema.DirectoryName -ChildPath 'readme.md'
+        # This is a workaround for issue #42.
+        $readMeFile = Get-ChildItem -Path $mofSchema.DirectoryName -ErrorAction 'SilentlyContinue' |
+            Where-Object -FilterScript {
+                $_.Name -like 'readme.md'
+            }
 
-        if (Test-Path -Path $descriptionPath)
+        if ($readMeFile)
         {
+            $descriptionPath = $readMeFile.FullName
+
             Write-Verbose -Message ($script:localizedData.GenerateHelpDocumentMessage -f $result.FriendlyName)
 
             $output = ".NAME`r`n"
