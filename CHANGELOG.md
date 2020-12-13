@@ -5,6 +5,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- New-WikiFooter
+  - Fixed `Encoding`, parameter value passed to `Out-File` to use `ascii` rather
+    than `[System.Text.Encoding]::ASCII` ([issue #45](https://github.com/dsccommunity/DscResource.DocGenerator/issues/45)).
+
+- New-WikiSidebar
+  - Fixed `Encoding`, parameter value passed to `Out-File` to use `ascii` rather
+    than `[System.Text.Encoding]::ASCII` ([issue #45](https://github.com/dsccommunity/DscResource.DocGenerator/issues/45)).
+
+- Set-WikiModuleVersion
+  - Fixed `Encoding`, parameter value passed to `Out-File` to use `ascii` rather
+    than `[System.Text.Encoding]::ASCII` ([issue #45](https://github.com/dsccommunity/DscResource.DocGenerator/issues/45)).
+
 ## [0.7.1] - 2020-08-05
 
 ### Fixed
