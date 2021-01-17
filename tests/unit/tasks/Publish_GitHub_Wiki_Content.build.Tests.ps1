@@ -42,7 +42,7 @@ Describe 'Publish_GitHub_Wiki_Content' {
         Remove-Variable -Name 'GitHubToken'
     }
 
-    It 'Should run the build script alias' {
+    It 'Should export the build script alias' {
         $buildTaskName = 'Publish_GitHub_Wiki_Content'
         $buildScriptAliasName = 'Task.{0}' -f $buildTaskName
 
@@ -52,8 +52,8 @@ Describe 'Publish_GitHub_Wiki_Content' {
         $script:buildScript.ReferencedCommand | Should -Be ('{0}.build.ps1' -f $buildTaskName)
     }
 
-    It 'Should dot-source the build script without throwing' {
-        { . $script:buildScript } | Should -Not -Throw
+    It 'Should reference an existing build script' {
+        Test-Path -Path $script:buildScript.Definition | Should -BeTrue
     }
 
     It 'Should run the build task without throwing' {

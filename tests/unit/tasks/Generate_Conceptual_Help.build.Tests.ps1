@@ -33,7 +33,7 @@ Describe 'Generate_Conceptual_Help' {
         $ModuleVersion = $null
     }
 
-    It 'Should run the build script alias' {
+    It 'Should export the build script alias' {
         $buildTaskName = 'Generate_Conceptual_Help'
         $buildScriptAliasName = 'Task.{0}' -f $buildTaskName
 
@@ -43,8 +43,8 @@ Describe 'Generate_Conceptual_Help' {
         $script:buildScript.ReferencedCommand | Should -Be ('{0}.build.ps1' -f $buildTaskName)
     }
 
-    It 'Should dot-source the build script without throwing' {
-        { . $script:buildScript } | Should -Not -Throw
+    It 'Should reference an existing build script' {
+        Test-Path -Path $script:buildScript.Definition | Should -BeTrue
     }
 
     Context 'When the generating conceptual help for a built module' {
