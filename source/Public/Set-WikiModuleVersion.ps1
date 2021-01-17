@@ -35,5 +35,5 @@ function Set-WikiModuleVersion
 
     $markdownContent = $markdownContent -replace '#\.#\.#', $ModuleVersion
 
-    Out-File -InputObject $markdownContent -FilePath $Path -Encoding ([System.Text.Encoding]::ASCII) -NoNewline
+    Out-File -InputObject $markdownContent -FilePath $Path -Encoding 'ascii' -NoNewline
 }

@@ -35,6 +35,6 @@ function New-WikiFooter
 
         $wikiFooter = @()
 
-        Out-File -InputObject $wikiFooter -FilePath $wikiFooterPath -Encoding ([System.Text.Encoding]::ASCII)
+        Out-File -InputObject $wikiFooter -FilePath $wikiFooterPath -Encoding 'ascii'
     }
 }

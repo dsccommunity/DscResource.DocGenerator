@@ -54,5 +54,5 @@ function New-WikiSidebar
         $WikiSidebarContent += "- [$($file.BaseName)]($($file.BaseName))"
     }
 
-    Out-File -InputObject $WikiSidebarContent -FilePath $wikiSideBarPath -Encoding ([System.Text.Encoding]::ASCII)
+    Out-File -InputObject $WikiSidebarContent -FilePath $wikiSideBarPath -Encoding 'ascii'
 }
