@@ -10,14 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New-WikiFooter
   - Fixed `Encoding`, parameter value passed to `Out-File` to use `ascii` rather
     than `[System.Text.Encoding]::ASCII` ([issue #45](https://github.com/dsccommunity/DscResource.DocGenerator/issues/45)).
-
 - New-WikiSidebar
   - Fixed `Encoding`, parameter value passed to `Out-File` to use `ascii` rather
     than `[System.Text.Encoding]::ASCII` ([issue #45](https://github.com/dsccommunity/DscResource.DocGenerator/issues/45)).
-
 - Set-WikiModuleVersion
   - Fixed `Encoding`, parameter value passed to `Out-File` to use `ascii` rather
     than `[System.Text.Encoding]::ASCII` ([issue #45](https://github.com/dsccommunity/DscResource.DocGenerator/issues/45)).
+- Fix the tests for the tasks that recently started failing. The tests
+  tried to dot-source the task scripts but that is not possible because
+  they need to be run within the scope of `Invoke-Build`. Instead a new
+  test was added to make sure the task alias is pointing to an existing
+  task script.
 
 ## [0.7.1] - 2020-08-05
 
