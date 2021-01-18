@@ -333,7 +333,7 @@ Configuration Example
 .COMPANYNAME Microsoft Corporation
 .COPYRIGHT
 .TAGS DSCConfiguration
-.LICENSEURI https://github.com/PowerShell/CertificateDsc/blob/master/LICENSE
+.LICENSEURI https://github.com/PowerShell/CertificateDsc/blob/main/LICENSE
 .PROJECTURI https://github.com/PowerShell/CertificateDsc
 .ICONURI
 .EXTERNALMODULEDEPENDENCIES
@@ -420,7 +420,7 @@ Configuration Example
 .COMPANYNAME Microsoft Corporation
 .COPYRIGHT
 .TAGS DSCConfiguration
-.LICENSEURI https://github.com/PowerShell/CertificateDsc/blob/master/LICENSE
+.LICENSEURI https://github.com/PowerShell/CertificateDsc/blob/main/LICENSE
 .PROJECTURI https://github.com/PowerShell/CertificateDsc
 .ICONURI
 .EXTERNALMODULEDEPENDENCIES
@@ -585,7 +585,7 @@ Configuration CertificateExport_CertByFriendlyName_Config
 .COMPANYNAME Microsoft Corporation
 .COPYRIGHT
 .TAGS DSCConfiguration
-.LICENSEURI https://github.com/PowerShell/CertificateDsc/blob/master/LICENSE
+.LICENSEURI https://github.com/PowerShell/CertificateDsc/blob/main/LICENSE
 .PROJECTURI https://github.com/PowerShell/CertificateDsc
 .ICONURI
 .EXTERNALMODULEDEPENDENCIES
