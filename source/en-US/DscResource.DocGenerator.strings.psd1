@@ -25,4 +25,8 @@ ConvertFrom-StringData @'
     CopyFileMessage                     = Copying file '{0}' to the Wiki.
     AddFileToSideBar                    = Adding file '{0}' to the Wiki Sidebar.
     NothingToCommitToWiki               = There are no changes to the documentation to commit and push to the Wiki.
+    FoundClassBasedMessage              = Found {0} Class-based resource in the built module '{1}'.
+    FoundClassResourcePropertyMessage   = Found property '{0}' in the resource '{1}'.
+    ClassBasedCommentBasedHelpMessage   = Reading comment-based help from source file '{0}'.
+    FoundResourceExamplesMessage        = Found {0} examples for resource '{1}'.
 '@
