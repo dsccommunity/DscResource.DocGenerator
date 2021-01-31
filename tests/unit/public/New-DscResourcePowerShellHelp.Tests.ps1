@@ -228,13 +228,18 @@ Configuration Example
             $FilePath -eq $script:mockSavePath
         }
 
-        $script:outFileInputObject_parameterFilter = {
-            $InputObject -eq $script:mockPowerShellHelpOutput -and
-            $FilePath -eq $script:mockSavePath
+        $script:outFileContent_parameterFilter = {
+            if ($InputObject -ne $script:mockPowerShellHelpOutput)
+            {
+                Write-Verbose -Message 'ERROR: Wrong output generated:'  -Verbose
+                Write-Verbose -Message ("Expected: `r`n{0}" -f ($script:mockPowerShellHelpOutput | Format-Hex | Out-String)) -Verbose
+                Write-Verbose -Message ("But was: `r`n{0}" -f ($InputObject | Format-Hex | Out-String)) -Verbose
+            }
+
+            $InputObject -eq $script:mockPowerShellHelpOutput
         }
 
         $script:outFileOutputInputObject_parameterFilter = {
-            $InputObject -eq $script:mockPowerShellHelpOutput -and
             $FilePath -eq $script:mockOutputSavePath
         }
 
@@ -493,6 +498,11 @@ Configuration Example
                     -CommandName Out-File `
                     -ParameterFilter $script:outFileOutputInputObject_parameterFilter `
                     -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Out-File `
+                    -ParameterFilter $script:outFileContent_parameterFilter `
+                    -Exactly -Times 1
             }
 
             It 'Should call the expected mocks ' {
@@ -699,7 +709,12 @@ Configuration Example
             It 'Should produce the correct output' {
                 Assert-MockCalled `
                     -CommandName Out-File `
-                    -ParameterFilter $script:outFileInputObject_parameterFilter `
+                    -ParameterFilter $script:outFile_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName Out-File `
+                    -ParameterFilter $script:outFileContent_parameterFilter `
                     -Exactly -Times 1
             }
 

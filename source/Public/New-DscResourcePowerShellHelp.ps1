@@ -176,7 +176,9 @@ function New-DscResourcePowerShellHelp
             $exampleContent = Get-ResourceExamplesAsText -SourcePath $ModulePath -ResourceName $result.FriendlyName
 
             $output += $exampleContent
-            $output += "`r`n"
+
+            # Trim excessive blank lines and indents at the end.
+            $output = $output -replace '[\r|\n|\s]+$', "`r`n"
 
             $outputFileName = "about_$($result.FriendlyName).help.txt"
 
@@ -216,180 +218,184 @@ function New-DscResourcePowerShellHelp
     #endregion MOF-based resource
 
     #region Class-based resource
-    $getChildItemParameters = @{
-        Path = Join-Path -Path $DestinationModulePath -ChildPath '*'
-        Include = '*.psm1'
-    }
-
-    $builtModuleScriptFiles = Get-ChildItem @getChildItemParameters
-
-    # Looping through each module file (normally just one).
-    foreach ($builtModuleScriptFile in $builtModuleScriptFiles)
+    if (Test-Path -Path $DestinationModulePath)
     {
-        $tokens, $parseErrors = $null
-
-        $ast = [System.Management.Automation.Language.Parser]::ParseFile($builtModuleScriptFile.FullName, [ref] $tokens, [ref] $parseErrors)
-
-        if ($parseErrors)
-        {
-            throw $parseErrors
+        $getChildItemParameters = @{
+            Path = Join-Path -Path $DestinationModulePath -ChildPath '*'
+            Include = '*.psm1'
+            ErrorAction = 'Stop'
         }
 
-        $astFilter = {
-            $args[0] -is [System.Management.Automation.Language.TypeDefinitionAst] `
-            -and $args[0].IsClass -eq $true `
-            -and $args[0].Attributes.Extent.Text -ieq '[DscResource()]'
-        }
+        $builtModuleScriptFiles = Get-ChildItem @getChildItemParameters
 
-        $dscResourceAsts = $ast.FindAll($astFilter, $true)
-
-        Write-Verbose -Message ($script:localizedData.FoundClassBasedMessage -f $dscResourceAsts.Count, $builtModuleScriptFile.FullName)
-
-        # Looping through each class-based resource.
-        foreach ($dscResourceAst in $dscResourceAsts)
+        # Looping through each module file (normally just one).
+        foreach ($builtModuleScriptFile in $builtModuleScriptFiles)
         {
-            Write-Verbose -Message ($script:localizedData.GenerateHelpDocumentMessage -f $dscResourceAst.Name)
+            $tokens, $parseErrors = $null
 
-            <#
-                PowerShell classes does not support comment-based help. There is
-                no GetHelpContent() on the TypeDefinitionAst.
+            $ast = [System.Management.Automation.Language.Parser]::ParseFile($builtModuleScriptFile.FullName, [ref] $tokens, [ref] $parseErrors)
 
-                We use the ScriptBlockAst to filter out our class-based resource
-                script block from the source file and use that to get the
-                comment-based help.
-            #>
-            $sourceFilePath = Join-Path -Path $ModulePath -ChildPath ('Classes/*{0}.ps1' -f $dscResourceAst.Name)
-            $sourceFilePath = Resolve-Path -Path $sourceFilePath
-
-            Write-Verbose -Message ($script:localizedData.ClassBasedCommentBasedHelpMessage -f $sourceFilePath)
-
-            $ast = [System.Management.Automation.Language.Parser]::ParseFile($sourceFilePath, [ref] $tokens, [ref] $parseErrors)
-
-            $dscResourceCommentBasedHelp = $ast.GetHelpContent()
-
-            $synopsis = $dscResourceCommentBasedHelp.Synopsis
-            $synopsis = $synopsis -replace '[\r|\n]+$' # Removes all blank rows at the end
-            $synopsis = $synopsis -replace '\r?\n', "`r`n" # Normalize to CRLF
-            $synopsis = $synopsis -replace '\r\n', "`r`n    " # Indent all rows
-
-            $description = $dscResourceCommentBasedHelp.Description
-            $description = $description -replace '[\r|\n]+$' # Removes all blank rows at the end
-            $description = $description -replace '\r?\n', "`r`n" # Normalize to CRLF
-            $description = $description -replace '\r\n', "`r`n    " # Indent all rows
-
-            $output = ".NAME`r`n"
-            $output += '    {0}' -f $dscResourceAst.Name
-            $output += "`r`n`r`n"
-            $output += ".SYNOPSIS`r`n"
-            $output += '    {0}' -f $synopsis
-            $output += "`r`n`r`n"
-            $output += ".DESCRIPTION`r`n"
-            $output += '    {0}' -f $description
-            $output += "`r`n`r`n"
-
-            $astFilter = {
-                $args[0] -is [System.Management.Automation.Language.PropertyMemberAst]
+            if ($parseErrors)
+            {
+                throw $parseErrors
             }
 
-            $propertyMemberAsts = $dscResourceAst.FindAll($astFilter, $true)
+            $astFilter = {
+                $args[0] -is [System.Management.Automation.Language.TypeDefinitionAst] `
+                -and $args[0].IsClass -eq $true `
+                -and $args[0].Attributes.Extent.Text -ieq '[DscResource()]'
+            }
 
-            # Looping through each resource property.
-            foreach ($propertyMemberAst in $propertyMemberAsts)
+            $dscResourceAsts = $ast.FindAll($astFilter, $true)
+
+            Write-Verbose -Message ($script:localizedData.FoundClassBasedMessage -f $dscResourceAsts.Count, $builtModuleScriptFile.FullName)
+
+            # Looping through each class-based resource.
+            foreach ($dscResourceAst in $dscResourceAsts)
             {
-                Write-Verbose -Message ($script:localizedData.FoundClassResourcePropertyMessage -f $propertyMemberAst.Name, $dscResourceAst.Name)
+                Write-Verbose -Message ($script:localizedData.GenerateHelpDocumentMessage -f $dscResourceAst.Name)
+
+                <#
+                    PowerShell classes does not support comment-based help. There is
+                    no GetHelpContent() on the TypeDefinitionAst.
+
+                    We use the ScriptBlockAst to filter out our class-based resource
+                    script block from the source file and use that to get the
+                    comment-based help.
+                #>
+                $sourceFilePath = Join-Path -Path $ModulePath -ChildPath ('Classes/*{0}.ps1' -f $dscResourceAst.Name)
+                $sourceFilePath = Resolve-Path -Path $sourceFilePath
+
+                Write-Verbose -Message ($script:localizedData.ClassBasedCommentBasedHelpMessage -f $sourceFilePath)
+
+                $ast = [System.Management.Automation.Language.Parser]::ParseFile($sourceFilePath, [ref] $tokens, [ref] $parseErrors)
+
+                $dscResourceCommentBasedHelp = $ast.GetHelpContent()
+
+                $synopsis = $dscResourceCommentBasedHelp.Synopsis
+                $synopsis = $synopsis -replace '[\r|\n]+$' # Removes all blank rows at the end
+                $synopsis = $synopsis -replace '\r?\n', "`r`n" # Normalize to CRLF
+                $synopsis = $synopsis -replace '\r\n', "`r`n    " # Indent all rows
+
+                $description = $dscResourceCommentBasedHelp.Description
+                $description = $description -replace '[\r|\n]+$' # Removes all blank rows at the end
+                $description = $description -replace '\r?\n', "`r`n" # Normalize to CRLF
+                $description = $description -replace '\r\n', "`r`n    " # Indent all rows
+
+                $output = ".NAME`r`n"
+                $output += '    {0}' -f $dscResourceAst.Name
+                $output += "`r`n`r`n"
+                $output += ".SYNOPSIS`r`n"
+                $output += '    {0}' -f $synopsis
+                $output += "`r`n`r`n"
+                $output += ".DESCRIPTION`r`n"
+                $output += '    {0}' -f $description
+                $output += "`r`n`r`n"
 
                 $astFilter = {
-                    $args[0] -is [System.Management.Automation.Language.NamedAttributeArgumentAst]
+                    $args[0] -is [System.Management.Automation.Language.PropertyMemberAst]
                 }
 
-                $propertyNamedAttributeArgumentAsts = $propertyMemberAst.FindAll($astFilter, $true)
+                $propertyMemberAsts = $dscResourceAst.FindAll($astFilter, $true)
 
-                $isKeyProperty = 'Key' -in $propertyNamedAttributeArgumentAsts.ArgumentName
-                $isMandatoryProperty = 'Mandatory' -in $propertyNamedAttributeArgumentAsts.ArgumentName
-                $isReadProperty = 'NotConfigurable' -in $propertyNamedAttributeArgumentAsts.ArgumentName
-
-                if ($isKeyProperty)
+                # Looping through each resource property.
+                foreach ($propertyMemberAst in $propertyMemberAsts)
                 {
-                    $propertyState = 'Key'
-                }
-                elseif ($isMandatoryProperty)
-                {
-                    $propertyState = 'Required'
-                }
-                elseif ($isReadProperty)
-                {
-                    $propertyState = 'Read'
-                }
-                else
-                {
-                    $propertyState = 'Write'
-                }
+                    Write-Verbose -Message ($script:localizedData.FoundClassResourcePropertyMessage -f $propertyMemberAst.Name, $dscResourceAst.Name)
 
-                $output += ".PARAMETER {0}`r`n" -f $propertyMemberAst.Name
-                $output += '    {0} - {1}' -f $propertyState, $propertyMemberAst.PropertyType.TypeName.FullName
-                $output += "`r`n"
+                    $astFilter = {
+                        $args[0] -is [System.Management.Automation.Language.NamedAttributeArgumentAst]
+                    }
 
-                $astFilter = {
-                    $args[0] -is [System.Management.Automation.Language.AttributeAst] `
-                    -and $args[0].TypeName.Name -eq 'ValidateSet'
-                }
+                    $propertyNamedAttributeArgumentAsts = $propertyMemberAst.FindAll($astFilter, $true)
 
-                $propertyAttributeAsts = $propertyMemberAst.FindAll($astFilter, $true)
+                    $isKeyProperty = 'Key' -in $propertyNamedAttributeArgumentAsts.ArgumentName
+                    $isMandatoryProperty = 'Mandatory' -in $propertyNamedAttributeArgumentAsts.ArgumentName
+                    $isReadProperty = 'NotConfigurable' -in $propertyNamedAttributeArgumentAsts.ArgumentName
 
-                if ($propertyAttributeAsts)
-                {
-                    $output += "    Allowed values: {0}" -f ($propertyAttributeAsts.PositionalArguments.Value -join ', ')
+                    if ($isKeyProperty)
+                    {
+                        $propertyState = 'Key'
+                    }
+                    elseif ($isMandatoryProperty)
+                    {
+                        $propertyState = 'Required'
+                    }
+                    elseif ($isReadProperty)
+                    {
+                        $propertyState = 'Read'
+                    }
+                    else
+                    {
+                        $propertyState = 'Write'
+                    }
+
+                    $output += ".PARAMETER {0}`r`n" -f $propertyMemberAst.Name
+                    $output += '    {0} - {1}' -f $propertyState, $propertyMemberAst.PropertyType.TypeName.FullName
+                    $output += "`r`n"
+
+                    $astFilter = {
+                        $args[0] -is [System.Management.Automation.Language.AttributeAst] `
+                        -and $args[0].TypeName.Name -eq 'ValidateSet'
+                    }
+
+                    $propertyAttributeAsts = $propertyMemberAst.FindAll($astFilter, $true)
+
+                    if ($propertyAttributeAsts)
+                    {
+                        $output += "    Allowed values: {0}" -f ($propertyAttributeAsts.PositionalArguments.Value -join ', ')
+                        $output += "`r`n"
+                    }
+
+                    # The key name must be upper-case for it to match the right item in the list of parameters.
+                    $propertyDescription = ($dscResourceCommentBasedHelp.Parameters[$propertyMemberAst.Name.ToUpper()] -replace '[\r|\n]+$')
+
+                    $propertyDescription = $propertyDescription -replace '[\r|\n]+$' # Removes all blank rows at the end
+                    $propertyDescription = $propertyDescription -replace '\r?\n', "`r`n" # Normalize to CRLF
+                    $propertyDescription = $propertyDescription -replace '\r\n', "`r`n    " # Indent all rows
+
+                    if (-not [System.String]::IsNullOrEmpty($propertyDescription))
+                    {
+                        $propertyDescription = Get-TextWithoutMarkdownCode -Text $propertyDescription -MarkdownCodeRegularExpression $MarkdownCodeRegularExpression
+
+                        $output += "    {0}" -f $propertyDescription
+                        $output += "``r`n"
+                    }
+
                     $output += "`r`n"
                 }
 
-                # The key name must be upper-case for it to match the right item in the list of parameters.
-                $propertyDescription = ($dscResourceCommentBasedHelp.Parameters[$propertyMemberAst.Name.ToUpper()] -replace '[\r|\n]+$')
+                $exampleContent = Get-ResourceExamplesAsText -SourcePath $ModulePath -ResourceName $dscResourceAst.Name
 
-                $propertyDescription = $propertyDescription -replace '[\r|\n]+$' # Removes all blank rows at the end
-                $propertyDescription = $propertyDescription -replace '\r?\n', "`r`n" # Normalize to CRLF
-                $propertyDescription = $propertyDescription -replace '\r\n', "`r`n    " # Indent all rows
+                $output += $exampleContent
 
-                if (-not [System.String]::IsNullOrEmpty($propertyDescription))
+                # Trim excessive blank lines and indents at the end.
+                $output = $output -replace '[\r|\n|\s]+$', "`r`n"
+
+                $outputFileName = 'about_{0}.help.txt' -f $dscResourceAst.Name
+
+                if ($PSBoundParameters.ContainsKey('OutputPath'))
                 {
-                    $propertyDescription = Get-TextWithoutMarkdownCode -Text $propertyDescription -MarkdownCodeRegularExpression $MarkdownCodeRegularExpression
-
-                    $output += "    {0}" -f $propertyDescription
-                    $output += "``r`n"
+                    # Output to $OutputPath if specified.
+                    $savePath = Join-Path -Path $OutputPath -ChildPath $outputFileName
+                }
+                elseif ($PSBoundParameters.ContainsKey('DestinationModulePath'))
+                {
+                    # Output to the built modules en-US folder.
+                    $savePath = Join-Path -Path $DestinationModulePath -ChildPath 'en-US' |
+                        Join-Path -ChildPath $outputFileName
+                }
+                else
+                {
+                    # Output to the resource 'en-US' directory in the ModulePath.
+                    $savePath = Join-Path -Path $mofSchema.DirectoryName -ChildPath 'en-US' |
+                        Join-Path -ChildPath $outputFileName
                 }
 
-                $output += "`r`n"
+                Write-Verbose -Message ($script:localizedData.OutputHelpDocumentMessage -f $savePath)
+
+                $output | Out-File -FilePath $savePath -Encoding 'ascii' -Force
             }
-
-            $exampleContent = Get-ResourceExamplesAsText -SourcePath $ModulePath -ResourceName $dscResourceAst.Name
-
-            $output += $exampleContent
-
-            # Trim excessive blank lines and indents at the end.
-            $output = $output -replace '[\r|\n|\s]+$', "`r`n"
-
-            $outputFileName = 'about_{0}.help.txt' -f $dscResourceAst.Name
-
-            if ($PSBoundParameters.ContainsKey('OutputPath'))
-            {
-                # Output to $OutputPath if specified.
-                $savePath = Join-Path -Path $OutputPath -ChildPath $outputFileName
-            }
-            elseif ($PSBoundParameters.ContainsKey('DestinationModulePath'))
-            {
-                # Output to the built modules en-US folder.
-                $savePath = Join-Path -Path $DestinationModulePath -ChildPath 'en-US' |
-                    Join-Path -ChildPath $outputFileName
-            }
-            else
-            {
-                # Output to the resource 'en-US' directory in the ModulePath.
-                $savePath = Join-Path -Path $mofSchema.DirectoryName -ChildPath 'en-US' |
-                    Join-Path -ChildPath $outputFileName
-            }
-
-            Write-Verbose -Message ($script:localizedData.OutputHelpDocumentMessage -f $savePath)
-
-            $output | Out-File -FilePath $savePath -Encoding 'ascii' -Force
         }
     }
     #endregion Class-based resource
