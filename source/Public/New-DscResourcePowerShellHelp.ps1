@@ -218,7 +218,7 @@ function New-DscResourcePowerShellHelp
     #endregion MOF-based resource
 
     #region Class-based resource
-    if (Test-Path -Path $DestinationModulePath)
+    if (-not [System.String]::IsNullOrEmpty($DestinationModulePath) -and (Test-Path -Path $DestinationModulePath))
     {
         $getChildItemParameters = @{
             Path = Join-Path -Path $DestinationModulePath -ChildPath '*'
