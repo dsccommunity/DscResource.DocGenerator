@@ -142,6 +142,11 @@ function New-DscResourcePowerShellHelp
             $descriptionContent = $descriptionContent -replace '\r\n\s{4}\r\n', "`r`n`r`n"
             $descriptionContent = $descriptionContent -replace '\s{4}$', ''
 
+            if (-not [System.String]::IsNullOrEmpty($descriptionContent))
+            {
+                $descriptionContent = Get-TextWithoutMarkdownCode -Text $descriptionContent -MarkdownCodeRegularExpression $MarkdownCodeRegularExpression
+            }
+
             $output += $descriptionContent
             $output += "`r`n"
 
@@ -169,7 +174,7 @@ function New-DscResourcePowerShellHelp
                     $propertyDescription = Get-TextWithoutMarkdownCode -Text $property.Description -MarkdownCodeRegularExpression $MarkdownCodeRegularExpression
                 }
 
-                $output += "    " + $propertyDescription
+                $output += "    {0}" -f $propertyDescription
                 $output += "`r`n`r`n"
             }
 
@@ -276,20 +281,36 @@ function New-DscResourcePowerShellHelp
                 $synopsis = $synopsis -replace '[\r|\n]+$' # Removes all blank rows at the end
                 $synopsis = $synopsis -replace '\r?\n', "`r`n" # Normalize to CRLF
                 $synopsis = $synopsis -replace '\r\n', "`r`n    " # Indent all rows
+                $synopsis = $synopsis -replace '[ ]+\r\n', "`r`n" # Remove indentation from blank rows
 
                 $description = $dscResourceCommentBasedHelp.Description
-                $description = $description -replace '[\r|\n]+$' # Removes all blank rows at the end
+                $description = $description -replace '[\r|\n]+$' # Removes all blank rows and whitespace at the end
                 $description = $description -replace '\r?\n', "`r`n" # Normalize to CRLF
                 $description = $description -replace '\r\n', "`r`n    " # Indent all rows
+                $description = $description -replace '[ ]+\r\n', "`r`n" # Remove indentation from blank rows
 
                 $output = ".NAME`r`n"
                 $output += '    {0}' -f $dscResourceAst.Name
                 $output += "`r`n`r`n"
                 $output += ".SYNOPSIS`r`n"
-                $output += '    {0}' -f $synopsis
+
+                if (-not [System.String]::IsNullOrEmpty($synopsis))
+                {
+                    $synopsis = Get-TextWithoutMarkdownCode -Text $synopsis -MarkdownCodeRegularExpression $MarkdownCodeRegularExpression
+
+                    $output += '    {0}' -f $synopsis
+                }
+
                 $output += "`r`n`r`n"
                 $output += ".DESCRIPTION`r`n"
-                $output += '    {0}' -f $description
+
+                if (-not [System.String]::IsNullOrEmpty($description))
+                {
+                    $description = Get-TextWithoutMarkdownCode -Text $description -MarkdownCodeRegularExpression $MarkdownCodeRegularExpression
+
+                    $output += '    {0}' -f $description
+                }
+
                 $output += "`r`n`r`n"
 
                 $astFilter = {
@@ -353,13 +374,14 @@ function New-DscResourcePowerShellHelp
                     $propertyDescription = $propertyDescription -replace '[\r|\n]+$' # Removes all blank rows at the end
                     $propertyDescription = $propertyDescription -replace '\r?\n', "`r`n" # Normalize to CRLF
                     $propertyDescription = $propertyDescription -replace '\r\n', "`r`n    " # Indent all rows
+                    $propertyDescription = $propertyDescription -replace '[ ]+\r\n', "`r`n" # Remove indentation from blank rows
 
                     if (-not [System.String]::IsNullOrEmpty($propertyDescription))
                     {
                         $propertyDescription = Get-TextWithoutMarkdownCode -Text $propertyDescription -MarkdownCodeRegularExpression $MarkdownCodeRegularExpression
 
                         $output += "    {0}" -f $propertyDescription
-                        $output += "``r`n"
+                        $output += "`r`n"
                     }
 
                     $output += "`r`n"
@@ -369,8 +391,8 @@ function New-DscResourcePowerShellHelp
 
                 $output += $exampleContent
 
-                # Trim excessive blank lines and indents at the end.
-                $output = $output -replace '[\r|\n|\s]+$', "`r`n"
+                # Trim excessive blank lines and indents at the end, then insert a last blank line.
+                $output = $output -replace '[\r?\n|\s]+$', "`r`n"
 
                 $outputFileName = 'about_{0}.help.txt' -f $dscResourceAst.Name
 
@@ -394,7 +416,7 @@ function New-DscResourcePowerShellHelp
 
                 Write-Verbose -Message ($script:localizedData.OutputHelpDocumentMessage -f $savePath)
 
-                $output | Out-File -FilePath $savePath -Encoding 'ascii' -Force
+                $output | Out-File -FilePath $savePath -Encoding 'ascii' -NoNewLine -Force
             }
         }
     }
