@@ -1,9 +1,11 @@
 <#
     .SYNOPSIS
-        Get-RegularExpressionParsedText removes any markdown code from a text string.
+        Get-RegularExpressionParsedText removes text that matches a regular expression.
 
     .DESCRIPTION
-        Get-RegularExpressionParsedText removes any markdown code from a text string.
+        Get-RegularExpressionParsedText removes text that matches a regular expression
+        from the passed text string. A regular expression must conform to a specific
+        grouping, see parameter 'RegularExpression' for more information.
 
     .PARAMETER Text
         The text string to process.
