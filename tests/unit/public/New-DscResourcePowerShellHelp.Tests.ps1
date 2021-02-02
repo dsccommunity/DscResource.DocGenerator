@@ -1084,7 +1084,52 @@ class AzDevOpsProject
                     Assert-MockCalled `
                         -CommandName Out-File `
                         -ParameterFilter $script:outFileContent_ParameterFilter `
-                        -Exactly -Times 1
+                        -Exactly -Times 1 -Scope Context
+                }
+
+                Context 'When the output should be written to the en-US folder in the DestinationModulePath' {
+                    BeforeAll {
+                        $mockFilePath = Join-Path -Path $mockDestinationModulePath -ChildPath 'en-US' |
+                            Join-Path -ChildPath 'about_AzDevOpsProject.help.txt'
+
+                        $mockNewDscResourcePowerShellHelpParameters = @{
+                            ModulePath = $mockSourcePath
+                            DestinationModulePath = $mockDestinationModulePath
+                        }
+                    }
+
+                    It 'Should not throw an exception and call Out-File with the correct path' {
+                        {
+                            New-DscResourcePowerShellHelp @mockNewDscResourcePowerShellHelpParameters
+                        } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Out-File -ParameterFilter {
+                            $FilePath -eq $mockFilePath
+                        } -Exactly -Times 1 -Scope It
+                    }
+                }
+
+                Context 'When the output should be written to the en-US folder in the OutputPath' {
+                    BeforeAll {
+                        $mockOutputPath = Join-Path -Path $TestDrive -ChildPath 'outputPath'
+                        $mockFilePath = Join-Path -Path $mockOutputPath -ChildPath 'about_AzDevOpsProject.help.txt'
+
+                        $mockNewDscResourcePowerShellHelpParameters = @{
+                            ModulePath = $mockSourcePath
+                            DestinationModulePath = $mockDestinationModulePath
+                            OutputPath = $mockOutputPath
+                        }
+                    }
+
+                    It 'Should not throw an exception and call Out-File with the correct path' {
+                        {
+                            New-DscResourcePowerShellHelp @mockNewDscResourcePowerShellHelpParameters
+                        } | Should -Not -Throw
+
+                        Assert-MockCalled -CommandName Out-File -ParameterFilter {
+                            $FilePath -eq $mockFilePath
+                        } -Exactly -Times 1 -Scope It
+                    }
                 }
             }
 
@@ -1168,7 +1213,7 @@ class AzDevOpsProject
                     Assert-MockCalled `
                         -CommandName Out-File `
                         -ParameterFilter $script:outFileContent_ParameterFilter `
-                        -Exactly -Times 1
+                        -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -1294,7 +1339,7 @@ Configuration Example
                     Assert-MockCalled `
                         -CommandName Out-File `
                         -ParameterFilter $script:outFileContent_ParameterFilter `
-                        -Exactly -Times 1
+                        -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -1433,7 +1478,7 @@ class AzDevOpsProject
                     Assert-MockCalled `
                         -CommandName Out-File `
                         -ParameterFilter $script:outFileContent_ParameterFilter `
-                        -Exactly -Times 1
+                        -Exactly -Times 1 -Scope Context
                 }
             }
 
@@ -1534,7 +1579,7 @@ class AzDevOpsProject
                     Assert-MockCalled `
                         -CommandName Out-File `
                         -ParameterFilter $script:outFileContent_ParameterFilter `
-                        -Exactly -Times 1
+                        -Exactly -Times 1 -Scope Context
                 }
             }
         }
