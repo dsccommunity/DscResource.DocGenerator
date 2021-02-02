@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.3] - 2021-02-02
+
 ### Added
 
 - Support conceptual help for class-based resources ([issue #51](https://github.com/dsccommunity/DscResource.DocGenerator/issues/51)).
