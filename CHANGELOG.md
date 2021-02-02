@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Conceptual help for MOF-based resource works again (broken in v0.7.3)
+  ([issue #55](https://github.com/dsccommunity/DscResource.DocGenerator/issues/55)).
+
 ## [0.7.3] - 2021-02-02
 
 ### Added

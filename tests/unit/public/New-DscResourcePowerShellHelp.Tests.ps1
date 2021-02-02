@@ -339,8 +339,7 @@ Configuration Example
             Context 'When there is no schemas found in the module folder' {
                 BeforeAll {
                     Mock `
-                        -CommandName Get-ChildItem `
-                        -ParameterFilter $script:getChildItemSchema_parameterFilter
+                        -CommandName Get-ChildItem
 
                     Mock `
                         -CommandName Out-File `
@@ -352,6 +351,18 @@ Configuration Example
                 }
 
                 It 'Should call the expected mocks ' {
+                    <#
+                        Regression test for issue https://github.com/dsccommunity/DscResource.DocGenerator/issues/55.
+                        When parameter File is present the command Get-ChildItem
+                        returns 0 (zero) files.
+                    #>
+                    Assert-MockCalled `
+                        -CommandName Get-ChildItem `
+                        -ParameterFilter {
+                            $PSBoundParameters.ContainsKey('File') -eq $false
+                        } `
+                        -Exactly -Times 1
+
                     Assert-MockCalled `
                         -CommandName Get-ChildItem `
                         -ParameterFilter $script:getChildItemSchema_parameterFilter `

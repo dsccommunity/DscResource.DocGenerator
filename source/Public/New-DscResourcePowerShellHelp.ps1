@@ -124,8 +124,8 @@ function New-DscResourcePowerShellHelp
     )
 
     #region MOF-based resource
-    $mofSearchPath = (Join-Path -Path $ModulePath -ChildPath '\**\*.schema.mof')
-    $mofSchemas = @(Get-ChildItem -Path $mofSearchPath -File -Recurse)
+    $mofSearchPath = Join-Path -Path $ModulePath -ChildPath '\**\*.schema.mof'
+    $mofSchemas = @(Get-ChildItem -Path $mofSearchPath -Recurse)
 
     Write-Verbose -Message ($script:localizedData.FoundMofFilesMessage -f $mofSchemas.Count, $ModulePath)
 
