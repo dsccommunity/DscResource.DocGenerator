@@ -401,16 +401,10 @@ function New-DscResourcePowerShellHelp
                     # Output to $OutputPath if specified.
                     $savePath = Join-Path -Path $OutputPath -ChildPath $outputFileName
                 }
-                elseif ($PSBoundParameters.ContainsKey('DestinationModulePath'))
+                else
                 {
                     # Output to the built modules en-US folder.
                     $savePath = Join-Path -Path $DestinationModulePath -ChildPath 'en-US' |
-                        Join-Path -ChildPath $outputFileName
-                }
-                else
-                {
-                    # Output to the resource 'en-US' directory in the ModulePath.
-                    $savePath = Join-Path -Path $mofSchema.DirectoryName -ChildPath 'en-US' |
                         Join-Path -ChildPath $outputFileName
                 }
 
