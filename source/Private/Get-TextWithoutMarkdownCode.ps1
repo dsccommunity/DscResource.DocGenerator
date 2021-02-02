@@ -1,26 +1,24 @@
 <#
     .SYNOPSIS
-        Get-TextWithoutMarkdownCode is remove markdown code from a text string.
+        Get-RegularExpressionParsedText removes any markdown code from a text string.
 
     .DESCRIPTION
-        Get-TextWithoutMarkdownCode is remove markdown code from a text string.
+        Get-RegularExpressionParsedText removes any markdown code from a text string.
 
     .PARAMETER Text
         The text string to process.
 
-    .PARAMETER MarkdownCodeRegularExpression
-        An array of regular expressions that should be used to parse the parameter
-        descriptions in the schema MOF. Each regular expression must be written
-        so that the capture group 0 is the full match and the capture group 1 is
-        the text that should be kept.
-
+    .PARAMETER RegularExpression
+        An array of regular expressions that should be used to parse the text. Each
+        regular expression must be written so that the capture group 0 is the full
+        match and the capture group 1 is the text that should be kept.
 
     .EXAMPLE
-        $myText = Get-TextWithoutMarkdownCode -Text 'My code call `Get-Process`' -MarkdownCodeRegularExpression @('\`(.+?)\`')
+        $myText = Get-RegularExpressionParsedText -Text 'My code call `Get-Process`' -RegularExpression @('\`(.+?)\`')
 
         This example process the string an remove the inline code-block.
 #>
-function Get-TextWithoutMarkdownCode
+function Get-RegularExpressionParsedText
 {
     [CmdletBinding()]
     [OutputType([System.String])]
@@ -32,12 +30,12 @@ function Get-TextWithoutMarkdownCode
 
         [Parameter()]
         [System.String[]]
-        $MarkdownCodeRegularExpression = @()
+        $RegularExpression = @()
     )
 
-    if ($MarkdownCodeRegularExpression.Count -gt 0)
+    if ($RegularExpression.Count -gt 0)
     {
-        foreach ($parseRegularExpression in $MarkdownCodeRegularExpression)
+        foreach ($parseRegularExpression in $RegularExpression)
         {
             $allMatches = $Text | Select-String -Pattern $parseRegularExpression -AllMatches
 

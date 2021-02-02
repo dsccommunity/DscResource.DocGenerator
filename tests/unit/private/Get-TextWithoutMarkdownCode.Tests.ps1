@@ -19,10 +19,10 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 #endregion HEADER
 
 InModuleScope $script:moduleName {
-    Describe 'Get-TextWithoutMarkdownCode' {
+    Describe 'Get-RegularExpressionParsedText' {
         Context 'When there are no examples for a resource' {
             It 'Should not throw and write a warning message' {
-                 $result = Get-TextWithoutMarkdownCode -Text '_MyText_' -MarkdownCodeRegularExpression ('_', 'Text')
+                 $result = Get-RegularExpressionParsedText -Text '_MyText_' -RegularExpression ('_', 'Text')
                  $result | Should -Be 'My'
             }
         }

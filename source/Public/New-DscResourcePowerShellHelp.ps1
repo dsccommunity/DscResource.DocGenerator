@@ -7,7 +7,7 @@
         The New-DscResourcePowerShellHelp generates PowerShell compatible help files
         for a DSC resource module.
 
-        The command will review all of the MOF- and class based resources in a
+        The command will review all of the MOF-based and class-based resources in a
         specified module directory and will inject PowerShell help files for each
         resource. These help files include details on the property types for each
         resource,  as well as a text description and examples where they exist.
@@ -26,12 +26,21 @@
         'Examples/Resources/<ResourceName>/1-Example.ps1'. Prefixing the value
         with a number will sort the examples in that order.
 
+        Example directory structure:
+
+            Examples
+                \---Resources
+                    \---MyResourceName
+                            1-FirstExample.ps1
+                            2-SecondExample.ps1
+                            3-ThirdExample.ps1
+
         These help files can then be read by passing the name of the resource as a
         parameter to Get-Help.
 
     .PARAMETER ModulePath
         The path to the root of the DSC resource module where the PSD1 file is
-        found, for example the folder 'source'. If there are MOF-based resource
+        found, for example the folder 'source'. If there are MOF-based resources
         there should be a 'DSCResources' child folder in this path. If using
         class-based resources there should be a 'Classes' child folder in this path.
 
@@ -41,15 +50,15 @@
         module, e.g 'c:\repos\ModuleName\output\ModuleName\1.0.0'.
 
         The conceptual help file will be saved in this path. For MOF-based resources
-        it will be saved to the en-US folder that is inside in either the DSCResources
-        or DSCClassResources folder (if using that pattern for class-based resources).
+        it will be saved to the 'en-US' folder that is inside in either the 'DSCResources'
+        or 'DSCClassResources' folder (if using that pattern for class-based resources).
 
         When using the pattern with having all powershell classes in the same
         module script file (.psm1) and all class-based resource are found in that
-        file (not using DSCClassResources). This path will be used to find the
+        file (not using 'DSCClassResources'). This path will be used to find the
         built module when generating conceptual help for class-based resource.
         It will also be used to save the conceptual help to the built modules
-        en-US folder.
+        'en-US' folder.
 
         If OutputPath is assigned that will be used for saving the output instead.
 
@@ -58,10 +67,15 @@
         will be saved (all files to the same path).
 
     .PARAMETER MarkdownCodeRegularExpression
-        An array of regular expressions that should be used to parse the parameter
-        descriptions in the schema MOF. Each regular expression must be written
-        so that the capture group 0 is the full match and the capture group 1 is
-        the text that should be kept.
+        An array of regular expressions that should be used to parse the text of
+        the synopsis, description and parameter descriptions. Each regular expression
+        must be written so that the capture group 0 is the full match and the capture
+        group 1 is the text that should be kept. This is meant to be used to remove
+        markdown code, but it can be used for anything as it follow the previous
+        mention pattern for the regular expression sequence.
+
+    .PARAMETER Force
+        When set the to $true and existing conceptual help file will be overwritten.
 
     .EXAMPLE
         New-DscResourcePowerShellHelp -ModulePath C:\repos\SharePointDsc
@@ -102,12 +116,16 @@ function New-DscResourcePowerShellHelp
 
         [Parameter()]
         [System.String[]]
-        $MarkdownCodeRegularExpression = @()
+        $MarkdownCodeRegularExpression = @(),
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Force
     )
 
     #region MOF-based resource
     $mofSearchPath = (Join-Path -Path $ModulePath -ChildPath '\**\*.schema.mof')
-    $mofSchemas = @(Get-ChildItem -Path $mofSearchPath -Recurse)
+    $mofSchemas = @(Get-ChildItem -Path $mofSearchPath -File -Recurse)
 
     Write-Verbose -Message ($script:localizedData.FoundMofFilesMessage -f $mofSchemas.Count, $ModulePath)
 
@@ -144,7 +162,7 @@ function New-DscResourcePowerShellHelp
 
             if (-not [System.String]::IsNullOrEmpty($descriptionContent))
             {
-                $descriptionContent = Get-TextWithoutMarkdownCode -Text $descriptionContent -MarkdownCodeRegularExpression $MarkdownCodeRegularExpression
+                $descriptionContent = Get-RegularExpressionParsedText -Text $descriptionContent -RegularExpression $MarkdownCodeRegularExpression
             }
 
             $output += $descriptionContent
@@ -171,14 +189,16 @@ function New-DscResourcePowerShellHelp
 
                 if (-not [System.String]::IsNullOrEmpty($property.Description))
                 {
-                    $propertyDescription = Get-TextWithoutMarkdownCode -Text $property.Description -MarkdownCodeRegularExpression $MarkdownCodeRegularExpression
+                    $propertyDescription = Get-RegularExpressionParsedText -Text $property.Description -RegularExpression $MarkdownCodeRegularExpression
                 }
 
                 $output += "    {0}" -f $propertyDescription
                 $output += "`r`n`r`n"
             }
 
-            $exampleContent = Get-ResourceExamplesAsText -SourcePath $ModulePath -ResourceName $result.FriendlyName
+            $resourceExamplePath = Join-Path -Path $ModulePath -ChildPath ('Examples\Resources\{0}' -f $result.FriendlyName)
+
+            $exampleContent = Get-ResourceExampleAsText -Path $resourceExamplePath
 
             $output += $exampleContent
 
@@ -201,8 +221,8 @@ function New-DscResourcePowerShellHelp
 
                 $savePath = Join-Path -Path $DestinationModulePath -ChildPath $dscRootFolderName |
                     Join-Path -ChildPath $resourceRelativePath |
-                    Join-Path -ChildPath 'en-US' |
-                    Join-Path -ChildPath $outputFileName
+                        Join-Path -ChildPath 'en-US' |
+                            Join-Path -ChildPath $outputFileName
             }
             else
             {
@@ -213,7 +233,7 @@ function New-DscResourcePowerShellHelp
 
             Write-Verbose -Message ($script:localizedData.OutputHelpDocumentMessage -f $savePath)
 
-            $output | Out-File -FilePath $savePath -Encoding 'ascii' -Force
+            $output | Out-File -FilePath $savePath -Encoding 'ascii' -Force:$Force
         }
         else
         {
@@ -226,9 +246,11 @@ function New-DscResourcePowerShellHelp
     if (-not [System.String]::IsNullOrEmpty($DestinationModulePath) -and (Test-Path -Path $DestinationModulePath))
     {
         $getChildItemParameters = @{
-            Path = Join-Path -Path $DestinationModulePath -ChildPath '*'
-            Include = '*.psm1'
+            Path        = Join-Path -Path $DestinationModulePath -ChildPath '*'
+            Include     = '*.psm1'
             ErrorAction = 'Stop'
+            File        = $true
+            Recurse     = $true
         }
 
         $builtModuleScriptFiles = Get-ChildItem @getChildItemParameters
@@ -247,8 +269,8 @@ function New-DscResourcePowerShellHelp
 
             $astFilter = {
                 $args[0] -is [System.Management.Automation.Language.TypeDefinitionAst] `
-                -and $args[0].IsClass -eq $true `
-                -and $args[0].Attributes.Extent.Text -ieq '[DscResource()]'
+                    -and $args[0].IsClass -eq $true `
+                    -and $args[0].Attributes.Extent.Text -imatch '\[DscResource\(.*\)\]'
             }
 
             $dscResourceAsts = $ast.FindAll($astFilter, $true)
@@ -296,7 +318,7 @@ function New-DscResourcePowerShellHelp
 
                 if (-not [System.String]::IsNullOrEmpty($synopsis))
                 {
-                    $synopsis = Get-TextWithoutMarkdownCode -Text $synopsis -MarkdownCodeRegularExpression $MarkdownCodeRegularExpression
+                    $synopsis = Get-RegularExpressionParsedText -Text $synopsis -RegularExpression $MarkdownCodeRegularExpression
 
                     $output += '    {0}' -f $synopsis
                 }
@@ -306,7 +328,7 @@ function New-DscResourcePowerShellHelp
 
                 if (-not [System.String]::IsNullOrEmpty($description))
                 {
-                    $description = Get-TextWithoutMarkdownCode -Text $description -MarkdownCodeRegularExpression $MarkdownCodeRegularExpression
+                    $description = Get-RegularExpressionParsedText -Text $description -RegularExpression $MarkdownCodeRegularExpression
 
                     $output += '    {0}' -f $description
                 }
@@ -357,7 +379,7 @@ function New-DscResourcePowerShellHelp
 
                     $astFilter = {
                         $args[0] -is [System.Management.Automation.Language.AttributeAst] `
-                        -and $args[0].TypeName.Name -eq 'ValidateSet'
+                            -and $args[0].TypeName.Name -eq 'ValidateSet'
                     }
 
                     $propertyAttributeAsts = $propertyMemberAst.FindAll($astFilter, $true)
@@ -378,7 +400,7 @@ function New-DscResourcePowerShellHelp
 
                     if (-not [System.String]::IsNullOrEmpty($propertyDescription))
                     {
-                        $propertyDescription = Get-TextWithoutMarkdownCode -Text $propertyDescription -MarkdownCodeRegularExpression $MarkdownCodeRegularExpression
+                        $propertyDescription = Get-RegularExpressionParsedText -Text $propertyDescription -RegularExpression $MarkdownCodeRegularExpression
 
                         $output += "    {0}" -f $propertyDescription
                         $output += "`r`n"
@@ -387,7 +409,9 @@ function New-DscResourcePowerShellHelp
                     $output += "`r`n"
                 }
 
-                $exampleContent = Get-ResourceExamplesAsText -SourcePath $ModulePath -ResourceName $dscResourceAst.Name
+                $examplesPath = Join-Path -Path $ModulePath -ChildPath ('Examples\Resources\{0}' -f $dscResourceAst.Name)
+
+                $exampleContent = Get-ResourceExampleAsText -Path $examplesPath
 
                 $output += $exampleContent
 
@@ -410,7 +434,7 @@ function New-DscResourcePowerShellHelp
 
                 Write-Verbose -Message ($script:localizedData.OutputHelpDocumentMessage -f $savePath)
 
-                $output | Out-File -FilePath $savePath -Encoding 'ascii' -NoNewLine -Force
+                $output | Out-File -FilePath $savePath -Encoding 'ascii' -NoNewLine -Force:$Force
             }
         }
     }

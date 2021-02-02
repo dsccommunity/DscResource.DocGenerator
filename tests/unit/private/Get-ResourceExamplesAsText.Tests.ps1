@@ -19,7 +19,7 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 #endregion HEADER
 
 InModuleScope $script:moduleName {
-    Describe 'Get-ResourceExamplesAsText' {
+    Describe 'Get-ResourceExampleAsText' {
         Context 'When there are no examples for a resource' {
             BeforeAll {
                 Mock -CommandName Get-ChildItem
@@ -27,7 +27,7 @@ InModuleScope $script:moduleName {
             }
 
             It 'Should not throw and write a warning message' {
-                 { Get-ResourceExamplesAsText -ResourceName 'MyResource' -SourcePath $TestDrive } | Should -Not -Throw
+                 { Get-ResourceExampleAsText -Path $TestDrive } | Should -Not -Throw
 
                  Assert-MockCalled -CommandName Write-Warning -ParameterFilter {
                     $Message -eq ($script:localizedData.NoExampleFileFoundWarning -f 'MyResource')
@@ -48,7 +48,7 @@ InModuleScope $script:moduleName {
             }
 
             It 'Should not throw and call the correct mock to generate the output' {
-                { Get-ResourceExamplesAsText -ResourceName 'MyResource' -SourcePath $TestDrive } | Should -Not -Throw
+                { Get-ResourceExampleAsText -Path $TestDrive } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Get-DscResourceHelpExampleContent -ParameterFilter {
                    $ExamplePath -eq $mockExamplePath `

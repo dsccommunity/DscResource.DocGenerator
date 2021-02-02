@@ -1,25 +1,25 @@
 <#
     .SYNOPSIS
-        Get-ResourceExamplesAsText gathers all examples for a resource and returns
+        Get-ResourceExampleAsText gathers all examples for a resource and returns
         them as a string in a format that is used for conceptual help.
 
     .DESCRIPTION
-        Get-ResourceExamplesAsText gathers all examples for a resource and returns
+        Get-ResourceExampleAsText gathers all examples for a resource and returns
         them as a string in a format that is used for conceptual help.
 
     .PARAMETER ResourceName
         The name of the resource for which examples should be retrieved.
 
-    .PARAMETER SourcePath
+    .PARAMETER Path
         THe path to the source folder where the folder Examples exist.
 
     .EXAMPLE
-        $examplesText = Get-ResourceExamplesAsText -ResourceName 'AzDevOpsProject' -SourcePath 'c:\MyProject'
+        $examplesText = Get-ResourceExampleAsText -ResourceName 'MyClassResource' -Path 'c:\MyProject'
 
-        This example fetches all examples from the folder 'c:\MyProject\Examples\Resources\$AzDevOpsProject'
+        This example fetches all examples from the folder 'c:\MyProject\Examples\Resources\MyClassResource'
         and returns them as a single string in a format that is used for conceptual help.
 #>
-function Get-ResourceExamplesAsText
+function Get-ResourceExampleAsText
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -27,22 +27,18 @@ function Get-ResourceExamplesAsText
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $ResourceName,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $SourcePath
+        $Path
     )
 
-    $exampleSearchPath = "\Examples\Resources\$ResourceName\*.ps1"
-    $examplesPath = (Join-Path -Path $SourcePath -ChildPath $exampleSearchPath)
-    $exampleFiles = @(Get-ChildItem -Path $examplesPath -ErrorAction 'SilentlyContinue')
+    $filePath = Join-Path -Path $Path -ChildPath '*.ps1'
+
+    $exampleFiles = @(Get-ChildItem -Path $filePath -File -Recurse -ErrorAction 'SilentlyContinue')
 
     if ($exampleFiles.Count -gt 0)
     {
         $exampleCount = 1
 
-        Write-Verbose -Message ($script:localizedData.FoundResourceExamplesMessage -f $exampleFiles.count, $ResourceName)
+        Write-Verbose -Message ($script:localizedData.FoundResourceExamplesMessage -f $exampleFiles.Count)
 
         foreach ($exampleFile in $exampleFiles)
         {
@@ -58,7 +54,7 @@ function Get-ResourceExamplesAsText
     }
     else
     {
-        Write-Warning -Message ($script:localizedData.NoExampleFileFoundWarning -f $ResourceName)
+        Write-Warning -Message ($script:localizedData.NoExampleFileFoundWarning)
     }
 
     return $text

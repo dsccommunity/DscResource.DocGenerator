@@ -143,5 +143,12 @@ task Generate_Conceptual_Help {
 
     Write-Build Magenta "Generating conceptual help for all DSC resources based on source."
 
-    New-DscResourcePowerShellHelp -ModulePath $SourcePath -DestinationModulePath $builtModulePath -MarkdownCodeRegularExpression $MarkdownCodeRegularExpression
+    $newDscResourcePowerShellHelpParameters = @{
+        ModulePath                    = $SourcePath
+        DestinationModulePath         = $builtModulePath
+        MarkdownCodeRegularExpression = $MarkdownCodeRegularExpression
+        Force                         = $true
+    }
+
+    New-DscResourcePowerShellHelp @newDscResourcePowerShellHelpParameters
 }
