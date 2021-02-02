@@ -7,7 +7,7 @@ ConvertFrom-StringData @'
     OutputWikiPageMessage               = Outputting wiki page to '{0}'.
     NoDescriptionFileFoundWarning       = No README.md description file found for '{0}', skipping.
     MultipleDescriptionFileFoundWarning = {1} README.md description files found for '{0}', skipping.
-    NoExampleFileFoundWarning           = No Example files found for resource '{0}'.
+    NoExampleFileFoundWarning           = No Example files found.
     CreateTempDirMessage                = Creating a temporary working directory.
     ConfigGlobalGitMessage              = Configuring global Git settings.
     ConfigLocalGitMessage               = Configuring local Git settings.
@@ -25,4 +25,8 @@ ConvertFrom-StringData @'
     CopyFileMessage                     = Copying file '{0}' to the Wiki.
     AddFileToSideBar                    = Adding file '{0}' to the Wiki Sidebar.
     NothingToCommitToWiki               = There are no changes to the documentation to commit and push to the Wiki.
+    FoundClassBasedMessage              = Found {0} class-based resources in the built module '{1}'.
+    FoundClassResourcePropertyMessage   = Found property '{0}' in the resource '{1}'.
+    ClassBasedCommentBasedHelpMessage   = Reading comment-based help from source file '{0}'.
+    FoundResourceExamplesMessage        = Found {0} examples.
 '@

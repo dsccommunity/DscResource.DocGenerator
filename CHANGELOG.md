@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Support conceptual help for class-based resources ([issue #51](https://github.com/dsccommunity/DscResource.DocGenerator/issues/51)).
+
 ### Changed
 
 - Renamed default branch to `main` ([issue #49](https://github.com/dsccommunity/DscResource.DocGenerator/issues/49)).
