@@ -140,7 +140,7 @@ task Generate_Wiki_Content {
 
     Write-Build -Color 'Magenta' -Text 'Generating Wiki content for all DSC resources based on source and built module.'
 
-    New-DscResourceWikiPage -SourcePath $SourcePath -BuiltModulePath $builtModulePath -OutputPath $wikiOutputPath
+    New-DscResourceWikiPage -SourcePath $SourcePath -BuiltModulePath $builtModulePath -OutputPath $wikiOutputPath -Force
 
     if ($wikiSourceExist)
     {
