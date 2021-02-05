@@ -25,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Split-ModuleVersion`
   - This cmdlet is now exported as a public function because it is required
     by the build task `Generate_Wiki_Content`.
+- `Generate_Wiki_Content`
+  - The Build task `Generate_Wiki_Content` was changed to call the cmdlet
+    `New-DscResourceWikiPage` with the correct parameters to support generating
+    documentation for class-based resource ([issue #52](https://github.com/dsccommunity/DscResource.DocGenerator/issues/52)).
 
 ## [0.7.4] - 2021-02-02
 
