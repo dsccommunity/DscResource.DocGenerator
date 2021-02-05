@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `Split-ModuleVersion`
+  - This cmdlet is not exported as a public function because it is required
+    by the build task `Generate_Wiki_Content`.
+    
 ## [0.7.4] - 2021-02-02
 
 ### Fixed
