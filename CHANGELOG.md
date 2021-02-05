@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   named attribute argument (from the attribute `[DscProperty()]`) for a
   class-based resource parameter and return the corresponding name used by
   MOF-based resources.
+- Added a new private function `Get-ResourceExampleAsMarkdown` that helps
+  to return examples as markdown, and to reduce code duplication.
 - Added a test helper module `DscResource.DocGenerator.TestHelper.psm1`
   that contain helper functions for tests.
   - Added helper function `Out-Diff` that outputs two text strings in hex
