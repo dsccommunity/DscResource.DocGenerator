@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added a new private function `Get-ClassResourceCommentBasedHelp` to get
   comment-based help from a PowerShell script file.
+- Added a new private function `Get-ClassResourcePropertyState` to get
+  named attribute argument (from the attribute `[DscProperty()]`) for a
+  class-based resource parameter and return the corresponding name used by
+  MOF-based resources.
 - Added a test helper module `DscResource.DocGenerator.TestHelper.psm1`
   that contain helper functions for tests.
   - Added helper function `Out-Diff` that outputs two text strings in hex
@@ -17,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - `Split-ModuleVersion`
-  - This cmdlet is not exported as a public function because it is required
+  - This cmdlet is now exported as a public function because it is required
     by the build task `Generate_Wiki_Content`.
 
 ## [0.7.4] - 2021-02-02
