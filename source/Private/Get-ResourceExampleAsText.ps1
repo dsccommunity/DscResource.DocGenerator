@@ -7,16 +7,13 @@
         Get-ResourceExampleAsText gathers all examples for a resource and returns
         them as a string in a format that is used for conceptual help.
 
-    .PARAMETER ResourceName
-        The name of the resource for which examples should be retrieved.
-
     .PARAMETER Path
-        THe path to the source folder where the folder Examples exist.
+        The path to the source folder where the examples for the resource exist.
 
     .EXAMPLE
-        $examplesText = Get-ResourceExampleAsText -ResourceName 'MyClassResource' -Path 'c:\MyProject'
+        $examplesText = Get-ResourceExampleAsText -Path 'c:\MyProject\source\Examples\Resources\MyResourceName'
 
-        This example fetches all examples from the folder 'c:\MyProject\Examples\Resources\MyClassResource'
+        This example fetches all examples from the folder 'ec:\MyProject\source\Examples\Resources\MyResourceName'
         and returns them as a single string in a format that is used for conceptual help.
 #>
 function Get-ResourceExampleAsText

@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `Get-ResourceExampleAsText`
+  - Comment-based help was updated to reflect the correct parameters.
+
+## [0.7.4] - 2021-02-02
+
+### Fixed
+
 - Conceptual help for MOF-based resource works again (broken in v0.7.3)
   ([issue #55](https://github.com/dsccommunity/DscResource.DocGenerator/issues/55)).
 
