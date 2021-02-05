@@ -29,6 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The Build task `Generate_Wiki_Content` was changed to call the cmdlet
     `New-DscResourceWikiPage` with the correct parameters to support generating
     documentation for class-based resource ([issue #52](https://github.com/dsccommunity/DscResource.DocGenerator/issues/52)).
+- `New-DscResourceWikiPage`
+  - Now supports generating wiki documentation for class-based resources
+    ([issue #52](https://github.com/dsccommunity/DscResource.DocGenerator/issues/52)).
+  - **BREAKING CHANGE:** To support class-based resource the parameters were
+    renamed to better recognize what path goes where.
 
 ## [0.7.4] - 2021-02-02
 
@@ -43,6 +48,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     script files. It could potentially lead to that it found resources that
     are part of common modules in the `Modules` folder.
   - Made use of private functions to reduce duplicate code.
+- `Get-DscResourceSchemaPropertyContent`
+  - Fixed the private function so that the description property no longer
+    output an extra whitespace in some circumstances.
 
 ## [0.7.4] - 2021-02-02
 
