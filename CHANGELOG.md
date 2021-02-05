@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added a new private function `Get-ClassResourceCommentBasedHelp` to get
   comment-based help from a PowerShell script file.
+- Added a test helper module `DscResource.DocGenerator.TestHelper.psm1`
+  that contain helper functions for tests.
+  - Added helper function `Out-Diff` that outputs two text strings in hex
+    side-by-side (thanks to @johanringman for help with this one).
 
 ### Changed
 
@@ -22,6 +26,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Get-ResourceExampleAsText`
   - Comment-based help was updated to reflect the correct parameters.
+- `New-DscResourcePowerShellHelp`
+  - Fixed unit tests to support new private function `Get-ClassResourceCommentBasedHelp`
+    and use the test helper module `DscResource.DocGenerator.TestHelper.psm1`.
+  - It no longer uses `Recurse` when looking for the module's PowerShell
+    script files. It could potentially lead to that it found resources that
+    are part of common modules in the `Modules` folder.
+  - Made use of private functions to reduce duplicate code.
 
 ## [0.7.4] - 2021-02-02
 

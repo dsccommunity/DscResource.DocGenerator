@@ -245,12 +245,15 @@ function New-DscResourcePowerShellHelp
     #region Class-based resource
     if (-not [System.String]::IsNullOrEmpty($DestinationModulePath) -and (Test-Path -Path $DestinationModulePath))
     {
+        <#
+            This must not use Recurse. Then it could potentially find resources
+            that are part of common modules in the Modules folder.
+        #>
         $getChildItemParameters = @{
             Path        = Join-Path -Path $DestinationModulePath -ChildPath '*'
             Include     = '*.psm1'
             ErrorAction = 'Stop'
             File        = $true
-            Recurse     = $true
         }
 
         $builtModuleScriptFiles = Get-ChildItem @getChildItemParameters
@@ -282,22 +285,9 @@ function New-DscResourcePowerShellHelp
             {
                 Write-Verbose -Message ($script:localizedData.GenerateHelpDocumentMessage -f $dscResourceAst.Name)
 
-                <#
-                    PowerShell classes does not support comment-based help. There is
-                    no GetHelpContent() on the TypeDefinitionAst.
-
-                    We use the ScriptBlockAst to filter out our class-based resource
-                    script block from the source file and use that to get the
-                    comment-based help.
-                #>
                 $sourceFilePath = Join-Path -Path $ModulePath -ChildPath ('Classes/*{0}.ps1' -f $dscResourceAst.Name)
-                $sourceFilePath = Resolve-Path -Path $sourceFilePath
 
-                Write-Verbose -Message ($script:localizedData.ClassBasedCommentBasedHelpMessage -f $sourceFilePath)
-
-                $ast = [System.Management.Automation.Language.Parser]::ParseFile($sourceFilePath, [ref] $tokens, [ref] $parseErrors)
-
-                $dscResourceCommentBasedHelp = $ast.GetHelpContent()
+                $dscResourceCommentBasedHelp = Get-ClassResourceCommentBasedHelp -Path $sourceFilePath
 
                 $synopsis = $dscResourceCommentBasedHelp.Synopsis
                 $synopsis = $synopsis -replace '[\r|\n]+$' # Removes all blank rows at the end
@@ -346,32 +336,7 @@ function New-DscResourcePowerShellHelp
                 {
                     Write-Verbose -Message ($script:localizedData.FoundClassResourcePropertyMessage -f $propertyMemberAst.Name, $dscResourceAst.Name)
 
-                    $astFilter = {
-                        $args[0] -is [System.Management.Automation.Language.NamedAttributeArgumentAst]
-                    }
-
-                    $propertyNamedAttributeArgumentAsts = $propertyMemberAst.FindAll($astFilter, $true)
-
-                    $isKeyProperty = 'Key' -in $propertyNamedAttributeArgumentAsts.ArgumentName
-                    $isMandatoryProperty = 'Mandatory' -in $propertyNamedAttributeArgumentAsts.ArgumentName
-                    $isReadProperty = 'NotConfigurable' -in $propertyNamedAttributeArgumentAsts.ArgumentName
-
-                    if ($isKeyProperty)
-                    {
-                        $propertyState = 'Key'
-                    }
-                    elseif ($isMandatoryProperty)
-                    {
-                        $propertyState = 'Required'
-                    }
-                    elseif ($isReadProperty)
-                    {
-                        $propertyState = 'Read'
-                    }
-                    else
-                    {
-                        $propertyState = 'Write'
-                    }
+                    $propertyState = Get-ClassResourcePropertyState -Ast $propertyMemberAst
 
                     $output += ".PARAMETER {0}`r`n" -f $propertyMemberAst.Name
                     $output += '    {0} - {1}' -f $propertyState, $propertyMemberAst.PropertyType.TypeName.FullName
