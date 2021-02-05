@@ -49,11 +49,10 @@ class AzDevOpsProject
                 { Get-ClassResourceCommentBasedHelp -Path $mockFilePath -Verbose } | Should -Throw 'The DSC resource ''AzDevOpsProject'' is missing a Set method that returns [void] and accepts no parameters.'
             }
         }
-    }
 
-    Context 'When returning comment-based help' {
-        BeforeAll {
-            $mockScriptFileContent = @'
+        Context 'When returning comment-based help' {
+            BeforeAll {
+                $mockScriptFileContent = @'
 <#
 .SYNOPSIS
     A synopsis.
@@ -83,15 +82,16 @@ class AzDevOpsProject
     [System.String]$ProjectName
 }
 '@
-            $mockFilePath = Join-Path -Path $TestDrive -ChildPath 'MyClassResource.ps1'
-            $mockScriptFileContent | Out-File -FilePath $mockFilePath -Encoding ascii -Force
-        }
+                $mockFilePath = Join-Path -Path $TestDrive -ChildPath 'MyClassResource.ps1'
+                $mockScriptFileContent | Out-File -FilePath $mockFilePath -Encoding ascii -Force
+            }
 
-        It 'Should return the correct comment-based help' {
-            $result = Get-ClassResourceCommentBasedHelp -Path $mockFilePath -Verbose
+            It 'Should return the correct comment-based help' {
+                $result = Get-ClassResourceCommentBasedHelp -Path $mockFilePath -Verbose
 
-            # Parameter name must be upper-case. Also strip any new lines at the end of the string.
-            ($result.Parameters['PROJECTNAME'] -replace '\r?\n+$') | Should -Be 'ProjectName description.'
+                # Parameter name must be upper-case. Also strip any new lines at the end of the string.
+                ($result.Parameters['PROJECTNAME'] -replace '\r?\n+$') | Should -Be 'ProjectName description.'
+            }
         }
     }
 }
