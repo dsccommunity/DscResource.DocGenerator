@@ -33,11 +33,11 @@ function Get-ResourceExampleAsMarkdown
 
     if ($exampleFiles.Count -gt 0)
     {
-        $output = New-Object -TypeName 'System.Text.StringBuilder'
+        $outputExampleMarkDown = New-Object -TypeName 'System.Text.StringBuilder'
 
         Write-Verbose -Message ($script:localizedData.FoundResourceExamplesMessage -f $exampleFiles.Count)
 
-        $null = $output.AppendLine('## Examples')
+        $null = $outputExampleMarkDown.AppendLine('## Examples')
 
         $exampleCount = 1
 
@@ -47,8 +47,8 @@ function Get-ResourceExampleAsMarkdown
                 -ExamplePath $exampleFile.FullName `
                 -ExampleNumber ($exampleCount++)
 
-            $null = $output.AppendLine()
-            $null = $output.AppendLine($exampleContent)
+            $null = $outputExampleMarkDown.AppendLine()
+            $null = $outputExampleMarkDown.AppendLine($exampleContent)
         }
     }
     else
@@ -56,5 +56,5 @@ function Get-ResourceExampleAsMarkdown
         Write-Warning -Message ($script:localizedData.NoExampleFileFoundWarning)
     }
 
-    return $output
+    return $outputExampleMarkDown
 }
