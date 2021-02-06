@@ -40,7 +40,7 @@ function Out-Diff
         # Handle if expected is shorter than actual
         if (-not $expectedRow)
         {
-            $expectedRow = ''.PadRight($column1Width - 1)
+            $expectedRow = ''.PadRight($column1Width)
         }
 
         $diffIndicator = '  '
