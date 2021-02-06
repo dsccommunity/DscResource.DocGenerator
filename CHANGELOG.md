@@ -18,7 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a test helper module `DscResource.DocGenerator.TestHelper.psm1`
   that contain helper functions for tests.
   - Added helper function `Out-Diff` that outputs two text strings in hex
-    side-by-side (thanks to @johanringman for help with this one).
+    side-by-side (thanks to [@johanringman](https://github.com/johanringman)
+    for help with this one).
 
 ### Changed
 
