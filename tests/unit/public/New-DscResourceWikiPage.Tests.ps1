@@ -159,14 +159,14 @@ Configuration Example
 The description of the resource.
 Second row of description.
 '
-            $script:mockWikiContentOutput = "# MyResource
+            $script:mockWikiContentOutput = '# MyResource
 
 ## Parameters
 
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
 | **Id** | Key | String | Id Description | |
-| **Enum** | Write | String | Enum Description. | Value1, Value2, Value3 |
+| **Enum** | Write | String | Enum Description. | `Value1`, `Value2`, `Value3` |
 | **Int** | Required | Uint32 | Int Description. | |
 | **Read** | Read | String | Read Description. | |
 
@@ -188,13 +188,13 @@ Configuration Example
     {
         MyResource Something
         {
-            Id    = 'MyId'
-            Enum  = 'Value1'
+            Id    = ''MyId''
+            Enum  = ''Value1''
             Int   = 1
         }
     }
 }
-" -replace '\r?\n', "`r`n"
+' -replace '\r?\n', "`r`n"
 
             # Parameter filters
             $script:getChildItemSchema_parameterFilter = {
@@ -229,14 +229,14 @@ Configuration Example
                 $FilePath -eq $script:mockSavePath
             }
 
-            $script:outFileInputObject_parameterFilter = {
-                $InputObject -eq $script:mockWikiContentOutput -and
-                $FilePath -eq $script:mockSavePath
-            }
+            $script:outFileContent_parameterFilter = {
+                if ($InputObject -ne $script:mockWikiContentOutput)
+                {
+                    # Helper to output the diff.
+                    Out-Diff -Expected $script:mockWikiContentOutput -Actual $InputObject
+                }
 
-            $script:outFileOutputInputObject_parameterFilter = {
-                $InputObject -eq $script:mockWikiContentOutput -and
-                $FilePath -eq $script:mockSavePath
+                $InputObject -eq $script:mockWikiContentOutput
             }
 
             $script:writeWarningDescription_parameterFilter = {
@@ -359,9 +359,18 @@ Configuration Example
                     Mock `
                         -CommandName Get-ChildItem `
                         -ParameterFilter $script:getChildItemDescription_parameterFilter `
-                        -MockWith { return @(
-                            @{ Name = 'README.MD'; FullName = $script:mockReadmePath },
-                            @{ Name = 'Readme.md'; FullName = $script:mockReadmePath }) }
+                        -MockWith {
+                            return @(
+                                @{
+                                    Name = 'README.MD'
+                                    FullName = $script:mockReadmePath
+                                },
+                                @{
+                                    Name = 'Readme.md'
+                                    FullName = $script:mockReadmePath
+                                }
+                            )
+                        }
 
                     Mock `
                         -CommandName Out-File `
@@ -414,7 +423,14 @@ Configuration Example
                     Mock `
                         -CommandName Get-ChildItem `
                         -ParameterFilter $script:getChildItemDescription_parameterFilter `
-                        -MockWith { return @(@{ Name = 'README.MD'; FullName = $script:mockReadmePath }) }
+                        -MockWith {
+                            return @(
+                                @{
+                                    Name = 'README.MD'
+                                    FullName = $script:mockReadmePath
+                                }
+                            )
+                        }
 
                     Mock `
                         -CommandName Get-Content `
@@ -499,8 +515,14 @@ Configuration Example
                     Mock `
                         -CommandName Get-ChildItem `
                         -ParameterFilter $script:getChildItemDescription_parameterFilter `
-                        -MockWith { return @(@{ Name = 'README.MD'; FullName = $script:mockReadmePath }) }
-
+                        -MockWith {
+                            return @(
+                                @{
+                                    Name = 'README.MD'
+                                    FullName = $script:mockReadmePath
+                                }
+                            )
+                        }
 
                     Mock `
                         -CommandName Get-Content `
@@ -536,7 +558,12 @@ Configuration Example
                 It 'Should produce the correct output' {
                     Assert-MockCalled `
                         -CommandName Out-File `
-                        -ParameterFilter $script:outFileOutputInputObject_parameterFilter `
+                        -ParameterFilter $script:outFileContent_parameterFilter `
+                        -Exactly -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Out-File `
+                        -ParameterFilter $script:outFile_parameterFilter `
                         -Exactly -Times 1
                 }
 
@@ -598,7 +625,14 @@ Configuration Example
                     Mock `
                         -CommandName Get-ChildItem `
                         -ParameterFilter $script:getChildItemDescription_parameterFilter `
-                        -MockWith { return @(@{ Name = 'README.MD'; FullName = $script:mockReadmePath }) }
+                        -MockWith {
+                            return @(
+                                @{
+                                    Name = 'README.MD'
+                                    FullName = $script:mockReadmePath
+                                }
+                            )
+                        }
 
                     Mock `
                         -CommandName Get-Content `
@@ -634,7 +668,12 @@ Configuration Example
                 It 'Should produce the correct output' {
                     Assert-MockCalled `
                         -CommandName Out-File `
-                        -ParameterFilter $script:outFileInputObject_parameterFilter `
+                        -ParameterFilter $script:outFileContent_parameterFilter `
+                        -Exactly -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Out-File `
+                        -ParameterFilter $script:outFile_parameterFilter `
                         -Exactly -Times 1
                 }
 
@@ -732,14 +771,14 @@ Configuration Example
                         )
                     }
 
-                    $mockWikiContentOutput = "# MyResource
+                    $mockWikiContentOutput = '# MyResource
 
 ## Parameters
 
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
 | **Id** | Key | String | Id Description | |
-| **Enum** | Write | String | Enum Description. | Value1, Value2, Value3 |
+| **Enum** | Write | String | Enum Description. | `Value1`, `Value2`, `Value3` |
 | **Int** | Required | Uint32 | Int Description. | |
 | **Read** | Read | String | Read Description. | |
 
@@ -750,7 +789,7 @@ Configuration Example
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
 | **EmbeddedId** | Key | String | Id Description | |
-| **EmbeddedEnum** | Write | String | Enum Description. | Value1, Value2, Value3 |
+| **EmbeddedEnum** | Write | String | Enum Description. | `Value1`, `Value2`, `Value3` |
 | **EmbeddedInt** | Required | Uint32 | Int Description. | |
 | **EmbeddedRead** | Read | String | Read Description. | |
 
@@ -772,13 +811,13 @@ Configuration Example
     {
         MyResource Something
         {
-            Id    = 'MyId'
-            Enum  = 'Value1'
+            Id    = ''MyId''
+            Enum  = ''Value1''
             Int   = 1
         }
     }
 }
-" -replace '\r?\n', "`r`n"
+' -replace '\r?\n', "`r`n"
 
                     Mock `
                         -CommandName Get-ChildItem `
@@ -798,7 +837,14 @@ Configuration Example
                     Mock `
                         -CommandName Get-ChildItem `
                         -ParameterFilter $script:getChildItemDescription_parameterFilter `
-                        -MockWith { return @(@{ Name = 'README.MD'; FullName = $script:mockReadmePath }) }
+                        -MockWith {
+                            return @(
+                                @{
+                                    Name = 'README.MD'
+                                    FullName = $script:mockReadmePath
+                                }
+                            )
+                        }
 
                     Mock `
                         -CommandName Get-Content `
@@ -835,8 +881,14 @@ Configuration Example
                     Assert-MockCalled `
                         -CommandName Out-File `
                         -ParameterFilter {
-                        $InputObject -eq $mockWikiContentOutput
-                    } `
+                            if ($InputObject -ne $mockWikiContentOutput)
+                            {
+                                # Helper to output the diff.
+                                Out-Diff -Expected $mockWikiContentOutput -Actual $InputObject
+                            }
+
+                            $InputObject -eq $mockWikiContentOutput
+                        } `
                         -Exactly -Times 1
                 }
 
@@ -1353,7 +1405,7 @@ class AzDevOpsProject
 | --- | --- | --- | --- | --- |
 | **ProjectName** | Key | System.String | ProjectName description. | |
 | **ProjectId** | Write | System.String | ProjectId description. Second row with text. | |
-| **ValidateSetProperty** | Write | System.String | | Up, Down |
+| **ValidateSetProperty** | Write | System.String | | `Up`, `Down` |
 | **MandatoryProperty** | Required | System.String | MandatoryProperty description. | |
 | **Reasons** | Read | String[] | Reasons description. | |
 

@@ -34,6 +34,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     ([issue #52](https://github.com/dsccommunity/DscResource.DocGenerator/issues/52)).
   - **BREAKING CHANGE:** To support class-based resource the parameters were
     renamed to better recognize what path goes where.
+  - Each values that are in a `ValueMap` of a MOF schema parameter, or in
+    a `ValidateSet()` of a class-based resource parameter, will be outputted
+    as markdown inline code.
 
 ## [0.7.4] - 2021-02-02
 

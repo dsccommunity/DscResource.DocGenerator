@@ -89,7 +89,7 @@ function New-DscResourceWikiPage
             $null = $output.AppendLine('## Parameters')
             $null = $output.AppendLine('')
 
-            $propertyContent = Get-DscResourceSchemaPropertyContent -Property $resourceSchema.Attributes
+            $propertyContent = Get-DscResourceSchemaPropertyContent -Property $resourceSchema.Attributes -UseMarkdown
 
             foreach ($line in $propertyContent)
             {
@@ -113,7 +113,7 @@ function New-DscResourceWikiPage
                 $null = $output.AppendLine('#### Parameters')
                 $null = $output.AppendLine('')
 
-                $propertyContent = Get-DscResourceSchemaPropertyContent -Property $embeddedSchema.Attributes
+                $propertyContent = Get-DscResourceSchemaPropertyContent -Property $embeddedSchema.Attributes -UseMarkdown
 
                 foreach ($line in $propertyContent)
                 {
@@ -280,7 +280,7 @@ function New-DscResourceWikiPage
                     $resourceProperty += $propertyAttribute
                 }
 
-                $propertyContent = Get-DscResourceSchemaPropertyContent -Property $resourceProperty
+                $propertyContent = Get-DscResourceSchemaPropertyContent -Property $resourceProperty -UseMarkdown
 
                 foreach ($line in $propertyContent)
                 {
