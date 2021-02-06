@@ -50,7 +50,18 @@ function Get-ClassResourceCommentBasedHelp
 
     if ($parseErrors)
     {
-        throw $parseErrors
+        <#
+            Normally we should throw if there is any parse errors but in the case
+            of the class-based resource source file that is not possible. If the
+            class is inheriting from a base class that base class is not part of
+            the source script file which will generate a parse error.
+            Even with parse errors the comment-based help is available with
+            GetHelpContent(). The errors are outputted for debug purposes, if there
+            would be a future problem that we have not taken account for.
+        #>
+        Write-Debug -Message (
+            $script:localizedData.IgnoreAstParseErrorMessage -f ($parseErrors | Out-String)
+        )
     }
 
     $dscResourceCommentBasedHelp = $ast.GetHelpContent()
