@@ -8,8 +8,8 @@
         resource property.
 
     .PARAMETER Ast
-        The AST for class-based DSC resource property. The passed value must
-        be an AST of the type 'PropertyMemberAst'.
+        The Abstract Syntax Tree (AST) for class-based DSC resource property.
+        The passed value must be an AST of the type 'PropertyMemberAst'.
 
     .EXAMPLE
         Test-PropertyMemberAst -IsKey -Ast {
