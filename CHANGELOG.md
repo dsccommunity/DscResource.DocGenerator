@@ -5,6 +5,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added a new private function `Get-ClassResourceCommentBasedHelp` to get
+  comment-based help from a PowerShell script file.
+- Added a new private function `Get-ClassResourcePropertyState` to get
+  named attribute argument (from the attribute `[DscProperty()]`) for a
+  class-based resource parameter and return the corresponding name used by
+  MOF-based resources.
+- Added a new private function `Get-ResourceExampleAsMarkdown` that helps
+  to return examples as markdown, and to reduce code duplication.
+- Added a test helper module `DscResource.DocGenerator.TestHelper.psm1`
+  that contain helper functions for tests.
+  - Added helper function `Out-Diff` that outputs two text strings in hex
+    side-by-side (thanks to [@johanringman](https://github.com/johanringman)
+    for help with this one).
+
+### Changed
+
+- `Split-ModuleVersion`
+  - This cmdlet is now exported as a public function because it is required
+    by the build task `Generate_Wiki_Content`.
+- `Generate_Wiki_Content`
+  - The Build task `Generate_Wiki_Content` was changed to call the cmdlet
+    `New-DscResourceWikiPage` with the correct parameters to support generating
+    documentation for class-based resource ([issue #52](https://github.com/dsccommunity/DscResource.DocGenerator/issues/52)).
+- `New-DscResourceWikiPage`
+  - Now supports generating wiki documentation for class-based resources
+    ([issue #52](https://github.com/dsccommunity/DscResource.DocGenerator/issues/52)).
+  - **BREAKING CHANGE:** To support class-based resource the parameters were
+    renamed to better recognize what path goes where.
+  - Each values that are in a `ValueMap` of a MOF schema parameter, or in
+    a `ValidateSet()` of a class-based resource parameter, will be outputted
+    as markdown inline code.
+
+### Fixed
+
+- `Get-ResourceExampleAsText`
+  - Comment-based help was updated to reflect the correct parameters.
+- `New-DscResourcePowerShellHelp`
+  - Fixed unit tests to support new private function `Get-ClassResourceCommentBasedHelp`
+    and use the test helper module `DscResource.DocGenerator.TestHelper.psm1`.
+  - It no longer uses `Recurse` when looking for the module's PowerShell
+    script files. It could potentially lead to that it found resources that
+    are part of common modules in the `Modules` folder.
+  - Made use of private functions to reduce duplicate code.
+- `Get-DscResourceSchemaPropertyContent`
+  - Fixed the private function so that the description property no longer
+    output an extra whitespace in some circumstances.
+
 ## [0.7.4] - 2021-02-02
 
 ### Fixed

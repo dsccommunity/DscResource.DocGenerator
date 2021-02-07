@@ -34,7 +34,11 @@ function Get-DscResourceSchemaPropertyContent
     (
         [Parameter(Mandatory = $true)]
         [System.Collections.Hashtable[]]
-        $Property
+        $Property,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $UseMarkdown
     )
 
     $stringArray = [System.String[]] @()
@@ -65,12 +69,27 @@ function Get-DscResourceSchemaPropertyContent
 
         $propertyLine = "| **$($currentProperty.Name)** " + `
                 "| $($currentProperty.State) " + `
-                "| $dataType " + `
-                "| $($currentProperty.Description) |"
+                "| $dataType |"
+
+        if (-not [System.String]::IsNullOrEmpty($currentProperty.Description))
+        {
+            $propertyLine += ' ' + $currentProperty.Description
+        }
+
+        $propertyLine += ' |'
 
         if (-not [System.String]::IsNullOrEmpty($currentProperty.ValueMap))
         {
-            $propertyLine += ' ' + ($currentProperty.ValueMap -join ', ')
+            $valueMap = $currentProperty.ValueMap
+
+            if ($UseMarkdown.IsPresent)
+            {
+                $valueMap = $valueMap | ForEach-Object -Process {
+                    '`{0}`' -f $_
+                }
+            }
+
+            $propertyLine += ' ' + ($valueMap -join ', ')
         }
 
         $propertyLine += ' |'

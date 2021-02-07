@@ -110,6 +110,11 @@ task Generate_Wiki_Content {
 
     $moduleVersion = Get-BuiltModuleVersion @getBuiltModuleVersionParameters
 
+    $moduleVersionParts = Split-ModuleVersion -ModuleVersion $moduleVersion
+
+    $builtModulePath = Join-Path -Path $OutputDirectory -ChildPath $ProjectName |
+        Join-Path -ChildPath $moduleVersionParts.Version
+
     $wikiOutputPath = Join-Path -Path $OutputDirectory -ChildPath 'WikiContent'
 
     if ((Test-Path -Path $wikiOutputPath) -eq $false)
@@ -121,6 +126,7 @@ task Generate_Wiki_Content {
     "`tProject Name            = $ProjectName"
     "`tModule Version          = $moduleVersion"
     "`tSource Path             = $SourcePath"
+    "`tBuilt Module Path       = $builtModulePath"
     "`tWiki Output Path        = $wikiOutputPath"
 
     $wikiSourcePath = Join-Path -Path $SourcePath -ChildPath $WikiSourceFolderName
@@ -132,13 +138,13 @@ task Generate_Wiki_Content {
         "`tWiki Source Path        = $wikiSourcePath"
     }
 
-    Write-Build Magenta "Generating Wiki content for all DSC resources based on source."
+    Write-Build -Color 'Magenta' -Text 'Generating Wiki content for all DSC resources based on source and built module.'
 
-    New-DscResourceWikiPage -ModulePath $SourcePath -OutputPath $wikiOutputPath
+    New-DscResourceWikiPage -SourcePath $SourcePath -BuiltModulePath $builtModulePath -OutputPath $wikiOutputPath -Force
 
     if ($wikiSourceExist)
     {
-        Write-Build Magenta "Copying Wiki content from the Wiki source folder."
+        Write-Build -Color 'Magenta' -Text 'Copying Wiki content from the Wiki source folder.'
 
         Copy-Item -Path (Join-Path $wikiSourcePath -ChildPath '*') -Destination $wikiOutputPath -Force
 
@@ -146,7 +152,7 @@ task Generate_Wiki_Content {
 
         if (Test-Path -Path $homeMarkdownFilePath)
         {
-            Write-Build Magenta "Updating module version in Home.md if there are any placeholders found."
+            Write-Build -Color 'Magenta' -Text 'Updating module version in Home.md if there are any placeholders found.'
 
             Set-WikiModuleVersion -Path $homeMarkdownFilePath -ModuleVersion $moduleVersion
         }

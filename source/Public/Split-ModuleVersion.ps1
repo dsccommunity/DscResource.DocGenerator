@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        This function parses a module version string as returns a hashtable
+        This function parses a module version string as returns a PSCustomObject
         which each of the module version's parts.
 
     .PARAMETER ModuleVersion
@@ -17,9 +17,8 @@
         1.15.0  pr0224           1.15.0-pr0224
 
     .NOTES
-        This is only used by Get-BuiltModuleVersion, so if the function in Sampler
-        is moved or exposed so we can remove Get-BuiltModuleVersion from this module
-        then we should remove this function too.
+        This is required by the function Get-BuiltModuleVersion and the build task
+        Generate_Wiki_Content.
 #>
 function Split-ModuleVersion
 {

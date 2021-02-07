@@ -1,11 +1,11 @@
 <#
     .SYNOPSIS
-        Get-ResourceExampleAsText gathers all examples for a resource and returns
-        them as a string in a format that is used for conceptual help.
+        Get-ResourceExampleAsMarkdown gathers all examples for a resource and returns
+        them as string build object in markdown format.
 
     .DESCRIPTION
-        Get-ResourceExampleAsText gathers all examples for a resource and returns
-        them as a string in a format that is used for conceptual help.
+        Get-ResourceExampleAsMarkdown gathers all examples for a resource and returns
+        them as string build object in markdown format.
 
     .PARAMETER Path
         The path to the source folder, the path will be recursively searched for *.ps1
@@ -13,15 +13,15 @@
         documentation should be generated for them.
 
     .EXAMPLE
-        $examplesText = Get-ResourceExampleAsText -Path 'c:\MyProject\source\Examples\Resources\MyResourceName'
+        $examplesMarkdown = Get-ResourceExampleAsMarkdown -Path 'c:\MyProject\source\Examples\Resources\MyResourceName'
 
         This example fetches all examples from the folder 'c:\MyProject\source\Examples\Resources\MyResourceName'
-        and returns them as a single string in a format that is used for conceptual help.
+        and returns them as a single string in markdown format.
 #>
-function Get-ResourceExampleAsText
+function Get-ResourceExampleAsMarkdown
 {
     [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
+    [OutputType([System.Text.StringBuilder])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -35,20 +35,22 @@ function Get-ResourceExampleAsText
 
     if ($exampleFiles.Count -gt 0)
     {
-        $exampleCount = 1
+        $outputExampleMarkDown = New-Object -TypeName 'System.Text.StringBuilder'
 
         Write-Verbose -Message ($script:localizedData.FoundResourceExamplesMessage -f $exampleFiles.Count)
 
+        $null = $outputExampleMarkDown.AppendLine('## Examples')
+
+        $exampleCount = 1
+
         foreach ($exampleFile in $exampleFiles)
         {
-            $exampleContent = Get-DscResourceHelpExampleContent `
+            $exampleContent = Get-DscResourceWikiExampleContent `
                 -ExamplePath $exampleFile.FullName `
                 -ExampleNumber ($exampleCount++)
 
-            $exampleContent = $exampleContent -replace '\r?\n', "`r`n"
-
-            $text += $exampleContent
-            $text += "`r`n"
+            $null = $outputExampleMarkDown.AppendLine()
+            $null = $outputExampleMarkDown.AppendLine($exampleContent)
         }
     }
     else
@@ -56,5 +58,5 @@ function Get-ResourceExampleAsText
         Write-Warning -Message ($script:localizedData.NoExampleFileFoundWarning)
     }
 
-    return $text
+    return $outputExampleMarkDown
 }
