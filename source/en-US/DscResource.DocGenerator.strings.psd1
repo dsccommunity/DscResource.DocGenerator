@@ -29,5 +29,5 @@ ConvertFrom-StringData @'
     FoundClassResourcePropertyMessage   = Found property '{0}' in the resource '{1}'.
     ClassBasedCommentBasedHelpMessage   = Reading comment-based help from source file '{0}'.
     FoundResourceExamplesMessage        = Found {0} examples.
-    IgnoreAstParseErrorMessage          = Errors was found during parsing of comment-based help. These errors was ignored: {0}
+    IgnoreAstParseErrorMessage          = Errors was found during parsing of comment-based help. These errors were ignored: {0}
 '@

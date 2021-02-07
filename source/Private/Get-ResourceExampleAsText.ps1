@@ -13,7 +13,7 @@
     .EXAMPLE
         $examplesText = Get-ResourceExampleAsText -Path 'c:\MyProject\source\Examples\Resources\MyResourceName'
 
-        This example fetches all examples from the folder 'ec:\MyProject\source\Examples\Resources\MyResourceName'
+        This example fetches all examples from the folder 'c:\MyProject\source\Examples\Resources\MyResourceName'
         and returns them as a single string in a format that is used for conceptual help.
 #>
 function Get-ResourceExampleAsText

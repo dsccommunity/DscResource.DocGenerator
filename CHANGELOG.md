@@ -39,8 +39,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     a `ValidateSet()` of a class-based resource parameter, will be outputted
     as markdown inline code.
 
-## [0.7.4] - 2021-02-02
-
 ### Fixed
 
 - `Get-ResourceExampleAsText`
