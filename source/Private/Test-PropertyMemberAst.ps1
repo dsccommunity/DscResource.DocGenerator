@@ -42,19 +42,19 @@ function Test-PropertyMemberAst
         [System.Management.Automation.Language.PropertyMemberAst]
         $Ast,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true, ParameterSetName='IsKey')]
         [System.Management.Automation.SwitchParameter]
         $IsKey,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true, ParameterSetName='IsMandatory')]
         [System.Management.Automation.SwitchParameter]
         $IsMandatory,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true, ParameterSetName='IsWrite')]
         [System.Management.Automation.SwitchParameter]
         $IsWrite,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true, ParameterSetName='IsRead')]
         [System.Management.Automation.SwitchParameter]
         $IsRead
     )
