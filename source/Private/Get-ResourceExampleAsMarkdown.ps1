@@ -8,7 +8,9 @@
         them as string build object in markdown format.
 
     .PARAMETER Path
-        The path to the source folder where the examples for the resource exist.
+        The path to the source folder, the path will be recursively searched for *.ps1
+        files. All found files will be assumed that they are examples and that
+        documentation should be generated for them.
 
     .EXAMPLE
         $examplesMarkdown = Get-ResourceExampleAsMarkdown -Path 'c:\MyProject\source\Examples\Resources\MyResourceName'
