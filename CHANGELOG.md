@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Updated tasks to use the Sampler functions `Get-SamplerProjectName` and `Get-SamplerSourcePath`.
+- Made Sampler a required Modules.
+- Updated the `build.yaml` & `RequiredModules.psd1` to use `Sampler.GitHubTasks` for automation.
+
 ## [0.8.0] - 2021-02-08
 
 ### Added

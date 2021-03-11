@@ -13,12 +13,12 @@
     Plaster                     = 'latest'
     ModuleBuilder               = 'latest'
     Sampler                     = 'latest'
+    'Sampler.GitHubTasks'       = 'latest'
     MarkdownLinkCheck           = 'latest'
     ChangelogManagement         = 'latest'
     'DscResource.Test'          = 'latest'
     'DscResource.AnalyzerRules' = 'latest'
     xDscResourceDesigner        = 'latest'
-
     # Build dependent modules
     'DscResource.Common'        = '0.2.0'
 }
