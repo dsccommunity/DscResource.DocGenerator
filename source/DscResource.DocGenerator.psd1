@@ -23,7 +23,7 @@
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion = '5.0'
 
-    RequiredModules = @('Sampler')
+    # RequiredModules = @('Sampler') # The Sampler Pack task does not support recursive pack yet.
 
     <#
         Functions to export from this module, for best performance, do not use
