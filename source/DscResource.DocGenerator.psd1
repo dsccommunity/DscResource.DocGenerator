@@ -23,6 +23,8 @@
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion = '5.0'
 
+    # RequiredModules = @('Sampler') # The Sampler Pack task does not support recursive pack yet.
+
     <#
         Functions to export from this module, for best performance, do not use
         wildcards and do not delete the entry, use an empty array if there are
@@ -67,7 +69,7 @@
     PrivateData       = @{
         PSData = @{
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags         = 'DSC', 'Modules', 'documentation'
+            Tags         = @('DSC', 'Modules', 'documentation')
 
             # A URL to the license for this module.
             LicenseUri   = 'https://github.com/dsccommunity/DscResource.DocGenerator/blob/main/LICENSE'

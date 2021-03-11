@@ -51,44 +51,11 @@ param
 
     [Parameter()]
     [System.String]
-    $ProjectName = (property ProjectName $(
-            # Find the module manifest to deduce the Project Name
-            (Get-ChildItem $BuildRoot\*\*.psd1 -Exclude @('build.psd1', 'analyzersettings.psd1') | Where-Object -FilterScript {
-                    ($_.Directory.Name -match 'source|src' -or $_.Directory.Name -eq $_.BaseName) -and
-                    $(
-                        try
-                        {
-                            Test-ModuleManifest -Path $_.FullName -ErrorAction 'Stop'
-                        }
-                        catch
-                        {
-                            Write-Warning -Message $_
-                            $false
-                        }
-                    )
-                }).BaseName
-        )
-    ),
+    $ProjectName = (property ProjectName $(Get-SamplerProjectName -BuildRoot $BuildRoot)),
 
     [Parameter()]
     [System.String]
-    $SourcePath = (property SourcePath $(
-            (Get-ChildItem $BuildRoot\*\*.psd1 -Exclude @('build.psd1', 'analyzersettings.psd1') | Where-Object -FilterScript {
-                    ($_.Directory.Name -match 'source|src' -or $_.Directory.Name -eq $_.BaseName) -and
-                    $(
-                        try
-                        {
-                            Test-ModuleManifest -Path $_.FullName -ErrorAction 'Stop'
-                        }
-                        catch
-                        {
-                            Write-Warning -Message $_
-                            $false
-                        }
-                    )
-                }).Directory.FullName
-        )
-    ),
+    $SourcePath = (property SourcePath $(Get-SamplerSourcePath -BuildRoot $BuildRoot)),
 
     [Parameter()]
     [System.String]
