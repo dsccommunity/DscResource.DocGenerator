@@ -9,6 +9,18 @@
         The base directory of all output. Defaults to folder 'output' relative to
         the $BuildRoot.
 
+    .PARAMETER BuiltModuleSubdirectory
+        Sub folder where you want to build the Module to (instead of $OutputDirectory/$ModuleName).
+        This is especially useful when you want to build DSC Resources, but you don't want the
+        `Get-DscResource` command to find several instances of the same DSC Resources because
+        of the overlapping $Env:PSmodulePath (`$buildRoot/output` for the built module and `$buildRoot/output/RequiredModules`).
+
+        In most cases I would recommend against setting $BuiltModuleSubdirectory.
+
+    .PARAMETER VersionedOutputDirectory
+        Whether the Module is built with its versioned Subdirectory, as you would see it on a System.
+        For instance, if VersionedOutputDirectory is $true, the built module's ModuleBase would be: `output/MyModuleName/2.0.1/`
+
     .PARAMETER ProjectName
         The project name. Defaults to the BaseName of the module manifest it finds
         in either the folder 'source', 'src, or a folder with the same name as
@@ -51,6 +63,14 @@ param
 
     [Parameter()]
     [System.String]
+    $BuiltModuleSubdirectory = (property BuiltModuleSubdirectory ''),
+
+    [Parameter()]
+    [System.Management.Automation.SwitchParameter]
+    $VersionedOutputDirectory = (property VersionedOutputDirectory $true),
+
+    [Parameter()]
+    [System.String]
     $ProjectName = (property ProjectName $(Get-SamplerProjectName -BuildRoot $BuildRoot)),
 
     [Parameter()]
@@ -80,17 +100,50 @@ param
 
 # Synopsis: This task publishes documentation to a GitHub Wiki repository.
 task Publish_GitHub_Wiki_Content -if ($GitHubToken) {
-    if (-not (Split-Path -IsAbsolute $OutputDirectory))
+    $OutputDirectory = Get-SamplerAbsolutePath -Path $OutputDirectory -RelativeTo $BuildRoot
+    "`tOutputDirectory       = '$OutputDirectory'"
+    $BuiltModuleSubdirectory = Get-SamplerAbsolutePath -Path $BuiltModuleSubdirectory -RelativeTo $OutputDirectory
+
+    if ($VersionedOutputDirectory)
     {
-        $OutputDirectory = Join-Path -Path $ProjectPath -ChildPath $OutputDirectory
+        # VersionedOutputDirectory is not [bool]'' nor $false nor [bool]$null
+        # Assume true, wherever it was set
+        $VersionedOutputDirectory = $true
+    }
+    else
+    {
+        # VersionedOutputDirectory may be [bool]'' but we can't tell where it's
+        # coming from, so assume the build info (Build.yaml) is right
+        $VersionedOutputDirectory = $BuildInfo['VersionedOutputDirectory']
     }
 
-    $getBuiltModuleVersionParameters = @{
-        OutputDirectory = $OutputDirectory
-        ProjectName     = $ProjectName
+    $GetBuiltModuleManifestParams = @{
+        OutputDirectory          = $OutputDirectory
+        BuiltModuleSubdirectory  = $BuiltModuleSubDirectory
+        ModuleName               = $ProjectName
+        VersionedOutputDirectory = $VersionedOutputDirectory
+        ErrorAction              = 'Stop'
     }
 
-    $moduleVersion = Get-BuiltModuleVersion @getBuiltModuleVersionParameters
+    $builtModuleManifest = Get-SamplerBuiltModuleManifest @GetBuiltModuleManifestParams
+    "`tBuilt Module Manifest         = '$builtModuleManifest'"
+
+    $builtModuleBase = Get-SamplerBuiltModuleBase @GetBuiltModuleManifestParams
+    "`tBuilt Module Base             = '$builtModuleBase'"
+
+    $moduleVersion = Get-BuiltModuleVersion @GetBuiltModuleManifestParams
+    $moduleVersionObject = Split-ModuleVersion -ModuleVersion $moduleVersion
+    $moduleVersionFolder = $moduleVersionObject.Version
+    $preReleaseTag       = $moduleVersionObject.PreReleaseString
+
+    "`tModule Version                = '$ModuleVersion'"
+    "`tModule Version Folder         = '$moduleVersionFolder'"
+    "`tPre-release Tag               = '$preReleaseTag'"
+
+    "`tProject Path                  = $ProjectPath"
+    "`tProject Name                  = $ProjectName"
+    "`tSource Path                   = $SourcePath"
+    "`tBuilt Module Base             = $builtModuleBase"
 
     # If variables are not set then update variables from the property values in the build.yaml.
     foreach ($gitHubConfigKey in @('GitHubConfigUserName', 'GitHubConfigUserEmail'))
@@ -108,31 +161,22 @@ task Publish_GitHub_Wiki_Content -if ($GitHubToken) {
     $remoteURL = git remote get-url origin
 
     # Parse the URL for owner name and repository name.
-    if ($remoteURL -match '(http[s]?:\/\/)([^:\/\s]+)\/(\w+)\/(.+)')
+    if ($remoteURL -match 'github')
     {
-        $ownerName = $Matches[3]
-        $repositoryName = $Matches[4]
+        $GHRepo = Get-GHOwnerRepoFromRemoteUrl -RemoteUrl $remoteURL
     }
     else
     {
-        throw 'Could not parse owner and repository from the git remote origin URL.'
+        throw "Could not parse owner and repository from the git remote origin URL: '$remoteUrl'."
     }
 
     $wikiOutputPath = Join-Path -Path $OutputDirectory -ChildPath $WikiContentFolderName
-
-    "`tProject Path            = $ProjectPath"
-    "`tProject Name            = $ProjectName"
-    "`tModule Version          = $moduleVersion"
-    "`tSource Path             = $SourcePath"
-    "`tRepository Owner Name   = $ownerName"
-    "`tRepository Name         = $repositoryName"
-    "`tOutput Directory        = $OutputDirectory"
-    "`tWiki Output Path        = $wikiOutputPath"
+    "`tWiki Output Path              = $wikiOutputPath"
 
     $publishWikiContentParameters = @{
         Path = $wikiOutputPath
-        OwnerName = $ownerName
-        RepositoryName = $repositoryName
+        OwnerName = $GHRepo.Owner
+        RepositoryName = $GHRepo.Repository
         ModuleName = $ProjectName
         ModuleVersion = $moduleVersion
         GitHubAccessToken = $GitHubToken
