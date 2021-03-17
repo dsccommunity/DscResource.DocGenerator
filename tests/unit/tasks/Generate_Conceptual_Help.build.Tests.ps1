@@ -20,7 +20,7 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 
 Describe 'Generate_Conceptual_Help' {
     BeforeAll {
-        Mock -CommandName New-DscResourcePowerShellHelp
+        Mock -CommandName New-DscResourcePowerShellHelp -Verifiable
     }
 
     BeforeEach {
@@ -61,7 +61,7 @@ Describe 'Generate_Conceptual_Help' {
 
             $mockExpectedDestinationModulePath = Join-Path -Path $script:projectPath -ChildPath 'output' |
                 Join-Path -ChildPath $mockTaskParameters.ProjectName |
-                    Join-Path -ChildPath '99.1.1'
+                    Join-Path -ChildPath '*'
         }
 
         It 'Should run the build task with the correct destination module path and without throwing' {
@@ -92,7 +92,7 @@ Describe 'Generate_Conceptual_Help' {
 
             $mockExpectedDestinationModulePath = Join-Path -Path $script:projectPath -ChildPath 'output' |
                 Join-Path -ChildPath $mockTaskParameters.ProjectName |
-                    Join-Path -ChildPath '99.1.1'
+                    Join-Path -ChildPath '*'
         }
 
         It 'Should run the build task with the correct destination module path and without throwing' {
