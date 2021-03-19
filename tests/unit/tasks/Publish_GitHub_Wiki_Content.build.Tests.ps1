@@ -33,8 +33,19 @@ Describe 'Publish_GitHub_Wiki_Content' {
             return $true
         }
 
-        Mock -CommandName Get-BuiltModuleVersion -MockWith {
-            return '1.0.0'
+        Mock -Command Get-BuiltModuleVersion -MockWith {
+            return [PSCustomObject]@{
+                Version          = '1.0.0-preview1'
+                PreReleaseString = 'preview1'
+                ModuleVersion    = '1.0.0'
+            }
+        }
+
+        Mock -CommandName Get-Item -MockWith {
+            $Path =  ($Path -replace '\*','1.0.0')
+            [PSCustomObject]@{
+                FullName = $Path
+            }
         }
     }
 
