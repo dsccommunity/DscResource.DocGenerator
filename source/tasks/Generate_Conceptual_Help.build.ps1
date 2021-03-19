@@ -109,9 +109,11 @@ task Generate_Conceptual_Help {
     }
 
     $builtModuleManifest = Get-SamplerBuiltModuleManifest @GetBuiltModuleManifestParams
+    $builtModuleManifest = [string](Get-Item -Path $builtModuleManifest).FullName
     "`tBuilt Module Manifest = '$builtModuleManifest'"
 
     $builtModuleBase = Get-SamplerBuiltModuleBase @GetBuiltModuleManifestParams
+    $builtModuleBase = [string](Get-Item -Path $builtModuleBase).FullName
     "`tBuilt Module Base     = '$builtModuleBase'"
 
     $moduleVersion = Get-BuiltModuleVersion @GetBuiltModuleManifestParams
