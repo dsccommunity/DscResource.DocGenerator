@@ -9,6 +9,18 @@
         The base directory of all output. Defaults to folder 'output' relative to
         the $BuildRoot.
 
+    .PARAMETER BuiltModuleSubdirectory
+        Sub folder where you want to build the Module to (instead of $OutputDirectory/$ModuleName).
+        This is especially useful when you want to build DSC Resources, but you don't want the
+        `Get-DscResource` command to find several instances of the same DSC Resources because
+        of the overlapping $Env:PSmodulePath (`$buildRoot/output` for the built module and `$buildRoot/output/RequiredModules`).
+
+        In most cases I would recommend against setting $BuiltModuleSubdirectory.
+
+    .PARAMETER VersionedOutputDirectory
+        Whether the Module is built with its versioned Subdirectory, as you would see it on a System.
+        For instance, if VersionedOutputDirectory is $true, the built module's ModuleBase would be: `output/MyModuleName/2.0.1/`
+
     .PARAMETER ProjectName
         The project name. Defaults to the BaseName of the module manifest it finds
         in either the folder 'source', 'src, or a folder with the same name as
@@ -45,6 +57,14 @@ param
 
     [Parameter()]
     [System.String]
+    $BuiltModuleSubdirectory = (property BuiltModuleSubdirectory ''),
+
+    [Parameter()]
+    [System.Management.Automation.SwitchParameter]
+    $VersionedOutputDirectory = (property VersionedOutputDirectory $true),
+
+    [Parameter()]
+    [System.String]
     $ProjectName = (property ProjectName $(Get-SamplerProjectName -BuildRoot $BuildRoot)),
 
     [Parameter()]
@@ -62,28 +82,53 @@ param
 
 # Synopsis: This task generates conceptual help for DSC resources.
 task Generate_Conceptual_Help {
-    if (-not (Split-Path -IsAbsolute $OutputDirectory))
+
+    $OutputDirectory = Get-SamplerAbsolutePath -Path $OutputDirectory -RelativeTo $BuildRoot
+    "`tOutputDirectory       = '$OutputDirectory'"
+    $BuiltModuleSubdirectory = Get-SamplerAbsolutePath -Path $BuiltModuleSubdirectory -RelativeTo $OutputDirectory
+
+    if ($VersionedOutputDirectory)
     {
-        $OutputDirectory = Join-Path -Path $ProjectPath -ChildPath $OutputDirectory
+        # VersionedOutputDirectory is not [bool]'' nor $false nor [bool]$null
+        # Assume true, wherever it was set
+        $VersionedOutputDirectory = $true
+    }
+    else
+    {
+        # VersionedOutputDirectory may be [bool]'' but we can't tell where it's
+        # coming from, so assume the build info (Build.yaml) is right
+        $VersionedOutputDirectory = $BuildInfo['VersionedOutputDirectory']
     }
 
-    $getBuiltModuleVersionParameters = @{
-        OutputDirectory = $OutputDirectory
-        ProjectName     = $ProjectName
+    $GetBuiltModuleManifestParams = @{
+        OutputDirectory          = $OutputDirectory
+        BuiltModuleSubdirectory  = $BuiltModuleSubDirectory
+        ModuleName               = $ProjectName
+        VersionedOutputDirectory = $VersionedOutputDirectory
+        ErrorAction              = 'Stop'
     }
 
-    $moduleVersion = Get-BuiltModuleVersion @getBuiltModuleVersionParameters
-    $ModuleVersionFolder, $PreReleaseString = $moduleVersion -split '\-', 2
+    $builtModuleManifest = Get-SamplerBuiltModuleManifest @GetBuiltModuleManifestParams
+    $builtModuleManifest = [string](Get-Item -Path $builtModuleManifest).FullName
+    "`tBuilt Module Manifest = '$builtModuleManifest'"
 
-    $builtModulePath = Join-Path -Path (Join-Path -Path $OutputDirectory -ChildPath $ProjectName) -ChildPath $ModuleVersionFolder
+    $builtModuleBase = Get-SamplerBuiltModuleBase @GetBuiltModuleManifestParams
+    $builtModuleBase = [string](Get-Item -Path $builtModuleBase).FullName
+    "`tBuilt Module Base     = '$builtModuleBase'"
+
+    $moduleVersion = Get-BuiltModuleVersion @GetBuiltModuleManifestParams
+    $moduleVersionObject = Split-ModuleVersion -ModuleVersion $moduleVersion
+    $moduleVersionFolder = $moduleVersionObject.Version
+    $preReleaseTag       = $moduleVersionObject.PreReleaseString
+
+    "`tModule Version                = '$ModuleVersion'"
+    "`tModule Version Folder         = '$moduleVersionFolder'"
+    "`tPre-release Tag               = '$preReleaseTag'"
 
     "`tProject Path                  = $ProjectPath"
     "`tProject Name                  = $ProjectName"
-    "`tModule Version                = $moduleVersion"
-    "`tModule Version Folder         = $ModuleVersionFolder"
-    "`tPrerelease String             = $PreReleaseString"
     "`tSource Path                   = $SourcePath"
-    "`tBuilt Module Path             = $builtModulePath"
+    "`tBuilt Module Base             = $builtModuleBase"
 
     $configParameterName = 'MarkdownCodeRegularExpression'
 
@@ -112,7 +157,7 @@ task Generate_Conceptual_Help {
 
     $newDscResourcePowerShellHelpParameters = @{
         ModulePath                    = $SourcePath
-        DestinationModulePath         = $builtModulePath
+        DestinationModulePath         = $builtModuleBase
         MarkdownCodeRegularExpression = $MarkdownCodeRegularExpression
         Force                         = $true
     }
