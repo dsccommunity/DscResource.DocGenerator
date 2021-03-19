@@ -5,11 +5,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Fixed the Tasks to support BuiltModuleDirectory and use new Sampler functions.
+
 ## [0.8.1] - 2021-03-11
 
 ### Changed
 
-- Fixed the Tasks to support BuiltModuleDirectory and use new Sampler functions.
 - Updated tasks to use the Sampler functions `Get-SamplerProjectName` and `Get-SamplerSourcePath`.
 - Made Sampler a required Modules.
 - Updated the `build.yaml` & `RequiredModules.psd1` to use `Sampler.GitHubTasks` for automation.
