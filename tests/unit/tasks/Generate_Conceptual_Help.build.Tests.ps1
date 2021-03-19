@@ -121,7 +121,7 @@ Describe 'Generate_Conceptual_Help' {
         It 'Should run the build task with the correct destination module path and without throwing' {
             {
                 Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @mockTaskParameters
-            } | Should -Not -Throw -Because "--------------> WTF: $($script:buildScript.Definition)"
+            } | Should -Not -Throw
 
             Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -ParameterFilter {
                 $DestinationModulePath -eq $mockExpectedDestinationModulePath
