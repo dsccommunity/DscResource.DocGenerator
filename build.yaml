@@ -65,7 +65,8 @@ Pester:
   ExcludeFromCodeCoverage:
     - Modules/DscResource.Common
   Script:
-  - tests/unit
+    - tests/QA
+    - tests/unit
   ExcludeTag:
   Tag:
   CodeCoverageThreshold: 80
