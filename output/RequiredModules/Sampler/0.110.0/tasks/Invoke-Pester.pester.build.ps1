@@ -1539,7 +1539,7 @@ task Convert_Pester_Coverage {
     $xmlSettings.Indent = $true
     $xmlSettings.Encoding = [System.Text.Encoding]::$CodeCoverageOutputFileEncoding
 
-    $xmlWriter = [System.Xml.XmlWriter]::Create("$CodeCoverageOutputFile.bak", $xmlSettings)
+    $xmlWriter = [System.Xml.XmlWriter]::Create($CodeCoverageOutputFile, $xmlSettings)
 
     $originalXml.Save($xmlWriter)
 
