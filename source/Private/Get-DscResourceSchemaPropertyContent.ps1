@@ -68,8 +68,8 @@ function Get-DscResourceSchemaPropertyContent
         }
 
         $propertyLine = "| **$($currentProperty.Name)** " + `
-                "| $($currentProperty.State) " + `
-                "| $dataType |"
+            "| $($currentProperty.State) " + `
+            "| $dataType |"
 
         if (-not [System.String]::IsNullOrEmpty($currentProperty.Description))
         {

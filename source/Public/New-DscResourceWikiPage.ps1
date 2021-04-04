@@ -132,7 +132,7 @@ function New-DscResourceWikiPage
 
             $examplesOutput = Get-ResourceExampleAsMarkdown -Path $examplesPath
 
-            if($examplesOutput.Length -gt 0)
+            if ($examplesOutput.Length -gt 0)
             {
                 $null = $output.Append($examplesOutput)
             }
@@ -301,7 +301,7 @@ function New-DscResourceWikiPage
 
                 $examplesOutput = Get-ResourceExampleAsMarkdown -Path $examplesPath
 
-                if($examplesOutput.Length -gt 0)
+                if ($examplesOutput.Length -gt 0)
                 {
                     $null = $output.Append($examplesOutput)
                 }

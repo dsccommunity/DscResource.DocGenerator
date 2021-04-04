@@ -106,7 +106,7 @@ function Get-DscResourceHelpExampleContent
                 Write-Debug -Message 'Not Currently Processing Block'
 
                 # Check the current line
-                if ($exampleLine.TrimStart() -eq  '<#PSScriptInfo')
+                if ($exampleLine.TrimStart() -eq '<#PSScriptInfo')
                 {
                     Write-Debug -Message 'PSScriptInfo Block Started'
 
