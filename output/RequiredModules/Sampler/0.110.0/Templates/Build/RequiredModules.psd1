@@ -1,10 +1,9 @@
 @{
+    # Set up a mini virtual environment...
     PSDependOptions             = @{
         AddToPath  = $true
         Target     = 'output\RequiredModules'
-        Parameters = @{
-            Repository = ''
-        }
+        Parameters = @{}
     }
 
     InvokeBuild                 = 'latest'
@@ -12,20 +11,17 @@
     Pester                      = '4.10.1'
     Plaster                     = 'latest'
     ModuleBuilder               = 'latest'
-
-    # Sampler                     = @{
-    #     version = 'latest'
-    #     Parameters = @{
-    #         AllowPrerelease = $true
-    #     }
-    # }
-
+    ChangelogManagement         = 'latest'
+    Sampler                     = 'latest'
     'Sampler.GitHubTasks'       = 'latest'
     MarkdownLinkCheck           = 'latest'
-    ChangelogManagement         = 'latest'
     'DscResource.Test'          = 'latest'
     'DscResource.AnalyzerRules' = 'latest'
     xDscResourceDesigner        = 'latest'
-    # Build dependent modules
-    'DscResource.Common'        = '0.2.0'
+
+    # PSPKI                       = 'latest'
+    # 'DscResource.Common' = @{
+    #     Target     = 'Source/Modules'
+    #     Version    = 'latest'
+    # }
 }
