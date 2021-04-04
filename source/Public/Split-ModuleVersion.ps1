@@ -50,17 +50,17 @@ function Split-ModuleVersion
 
     if ($validPreReleaseString)
     {
-        $fullModuleVersion =  $moduleVersion + '-' + $validPreReleaseString
+        $fullModuleVersion = $moduleVersion + '-' + $validPreReleaseString
     }
     else
     {
-        $fullModuleVersion =  $moduleVersion
+        $fullModuleVersion = $moduleVersion
     }
 
     $moduleVersionParts = [PSCustomObject] @{
-        Version = $moduleVersion
+        Version          = $moduleVersion
         PreReleaseString = $validPreReleaseString
-        ModuleVersion = $fullModuleVersion
+        ModuleVersion    = $fullModuleVersion
     }
 
     return $moduleVersionParts

@@ -122,7 +122,7 @@ task Generate_Wiki_Content {
     $moduleVersion = Get-BuiltModuleVersion @GetBuiltModuleManifestParams
     $moduleVersionObject = Split-ModuleVersion -ModuleVersion $moduleVersion
     $moduleVersionFolder = $moduleVersionObject.Version
-    $preReleaseTag       = $moduleVersionObject.PreReleaseString
+    $preReleaseTag = $moduleVersionObject.PreReleaseString
 
     "`tModule Version                = '$ModuleVersion'"
     "`tModule Version Folder         = '$moduleVersionFolder'"
