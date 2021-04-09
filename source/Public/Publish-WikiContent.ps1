@@ -86,7 +86,7 @@ function Publish-WikiContent
         $GitUserName,
 
         [Parameter()]
-        [ValidateSet('true','false','input')]
+        [ValidateSet('true', 'false', 'input')]
         [System.String]
         $GlobalCoreAutoCrLf
     )
@@ -119,9 +119,9 @@ function Publish-WikiContent
         $null = Invoke-Git -Arguments 'clone', $wikiRepoName, $tempPath, '--quiet'
 
         $copyWikiFileParameters = @{
-            Path = $Path
+            Path            = $Path
             DestinationPath = $tempPath
-            Force = $true
+            Force           = $true
         }
 
         Copy-WikiFolder @copyWikiFileParameters

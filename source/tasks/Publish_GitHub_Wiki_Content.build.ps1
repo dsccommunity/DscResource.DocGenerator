@@ -136,7 +136,7 @@ task Publish_GitHub_Wiki_Content -if ($GitHubToken) {
     $moduleVersion = Get-BuiltModuleVersion @GetBuiltModuleManifestParams
     $moduleVersionObject = Split-ModuleVersion -ModuleVersion $moduleVersion
     $moduleVersionFolder = $moduleVersionObject.Version
-    $preReleaseTag       = $moduleVersionObject.PreReleaseString
+    $preReleaseTag = $moduleVersionObject.PreReleaseString
 
     "`tModule Version                = '$ModuleVersion'"
     "`tModule Version Folder         = '$moduleVersionFolder'"
@@ -176,14 +176,14 @@ task Publish_GitHub_Wiki_Content -if ($GitHubToken) {
     "`tWiki Output Path              = $wikiOutputPath"
 
     $publishWikiContentParameters = @{
-        Path = $wikiOutputPath
-        OwnerName = $GHRepo.Owner
-        RepositoryName = $GHRepo.Repository
-        ModuleName = $ProjectName
-        ModuleVersion = $moduleVersion
+        Path              = $wikiOutputPath
+        OwnerName         = $GHRepo.Owner
+        RepositoryName    = $GHRepo.Repository
+        ModuleName        = $ProjectName
+        ModuleVersion     = $moduleVersion
         GitHubAccessToken = $GitHubToken
-        GitUserEmail = $GitHubConfigUserEmail
-        GitUserName = $GitHubConfigUserName
+        GitUserEmail      = $GitHubConfigUserEmail
+        GitUserName       = $GitHubConfigUserName
     }
 
     Write-Build Magenta "Publishing Wiki content."

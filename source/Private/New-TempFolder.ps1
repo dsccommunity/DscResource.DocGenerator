@@ -17,26 +17,30 @@ function New-TempFolder
 {
     [CmdletBinding()]
     [OutputType([System.IO.DirectoryInfo])]
-    param (
+    param
+    (
         [Parameter()]
-        [Int]
+        [System.Int32]
         $MaximumRetries = 10
     )
 
     $tempPath = [System.IO.Path]::GetTempPath()
 
     $retries = 0
+
     do
     {
         $retries++
-        if ($Retries -gt $MaximumRetries)
+
+        if ($retries -gt $MaximumRetries)
         {
             throw ($localizedData.NewTempFolderCreationError -f $tempPath)
         }
+
         $name = [System.IO.Path]::GetRandomFileName()
+
         $path = New-Item -Path $tempPath -Name $name -ItemType Directory -ErrorAction SilentlyContinue
-    }
-    while (-not $path)
+    } while (-not $path)
 
     return $path
 }
