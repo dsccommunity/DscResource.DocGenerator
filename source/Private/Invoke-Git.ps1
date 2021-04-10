@@ -36,9 +36,9 @@ function Invoke-Git
         & git @Arguments
 
         <#
-            Assuming error code 1 from git is warnings or informational like
-            "nothing to commit, working tree clean" and those are returned
-            instead of throwing an exception.
+            Assuming the error code 1 from git is warnings or informational like
+            "nothing to commit, working tree clean" and those are returned instead
+            of throwing an exception.
         #>
         if ($LASTEXITCODE -gt 1)
         {

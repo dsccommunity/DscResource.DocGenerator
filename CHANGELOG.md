@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - DscResource.DocGenerator
   - Fixed formatting in the code through out.
+  - Minor change in code comment.
 
 ## [0.8.2 - 2021-03-19
 
