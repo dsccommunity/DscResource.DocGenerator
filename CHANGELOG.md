@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Converted `Invoke-Git` cmdlet to use `System.Diagnostics.Process` for improved error handling.
+
 ## [0.8.3] - 2021-04-10
 
 ### Added

@@ -93,30 +93,24 @@ function Publish-WikiContent
 
     $ErrorActionPreference = 'Stop'
 
-    $headers = @{
-        'Content-type' = 'application/json'
-    }
-
     Write-Verbose -Message $script:localizedData.CreateTempDirMessage
 
     $tempPath = New-TempFolder
 
     try
     {
-        Push-Location
-
         Write-Verbose -Message $script:localizedData.ConfigGlobalGitMessage
 
         if ($PSBoundParameters.ContainsKey('GlobalCoreAutoCrLf'))
         {
-            $null = Invoke-Git -Arguments 'config', '--global', 'core.autocrlf', $GlobalCoreAutoCrLf
+            $null = Invoke-Git -Arguments $tempPath.FullName, 'config', '--global', 'core.autocrlf', $GlobalCoreAutoCrLf
         }
 
         $wikiRepoName = "https://github.com/$OwnerName/$RepositoryName.wiki.git"
 
         Write-Verbose -Message ($script:localizedData.CloneWikiGitRepoMessage -f $WikiRepoName)
 
-        $null = Invoke-Git -Arguments 'clone', $wikiRepoName, $tempPath, '--quiet'
+        $null = Invoke-Git -Arguments $tempPath.FullName, 'clone', $wikiRepoName, $tempPath, '--quiet'
 
         $copyWikiFileParameters = @{
             Path            = $Path
@@ -129,29 +123,27 @@ function Publish-WikiContent
         New-WikiSidebar -ModuleName $ModuleName -Path $tempPath
         New-WikiFooter -Path $tempPath
 
-        Set-Location -Path $tempPath
-
         Write-Verbose -Message $script:localizedData.ConfigLocalGitMessage
 
-        $null = Invoke-Git -Arguments 'config', '--local', 'user.email', $GitUserEmail
-        $null = Invoke-Git -Arguments 'config', '--local', 'user.name', $GitUserName
-        $null = Invoke-Git -Arguments 'remote', 'set-url', 'origin', "https://$($GitUserName):$($GitHubAccessToken)@github.com/$OwnerName/$RepositoryName.wiki.git"
+        $null = Invoke-Git -Arguments $tempPath.FullName, 'config', '--local', 'user.email', $GitUserEmail
+        $null = Invoke-Git -Arguments $tempPath.FullName, 'config', '--local', 'user.name', $GitUserName
+        $null = Invoke-Git -Arguments $tempPath.FullName, 'remote', 'set-url', 'origin', "https://$($GitUserName):$($GitHubAccessToken)@github.com/$OwnerName/$RepositoryName.wiki.git"
 
         Write-Verbose -Message $localizedData.AddWikiContentToGitRepoMessage
 
-        $null = Invoke-Git -Arguments 'add', '*'
+        $null = Invoke-Git -Arguments $tempPath.FullName, 'add', '*'
 
         Write-Verbose -Message ($localizedData.CommitAndTagRepoChangesMessage -f $ModuleVersion)
 
-        $invokeGitResult = Invoke-Git -Arguments 'commit', '--message', ($localizedData.UpdateWikiCommitMessage -f $ModuleVersion), '--quiet'
+        $invokeGitResult = Invoke-Git -Arguments $tempPath.FullName, 'commit', '--message', ($localizedData.UpdateWikiCommitMessage -f $ModuleVersion), '--quiet'
         if ($invokeGitResult -eq 0)
         {
-            $null = Invoke-Git -Arguments 'tag', '--annotate', $ModuleVersion, '--message', $ModuleVersion
+            $null = Invoke-Git -Arguments $tempPath.FullName, 'tag', '--annotate', $ModuleVersion, '--message', $ModuleVersion
 
             Write-Verbose -Message $localizedData.PushUpdatedRepoMessage
 
-            $null = Invoke-Git -Arguments 'push', 'origin', '--quiet'
-            $null = Invoke-Git -Arguments 'push', 'origin', $ModuleVersion, '--quiet'
+            $null = Invoke-Git -Arguments $tempPath.FullName, 'push', 'origin', '--quiet'
+            $null = Invoke-Git -Arguments $tempPath.FullName, 'push', 'origin', $ModuleVersion, '--quiet'
 
             Write-Verbose -Message $localizedData.PublishWikiContentCompleteMessage
         }
@@ -162,8 +154,6 @@ function Publish-WikiContent
     }
     finally
     {
-        Pop-Location
-
         Remove-Item -Path $tempPath -Recurse -Force
     }
 }

@@ -3,10 +3,10 @@
         Invokes the git command.
 
     .PARAMETER Arguments
-        The arguments to pass to the Git executable.
+        The arguments to pass to the Git executable. First Argument MUST be the desired working directory.
 
     .EXAMPLE
-        Invoke-Git clone https://github.com/X-Guardian/xActiveDirectory.wiki.git --quiet
+        Invoke-Git D:\WorkingFolder clone https://github.com/X-Guardian/xActiveDirectory.wiki.git --quiet
 
         Invokes the Git executable to clone the specified repository to the current working directory.
 #>
@@ -21,6 +21,13 @@ function Invoke-Git
         $Arguments
     )
 
+    $workingDirectory = $Arguments[0]
+
+    for ($i=1; $i -lt $Arguments.Length; $i++)
+    {
+        [string[]] $cmdArguments += $Arguments[$i]
+    }
+
     $argumentsJoined = $Arguments -join ' '
 
     # Trying to remove any access token from the debug output.
@@ -33,22 +40,59 @@ function Invoke-Git
 
     try
     {
-        & git @Arguments
+        $process = New-Object System.Diagnostics.Process
+        $process.StartInfo.Arguments = $cmdArguments
+        $process.StartInfo.CreateNoWindow = $true
+        $process.StartInfo.FileName = 'git.exe'
+        $process.StartInfo.RedirectStandardOutput = $true
+        $process.StartInfo.RedirectStandardError = $true
+        $process.StartInfo.UseShellExecute = $false
+        $process.StartInfo.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden
+        $process.StartInfo.WorkingDirectory = $workingDirectory
 
-        <#
-            Assuming the error code 1 from git is warnings or informational like
-            "nothing to commit, working tree clean" and those are returned instead
-            of throwing an exception.
-        #>
-        if ($LASTEXITCODE -gt 1)
+        if ($process.Start() -eq $true)
         {
-            throw $LASTEXITCODE
+            <#
+                -1 specifies an infinite wait. Suitable for large commits,
+                network issues, etc.
+            #>
+            if ($process.WaitForExit(-1) -eq $true)
+            {
+                <#
+                    Assuming the error code 1 from git is warnings or informational like
+                    "nothing to commit, working tree clean" and those are returned instead
+                    of throwing an exception.
+                #>
+                if ($process.ExitCode -gt 1)
+                {
+                    Write-Warning -Message ($localizedData.UnexpectedInvokeGitReturnCode -f $process.ExitCode)
+                    Write-Warning -Message "  git $argumentsJoined"
+
+                    [string] $invokeGitOutput = $process.StandardOutput.ReadToEnd()
+                    [string] $invokeGitError = $process.StandardError.ReadToEnd()
+
+                    if ([System.String]::IsNullOrWhiteSpace($invokeGitOutput) -eq $false)
+                    {
+                        Write-Warning -Message "  OUTPUT: $invokeGitOutput"
+                    }
+                    if ([System.String]::IsNullOrWhiteSpace($invokeGitError) -eq $false)
+                    {
+                        Write-Warning -Message "  ERROR: $invokeGitError"
+                    }
+                }
+            }
         }
     }
-    catch
-    {
-        throw $_
+    catch {
+        $e = $_
+
+        Write-Error -Message $e.Exception.Message
+    }
+    finally {
+
+        $exitCode = $process.ExitCode
+        $process.Dispose()
     }
 
-    return $LASTEXITCODE
+    return $exitCode
 }

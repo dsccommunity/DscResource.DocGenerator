@@ -30,4 +30,5 @@ ConvertFrom-StringData @'
     ClassBasedCommentBasedHelpMessage   = Reading comment-based help from source file '{0}'.
     FoundResourceExamplesMessage        = Found {0} examples.
     IgnoreAstParseErrorMessage          = Errors was found during parsing of comment-based help. These errors were ignored: {0}
+    UnexpectedInvokeGitReturnCode       = Unexpected return code '{0}' from the following Git command.
 '@
