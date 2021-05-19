@@ -28,7 +28,7 @@ function Invoke-Git
         [string[]] $cmdArguments += $Arguments[$i]
     }
 
-    $argumentsJoined = $Arguments -join ' '
+    $argumentsJoined = $cmdArguments -join ' '
 
     # Trying to remove any access token from the debug output.
     if ($argumentsJoined -match ':[\d|a-f].*@')
@@ -66,6 +66,7 @@ function Invoke-Git
                 if ($process.ExitCode -gt 1)
                 {
                     Write-Warning -Message ($localizedData.UnexpectedInvokeGitReturnCode -f $process.ExitCode)
+                    Write-Warning -Message "  PWD: $workingDirectory"
                     Write-Warning -Message "  git $argumentsJoined"
 
                     [string] $invokeGitOutput = $process.StandardOutput.ReadToEnd()

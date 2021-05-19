@@ -21,64 +21,96 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 InModuleScope $script:moduleName {
     Describe 'Invoke-Git' {
         BeforeAll {
-            # stub for git so we can mock it.
-            function git {}
+            $workingDirectory = @{ [string] 'FullName' = "$TestDrive\TestWorkingDirectory" }
+            $mockProcess = New-MockObject -Type System.Diagnostics.Process
+            $mockProcess | Add-Member -MemberType ScriptMethod -Name 'Start' -Value { $true } -Force
+            $mockProcess | Add-Member -MemberType ScriptMethod -Name 'WaitForExit' -Value { $true } -Force
+            $mockProcess | Add-Member -MemberType ScriptProperty -Name ExitCode -Value { 0 } -Force
+            $mockProcess | Add-Member -MemberType ScriptProperty -Name WorkingDirectory -Value { '' } -Force
+
+            Mock -CommandName New-Object -MockWith { return $mockProcess } -ParameterFilter { $TypeName -eq 'System.Diagnostics.Process' } -Verifiable
         }
 
         Context 'When calling Invoke-Git' {
-            BeforeAll {
-                Mock -CommandName 'git'
-            }
+            It 'Should call without throwing' {
+                { Invoke-Git -Arguments $workingDirectory.FullName, 'config', '--local', 'user.email', 'user@host.com' } | Should -Not -Throw
 
-            It 'Should call git without throwing' {
-                { Invoke-Git -Arguments 'config', '--local', 'user.email', 'user@host.com' } | Should -Not -Throw
+                Assert-VerifiableMock
             }
         }
 
         Context 'When calling Invoke-Git with an access token' {
             BeforeAll {
-                Mock -CommandName 'git'
                 Mock -CommandName Write-Debug
             }
 
             It 'Should call git but mask access token in debug message' {
-                { Invoke-Git -Arguments 'remote', 'set-url', 'origin', 'https://name:5ea239f132736de237492ff3@github.com/repository.wiki.git' -Debug } | Should -Not -Throw
+                { Invoke-Git -Arguments $workingDirectory.FullName, 'remote', 'set-url', 'origin', 'https://name:5ea239f132736de237492ff3@github.com/repository.wiki.git' -Debug } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
                     $Message -match 'https://name:RedactedToken@github.com/repository.wiki.git'
                 } -Exactly -Times 1 -Scope It
+
+                Assert-VerifiableMock
             }
         }
 
         Context 'When git exits with error code 1' {
             BeforeAll {
-                Mock -CommandName 'git' -MockWith {
-                    $script:LASTEXITCODE = 1
-                }
-            }
-
-            AfterAll {
-                $script:LASTEXITCODE = 0
+                $mockProcess | Add-Member -MemberType ScriptProperty -Name ExitCode -Value { 1 } -Force
             }
 
             It 'Should not throw an exception' {
-                { Invoke-Git -Arguments 'status' } | Should -Not -Throw
+                { Invoke-Git -Arguments $workingDirectory.FullName, 'status' } | Should -Not -Throw
+
+                Assert-VerifiableMock
+            }
+            It 'Should return 1' {
+                $returnCode = Invoke-Git -Arguments $workingDirectory.FullName, 'status'
+                $returnCode | Should -BeExactly 1
+
+                Assert-VerifiableMock
             }
         }
 
         Context 'When git exits with an error code higher than 1' {
             BeforeAll {
-                Mock -CommandName 'git' -MockWith {
-                    $script:LASTEXITCODE = 2
-                }
+                $mockProcess | Add-Member -MemberType ScriptProperty -Name 'ExitCode' -Value { 128 } -Force
+
+                $mockProcess | Add-Member -MemberType ScriptProperty -Name 'StandardOutput' -Value {
+                    New-Object -TypeName 'Object' | `
+                        Add-Member -MemberType ScriptMethod -Name 'ReadToEnd' -Value { 'Standard Output Message' } -PassThru -Force
+                } -Force
+
+                $mockProcess | Add-Member -MemberType ScriptProperty -Name 'StandardError' -Value {
+                    New-Object -TypeName 'Object' | `
+                        Add-Member -MemberType ScriptMethod -Name 'ReadToEnd' -Value { 'Standard Error Message' } -PassThru -Force
+                } -Force
+
+                Mock -CommandName Write-Warning
             }
 
-            AfterAll {
-                $script:LASTEXITCODE = 0
-            }
+            It 'Should produce ExitCode=128 and Write-Warning' {
+                $returnCode = Invoke-Git -Arguments $workingDirectory.FullName, 'status'
+                $returnCode | Should -BeExactly '128'
 
-            It 'Should throw an exception with the correct exit code' {
-                { Invoke-Git -Arguments 'status' } | Should -Throw '2'
+                Assert-MockCalled -CommandName Write-Warning -ParameterFilter {
+                    $Message -eq $($localizedData.UnexpectedInvokeGitReturnCode -f $mockProcess.ExitCode)
+                } -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Write-Warning -ParameterFilter {
+                    $Message -eq $('  PWD: {0}' -f $($workingDirectory.FullName))
+                } -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Write-Warning -ParameterFilter {
+                    $Message -eq '  git status'
+                } -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Write-Warning -ParameterFilter {
+                    $Message -eq '  OUTPUT: Standard Output Message'
+                } -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Write-Warning -ParameterFilter {
+                    $Message -eq '  ERROR: Standard Error Message'
+                } -Exactly -Times 1 -Scope It
+
+                Assert-VerifiableMock
             }
         }
     }
