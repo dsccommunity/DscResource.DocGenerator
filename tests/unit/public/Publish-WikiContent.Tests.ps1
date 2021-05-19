@@ -50,18 +50,16 @@ InModuleScope $script:moduleName {
 
                 { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Not -Throw
 
-                Assert-MockCalled -CommandName Push-Location -Exactly -Times 1 -Scope It
-
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'config' -and
-                    $Arguments[1] -eq '--global' -and
-                    $Arguments[2] -eq 'core.autocrlf' -and
-                    $Arguments[3] -eq 'true'
+                    $Arguments[1] -eq 'config' -and
+                    $Arguments[2] -eq '--global' -and
+                    $Arguments[3] -eq 'core.autocrlf' -and
+                    $Arguments[4] -eq 'true'
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'clone' -and
-                    $Arguments[1] -eq "https://github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
+                    $Arguments[1] -eq 'clone' -and
+                    $Arguments[2] -eq "https://github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Copy-WikiFolder -Exactly -Times 1 -Scope It
@@ -70,63 +68,59 @@ InModuleScope $script:moduleName {
 
                 Assert-MockCalled -CommandName New-WikiFooter -Exactly -Times 1 -Scope It
 
-                Assert-MockCalled -CommandName Set-Location -Exactly -Times 1 -Scope It
-
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'config' -and
-                    $Arguments[1] -eq '--local' -and
-                    $Arguments[2] -eq 'user.email' -and
-                    $Arguments[3] -eq $mockPublishWikiContentParameters.GitUserEmail
+                    $Arguments[1] -eq 'config' -and
+                    $Arguments[2] -eq '--local' -and
+                    $Arguments[3] -eq 'user.email' -and
+                    $Arguments[4] -eq $mockPublishWikiContentParameters.GitUserEmail
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'config' -and
-                    $Arguments[1] -eq '--local' -and
-                    $Arguments[2] -eq 'user.name' -and
-                    $Arguments[3] -eq $mockPublishWikiContentParameters.GitUserName
+                    $Arguments[1] -eq 'config' -and
+                    $Arguments[2] -eq '--local' -and
+                    $Arguments[3] -eq 'user.name' -and
+                    $Arguments[4] -eq $mockPublishWikiContentParameters.GitUserName
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'remote' -and
-                    $Arguments[1] -eq 'set-url' -and
+                    $Arguments[1] -eq 'remote' -and
+                    $Arguments[2] -eq 'set-url' -and
+                    $Arguments[3] -eq 'origin' -and
+                    $Arguments[4] -eq "https://$($mockPublishWikiContentParameters.GitUserName):$($mockPublishWikiContentParameters.GithubAccessToken)@github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[1] -eq 'add' -and
+                    $Arguments[2] -eq '*'
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[1] -eq 'commit' -and
+                    $Arguments[2] -eq '--message' -and
+                    $Arguments[3] -eq ($localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion) -and
+                    $Arguments[4] -eq '--quiet'
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[1] -eq 'tag' -and
+                    $Arguments[2] -eq '--annotate' -and
+                    $Arguments[3] -eq $mockPublishWikiContentParameters.ModuleVersion -and
+                    $Arguments[4] -eq '--message' -and
+                    $Arguments[5] -eq $mockPublishWikiContentParameters.ModuleVersion
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[1] -eq 'push' -and
                     $Arguments[2] -eq 'origin' -and
-                    $Arguments[3] -eq "https://$($mockPublishWikiContentParameters.GitUserName):$($mockPublishWikiContentParameters.GithubAccessToken)@github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
-                } -Exactly -Times 1 -Scope It
-
-                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'add' -and
-                    $Arguments[1] -eq '*'
-                } -Exactly -Times 1 -Scope It
-
-                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'commit' -and
-                    $Arguments[1] -eq '--message' -and
-                    $Arguments[2] -eq ($localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion) -and
                     $Arguments[3] -eq '--quiet'
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'tag' -and
-                    $Arguments[1] -eq '--annotate' -and
-                    $Arguments[2] -eq $mockPublishWikiContentParameters.ModuleVersion -and
-                    $Arguments[3] -eq '--message' -and
-                    $Arguments[4] -eq $mockPublishWikiContentParameters.ModuleVersion
+                    $Arguments[1] -eq 'push' -and
+                    $Arguments[2] -eq 'origin' -and
+                    $Arguments[3] -eq $mockPublishWikiContentParameters.ModuleVersion -and
+                    $Arguments[4] -eq '--quiet'
                 } -Exactly -Times 1 -Scope It
-
-                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'push' -and
-                    $Arguments[1] -eq 'origin' -and
-                    $Arguments[2] -eq '--quiet'
-                } -Exactly -Times 1 -Scope It
-
-                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'push' -and
-                    $Arguments[1] -eq 'origin' -and
-                    $Arguments[2] -eq $mockPublishWikiContentParameters.ModuleVersion -and
-                    $Arguments[3] -eq '--quiet'
-                } -Exactly -Times 1 -Scope It
-
-                Assert-MockCalled -CommandName Pop-Location -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Remove-Item -Exactly -Times 1 -Scope It
             }
@@ -163,18 +157,16 @@ InModuleScope $script:moduleName {
 
                 { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Not -Throw
 
-                Assert-MockCalled -CommandName Push-Location -Exactly -Times 1 -Scope It
-
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'config' -and
-                    $Arguments[1] -eq '--global' -and
-                    $Arguments[2] -eq 'core.autocrlf' -and
-                    $Arguments[3] -eq 'true'
+                    $Arguments[1] -eq 'config' -and
+                    $Arguments[2] -eq '--global' -and
+                    $Arguments[3] -eq 'core.autocrlf' -and
+                    $Arguments[4] -eq 'true'
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'clone' -and
-                    $Arguments[1] -eq "https://github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
+                    $Arguments[1] -eq 'clone' -and
+                    $Arguments[2] -eq "https://github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Copy-WikiFolder -Exactly -Times 1 -Scope It
@@ -183,63 +175,59 @@ InModuleScope $script:moduleName {
 
                 Assert-MockCalled -CommandName New-WikiFooter -Exactly -Times 1 -Scope It
 
-                Assert-MockCalled -CommandName Set-Location -Exactly -Times 1 -Scope It
-
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'config' -and
-                    $Arguments[1] -eq '--local' -and
-                    $Arguments[2] -eq 'user.email' -and
-                    $Arguments[3] -eq $mockPublishWikiContentParameters.GitUserEmail
+                    $Arguments[1] -eq 'config' -and
+                    $Arguments[2] -eq '--local' -and
+                    $Arguments[3] -eq 'user.email' -and
+                    $Arguments[4] -eq $mockPublishWikiContentParameters.GitUserEmail
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'config' -and
-                    $Arguments[1] -eq '--local' -and
-                    $Arguments[2] -eq 'user.name' -and
-                    $Arguments[3] -eq $mockPublishWikiContentParameters.GitUserName
+                    $Arguments[1] -eq 'config' -and
+                    $Arguments[2] -eq '--local' -and
+                    $Arguments[3] -eq 'user.name' -and
+                    $Arguments[4] -eq $mockPublishWikiContentParameters.GitUserName
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'remote' -and
-                    $Arguments[1] -eq 'set-url' -and
+                    $Arguments[1] -eq 'remote' -and
+                    $Arguments[2] -eq 'set-url' -and
+                    $Arguments[3] -eq 'origin' -and
+                    $Arguments[4] -eq "https://$($mockPublishWikiContentParameters.GitUserName):$($mockPublishWikiContentParameters.GithubAccessToken)@github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[1] -eq 'add' -and
+                    $Arguments[2] -eq '*'
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[1] -eq 'commit' -and
+                    $Arguments[2] -eq '--message' -and
+                    $Arguments[3] -eq ($localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion) -and
+                    $Arguments[4] -eq '--quiet'
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[1] -eq 'tag' -and
+                    $Arguments[2] -eq '--annotate' -and
+                    $Arguments[3] -eq $mockPublishWikiContentParameters.ModuleVersion -and
+                    $Arguments[4] -eq '--message' -and
+                    $Arguments[5] -eq $mockPublishWikiContentParameters.ModuleVersion
+                } -Exactly -Times 0 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[1] -eq 'push' -and
                     $Arguments[2] -eq 'origin' -and
-                    $Arguments[3] -eq "https://$($mockPublishWikiContentParameters.GitUserName):$($mockPublishWikiContentParameters.GithubAccessToken)@github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
-                } -Exactly -Times 1 -Scope It
-
-                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'add' -and
-                    $Arguments[1] -eq '*'
-                } -Exactly -Times 1 -Scope It
-
-                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'commit' -and
-                    $Arguments[1] -eq '--message' -and
-                    $Arguments[2] -eq ($localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion) -and
-                    $Arguments[3] -eq '--quiet'
-                } -Exactly -Times 1 -Scope It
-
-                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'tag' -and
-                    $Arguments[1] -eq '--annotate' -and
-                    $Arguments[2] -eq $mockPublishWikiContentParameters.ModuleVersion -and
-                    $Arguments[3] -eq '--message' -and
-                    $Arguments[4] -eq $mockPublishWikiContentParameters.ModuleVersion
-                } -Exactly -Times 0 -Scope It
-
-                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'push' -and
-                    $Arguments[1] -eq 'origin' -and
-                    $Arguments[2] -eq '--quiet'
-                } -Exactly -Times 0 -Scope It
-
-                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'push' -and
-                    $Arguments[1] -eq 'origin' -and
-                    $Arguments[2] -eq $mockPublishWikiContentParameters.ModuleVersion -and
                     $Arguments[3] -eq '--quiet'
                 } -Exactly -Times 0 -Scope It
 
-                Assert-MockCalled -CommandName Pop-Location -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[1] -eq 'push' -and
+                    $Arguments[2] -eq 'origin' -and
+                    $Arguments[3] -eq $mockPublishWikiContentParameters.ModuleVersion -and
+                    $Arguments[4] -eq '--quiet'
+                } -Exactly -Times 0 -Scope It
 
                 Assert-MockCalled -CommandName Remove-Item -Exactly -Times 1 -Scope It
             }
