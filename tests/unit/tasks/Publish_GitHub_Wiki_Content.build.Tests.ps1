@@ -20,13 +20,6 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 
 Describe 'Publish_GitHub_Wiki_Content' {
     BeforeAll {
-        <#
-            The build task only run if this is set. This sets the variable in the
-            parent scope so Invoke-Build can use it. This way we don't mess with
-            any real environment variables.
-        #>
-        $GitHubToken = 'anytoken'
-
         Mock -CommandName Publish-WikiContent
 
         Mock -CommandName Test-Path -MockWith {
@@ -48,35 +41,64 @@ Describe 'Publish_GitHub_Wiki_Content' {
             }
         }
     }
+    Context 'When $GitHubToken is specified.' {
+        BeforeAll {
+            <#
+                The build task only run if this is set. This sets the variable in the
+                parent scope so Invoke-Build can use it. This way we don't mess with
+                any real environment variables.
+            #>
+            $GitHubToken = 'anytoken'
+        }
 
-    AfterAll {
-        Remove-Variable -Name 'GitHubToken'
+        AfterAll {
+            Remove-Variable -Name 'GitHubToken'
+        }
+
+        It 'Should export the build script alias' {
+            $buildTaskName = 'Publish_GitHub_Wiki_Content'
+            $buildScriptAliasName = 'Task.{0}' -f $buildTaskName
+
+            $script:buildScript = Get-Command -Name $buildScriptAliasName -Module $script:projectName
+
+            $script:buildScript.Name | Should -Be $buildScriptAliasName
+            $script:buildScript.ReferencedCommand | Should -Be ('{0}.build.ps1' -f $buildTaskName)
+        }
+
+        It 'Should reference an existing build script' {
+            Test-Path -Path $script:buildScript.Definition | Should -BeTrue
+        }
+
+        It 'Should run the build task without throwing' {
+            {
+                $taskParameters = @{
+                    ProjectName = 'MyModule'
+                    SourcePath = $TestDrive
+                }
+
+                Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @taskParameters
+            } | Should -Not -Throw
+
+            Assert-MockCalled -CommandName Publish-WikiContent -Exactly -Times 1 -Scope It
+        }
     }
+    Context 'When $GitHubToken is not specified.' {
+        BeforeAll {
+            Mock -CommandName Write-Build
+        }
+        It 'Should Write-Build missing $GitHubToken & skipping task.' {
 
-    It 'Should export the build script alias' {
-        $buildTaskName = 'Publish_GitHub_Wiki_Content'
-        $buildScriptAliasName = 'Task.{0}' -f $buildTaskName
+            { Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @taskParameters
+            } | Should -Not -Throw
 
-        $script:buildScript = Get-Command -Name $buildScriptAliasName -Module $script:projectName
-
-        $script:buildScript.Name | Should -Be $buildScriptAliasName
-        $script:buildScript.ReferencedCommand | Should -Be ('{0}.build.ps1' -f $buildTaskName)
-    }
-
-    It 'Should reference an existing build script' {
-        Test-Path -Path $script:buildScript.Definition | Should -BeTrue
-    }
-
-    It 'Should run the build task without throwing' {
-        {
-            $taskParameters = @{
-                ProjectName = 'MyModule'
-                SourcePath = $TestDrive
-            }
-
-            Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @taskParameters
-        } | Should -Not -Throw
-
-        Assert-MockCalled -CommandName Publish-WikiContent -Exactly -Times 1 -Scope It
+            Assert-MockCalled -CommandName Write-Build -ParameterFilter {
+                $Color -eq 'Yellow' -and
+                $Text -eq '$GitHubToken not set via parent scope, as an environment variable, or passed to the build task.'
+            } -Exactly -Times 1 -Scope It
+            Assert-MockCalled -CommandName Write-Build -ParameterFilter {
+                $Color -eq 'Yellow' -and
+                $Text -eq 'Skipping task: Publish_GitHub_Wiki_Content'
+            } -Exactly -Times 1 -Scope It
+        }
     }
 }
