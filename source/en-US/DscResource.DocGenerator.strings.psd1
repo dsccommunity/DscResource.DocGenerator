@@ -16,7 +16,7 @@ ConvertFrom-StringData @'
     CommitAndTagRepoChangesMessage      = Committing the changes to the Repository and adding build tag '{0}'.
     PushUpdatedRepoMessage              = Pushing the updated Repository to the Git Wiki.
     PublishWikiContentCompleteMessage   = Publish Wiki Content complete.
-    UpdateWikiCommitMessage             = "Updating Wiki with the content for module version '{0}'."
+    UpdateWikiCommitMessage             = Updating Wiki with the content for module version '{0}'.
     NewTempFolderCreationError          = Unable to create a temporary working folder in '{0}'.
     InvokingGitMessage                  = Invoking Git '{0}'.
     GenerateWikiSidebarMessage          = Generating Wiki Sidebar '{0}'.

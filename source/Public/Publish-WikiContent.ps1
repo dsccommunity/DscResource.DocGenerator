@@ -135,7 +135,7 @@ function Publish-WikiContent
 
         Write-Verbose -Message ($localizedData.CommitAndTagRepoChangesMessage -f $ModuleVersion)
 
-        $invokeGitResult = Invoke-Git -Arguments $tempPath.FullName, 'commit', '--message', ($localizedData.UpdateWikiCommitMessage -f $ModuleVersion), '--quiet'
+        $invokeGitResult = Invoke-Git -Arguments $tempPath.FullName, 'commit', '--message', "`"$($localizedData.UpdateWikiCommitMessage -f $ModuleVersion)`"", '--quiet'
         if ($invokeGitResult -eq 0)
         {
             $null = Invoke-Git -Arguments $tempPath.FullName, 'tag', '--annotate', $ModuleVersion, '--message', $ModuleVersion
