@@ -41,7 +41,8 @@ Describe 'Publish_GitHub_Wiki_Content' {
             }
         }
     }
-    Context 'When $GitHubToken is specified.' {
+
+    Context 'When $GitHubToken is specified' {
         BeforeAll {
             <#
                 The build task only run if this is set. This sets the variable in the
@@ -82,19 +83,23 @@ Describe 'Publish_GitHub_Wiki_Content' {
             Assert-MockCalled -CommandName Publish-WikiContent -Exactly -Times 1 -Scope It
         }
     }
-    Context 'When $GitHubToken is not specified.' {
+
+    Context 'When $GitHubToken is not specified' {
         BeforeAll {
             Mock -CommandName Write-Build
         }
-        It 'Should Write-Build missing $GitHubToken & skipping task.' {
 
-            { Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @taskParameters
+        It 'Should Write-Build missing $GitHubToken & skipping task' {
+
+            {
+                Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @taskParameters
             } | Should -Not -Throw
 
             Assert-MockCalled -CommandName Write-Build -ParameterFilter {
                 $Color -eq 'Yellow' -and
                 $Text -eq '$GitHubToken not set via parent scope, as an environment variable, or passed to the build task.'
             } -Exactly -Times 1 -Scope It
+
             Assert-MockCalled -CommandName Write-Build -ParameterFilter {
                 $Color -eq 'Yellow' -and
                 $Text -eq 'Skipping task: Publish_GitHub_Wiki_Content'
