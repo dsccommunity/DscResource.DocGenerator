@@ -5,6 +5,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added private functions:
+  - `Get-ClassAst` - Returns the AST for a single or all classes.
+  - `Get-ClassResourceAst` - Returns the AST for a single or all DSC class
+    resources.
+  - `Get-ClassResourceProperty` - Returns DSC class resource properties
+    from the provided class or classes.
+
+### Changed
+
+- `New-DscResourceWikiPage`
+  - If a class-based resource have a parent class that contains DSC resource
+    properties they will now also be returned as part of the DSC resource
+    parameters ([issue #62](https://github.com/dsccommunity/DscResource.DocGenerator/issues/62)).
+
 ### Fixed
 
 - `Publish_GitHub_Wiki_Content`
