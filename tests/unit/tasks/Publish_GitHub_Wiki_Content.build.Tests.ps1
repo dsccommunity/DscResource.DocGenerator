@@ -97,12 +97,7 @@ Describe 'Publish_GitHub_Wiki_Content' {
 
             Assert-MockCalled -CommandName Write-Build -ParameterFilter {
                 $Color -eq 'Yellow' -and
-                $Text -eq '$GitHubToken not set via parent scope, as an environment variable, or passed to the build task.'
-            } -Exactly -Times 1 -Scope It
-
-            Assert-MockCalled -CommandName Write-Build -ParameterFilter {
-                $Color -eq 'Yellow' -and
-                $Text -eq 'Skipping task: Publish_GitHub_Wiki_Content'
+                $Text -eq 'Skipping task. Variable $GitHubToken not set via parent scope, as an environment variable, or passed to the build task.'
             } -Exactly -Times 1 -Scope It
         }
     }
