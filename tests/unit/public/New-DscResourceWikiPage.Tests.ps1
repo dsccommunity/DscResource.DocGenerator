@@ -958,7 +958,7 @@ Configuration Example
                 }
             }
 
-            Context 'When the resource is describe with just one key property with not description for resource or property' {
+            Context 'When the resource is describe with just one key property with no description for resource or property' {
                 BeforeAll {
                     # The class DSC resource in the built module.
                     $mockBuiltModuleScript = @'
@@ -1415,6 +1415,306 @@ A DSC Resource for Azure DevOps that
 represents the Project resource.
 
 This is another row.
+'@ -replace '\r?\n', "`r`n"
+
+                    $mockNewDscResourcePowerShellHelpParameters = @{
+                        SourcePath      = $mockSourcePath
+                        BuiltModulePath = $mockBuiltModulePath
+                        OutputPath      = $TestDrive
+                        Verbose         = $true
+                    }
+
+                    Mock -CommandName Out-File
+                }
+
+                It 'Should not throw an exception' {
+                    {
+                        New-DscResourceWikiPage @mockNewDscResourcePowerShellHelpParameters
+                    } | Should -Not -Throw
+                }
+
+                It 'Should produce the correct output' {
+                    Assert-MockCalled `
+                        -CommandName Out-File `
+                        -ParameterFilter $script:outFileContent_ParameterFilter `
+                        -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the resource have a parent class that also have a DSC property' {
+                BeforeAll {
+                    # The class DSC resource in the built module.
+                    $mockBuiltModuleScript = @'
+class ResourceBase
+{
+    hidden [System.String] $NotADscProperty
+
+    [DscProperty()]
+    [System.String]
+    $Ensure
+}
+
+[DscResource()]
+class AzDevOpsProject : ResourceBase
+{
+    [AzDevOpsProject] Get()
+    {
+        return [AzDevOpsProject] $this
+    }
+
+    [System.Boolean] Test()
+    {
+        return $true
+    }
+
+    [void] Set() {}
+
+    [DscProperty(Key)]
+    [System.String]$ProjectName
+
+    [DscProperty()]
+    [System.String]$ProjectId
+
+    [DscProperty()]
+    [ValidateSet('Up', 'Down')]
+    [System.String]$ValidateSetProperty
+
+    [DscProperty(Mandatory)]
+    [System.String]$MandatoryProperty
+
+    [DscProperty(NotConfigurable)]
+    [String[]]$Reasons
+}
+'@
+                    # Uses Microsoft.PowerShell.Utility\Out-File to override the stub that is needed for the mocks.
+                    $mockBuiltModuleScript | Microsoft.PowerShell.Utility\Out-File -FilePath "$mockBuiltModulePath\MyClassModule.psm1" -Encoding ascii -Force
+
+                    # The source file of class DSC resource.
+                    $mockResourceSourceScript = @'
+<#
+    .SYNOPSIS
+        A DSC Resource for Azure DevOps that
+        represents the Project resource.
+
+        This is another row.
+
+    .DESCRIPTION
+        A DSC Resource for Azure DevOps that
+        represents the Project resource.
+
+        This is another row.
+
+    .PARAMETER ProjectName
+        ProjectName description.
+
+    .PARAMETER ProjectId
+        ProjectId description.
+
+        Second row with text.
+
+    .PARAMETER MandatoryProperty
+        MandatoryProperty description.
+
+    .PARAMETER Reasons
+        Reasons description.
+#>
+[DscResource()]
+class AzDevOpsProject
+{
+    [AzDevOpsProject] Get()
+    {
+        return [AzDevOpsProject] $this
+    }
+
+    [System.Boolean] Test()
+    {
+        return $true
+    }
+
+    [void] Set() {}
+
+    [DscProperty(Key)]
+    [System.String]$ProjectName
+
+    [DscProperty()]
+    [System.String]$ProjectId
+
+    [DscProperty()]
+    [ValidateSet('Up', 'Down')]
+    [System.String]$ValidateSetProperty
+
+    [DscProperty(Mandatory)]
+    [System.String]$MandatoryProperty
+
+    [DscProperty(NotConfigurable)]
+    [String[]]$Reasons
+}
+'@
+                    # Uses Microsoft.PowerShell.Utility\Out-File to override the stub that is needed for the mocks.
+                    $mockResourceSourceScript | Microsoft.PowerShell.Utility\Out-File -FilePath "$mockSourcePath\Classes\010.AzDevOpsProject.ps1" -Encoding ascii -Force
+
+                    $mockBaseClassSourceScript = @'
+<#
+    .SYNOPSIS
+        Synopsis for base class.
+
+    .DESCRIPTION
+        Description for base class
+
+    .PARAMETER Ensure
+        Ensure description.
+#>
+class ResourceBase
+{
+    hidden [System.String] $NotADscProperty
+
+    [DscProperty()]
+    [System.String]
+    $Ensure
+}
+'@
+                    # Uses Microsoft.PowerShell.Utility\Out-File to override the stub that is needed for the mocks.
+                    $mockBaseClassSourceScript | Microsoft.PowerShell.Utility\Out-File -FilePath "$mockSourcePath\Classes\001.ResourceBase.ps1" -Encoding ascii -Force
+
+                    $mockExpectedFileOutput = @'
+# AzDevOpsProject
+
+## Parameters
+
+| Parameter | Attribute | DataType | Description | Allowed Values |
+| --- | --- | --- | --- | --- |
+| **Ensure** | Write | System.String | Ensure description. | |
+| **ProjectName** | Key | System.String | ProjectName description. | |
+| **ProjectId** | Write | System.String | ProjectId description. Second row with text. | |
+| **ValidateSetProperty** | Write | System.String | | `Up`, `Down` |
+| **MandatoryProperty** | Required | System.String | MandatoryProperty description. | |
+| **Reasons** | Read | String[] | Reasons description. | |
+
+## Description
+
+A DSC Resource for Azure DevOps that
+represents the Project resource.
+
+This is another row.
+'@ -replace '\r?\n', "`r`n"
+
+                    $mockNewDscResourcePowerShellHelpParameters = @{
+                        SourcePath      = $mockSourcePath
+                        BuiltModulePath = $mockBuiltModulePath
+                        OutputPath      = $TestDrive
+                        Verbose         = $true
+                    }
+
+                    Mock -CommandName Out-File
+                }
+
+                It 'Should not throw an exception' {
+                    {
+                        New-DscResourceWikiPage @mockNewDscResourcePowerShellHelpParameters
+                    } | Should -Not -Throw
+                }
+
+                It 'Should produce the correct output' {
+                    Assert-MockCalled `
+                        -CommandName Out-File `
+                        -ParameterFilter $script:outFileContent_ParameterFilter `
+                        -Exactly -Times 1 -Scope Context
+                }
+            }
+
+            Context 'When the resource have a parent class that also have a DSC property, but the property does not have parameter description' {
+                BeforeAll {
+                    # The class DSC resource in the built module.
+                    $mockBuiltModuleScript = @'
+class ResourceBase
+{
+    [DscProperty()]
+    [System.String]
+    $Ensure
+}
+
+[DscResource()]
+class AzDevOpsProject : ResourceBase
+{
+    [AzDevOpsProject] Get()
+    {
+        return [AzDevOpsProject] $this
+    }
+
+    [System.Boolean] Test()
+    {
+        return $true
+    }
+
+    [void] Set() {}
+
+    [DscProperty(Key)]
+    [System.String]$ProjectName
+}
+'@
+                    # Uses Microsoft.PowerShell.Utility\Out-File to override the stub that is needed for the mocks.
+                    $mockBuiltModuleScript | Microsoft.PowerShell.Utility\Out-File -FilePath "$mockBuiltModulePath\MyClassModule.psm1" -Encoding ascii -Force
+
+                    # The source file of class DSC resource.
+                    $mockResourceSourceScript = @'
+<#
+    .SYNOPSIS
+        Resource synopsis.
+
+    .DESCRIPTION
+        Resource description.
+
+    .PARAMETER ProjectName
+        ProjectName description.
+#>
+[DscResource()]
+class AzDevOpsProject
+{
+    [AzDevOpsProject] Get()
+    {
+        return [AzDevOpsProject] $this
+    }
+
+    [System.Boolean] Test()
+    {
+        return $true
+    }
+
+    [void] Set() {}
+
+    [DscProperty(Key)]
+    [System.String]$ProjectName
+}
+'@
+                    # Uses Microsoft.PowerShell.Utility\Out-File to override the stub that is needed for the mocks.
+                    $mockResourceSourceScript | Microsoft.PowerShell.Utility\Out-File -FilePath "$mockSourcePath\Classes\010.AzDevOpsProject.ps1" -Encoding ascii -Force
+
+                    $mockBaseClassSourceScript = @'
+class ResourceBase
+{
+    hidden [System.String] $NotADscProperty
+
+    [DscProperty()]
+    [System.String]
+    $Ensure
+}
+'@
+                    # Uses Microsoft.PowerShell.Utility\Out-File to override the stub that is needed for the mocks.
+                    $mockBaseClassSourceScript | Microsoft.PowerShell.Utility\Out-File -FilePath "$mockSourcePath\Classes\001.ResourceBase.ps1" -Encoding ascii -Force
+
+                    $mockExpectedFileOutput = @'
+# AzDevOpsProject
+
+## Parameters
+
+| Parameter | Attribute | DataType | Description | Allowed Values |
+| --- | --- | --- | --- | --- |
+| **Ensure** | Write | System.String | | |
+| **ProjectName** | Key | System.String | ProjectName description. | |
+
+## Description
+
+Resource description.
 '@ -replace '\r?\n', "`r`n"
 
                     $mockNewDscResourcePowerShellHelpParameters = @{
