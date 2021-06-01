@@ -196,8 +196,6 @@ function New-DscResourceWikiPage
 
                 $sourceFilePath = Join-Path -Path $SourcePath -ChildPath ('Classes/*{0}.ps1' -f $dscResourceAst.Name)
 
-                $dscResourceCommentBasedHelp = Get-ClassResourceCommentBasedHelp -Path $sourceFilePath
-
                 $className = @()
 
                 if ($dscResourceAst.BaseTypes.Count -gt 0)
@@ -218,6 +216,8 @@ function New-DscResourceWikiPage
                 }
 
                 $null = $output.AppendLine()
+
+                $dscResourceCommentBasedHelp = Get-ClassResourceCommentBasedHelp -Path $sourceFilePath
 
                 $description = $dscResourceCommentBasedHelp.Description
                 $description = $description -replace '[\r|\n]+$' # Removes all blank rows and whitespace at the end
