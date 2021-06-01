@@ -32,36 +32,31 @@ function Get-ClassResourceAst
         $ClassName
     )
 
-    $tokens, $parseErrors = $null
+    $dscClassResourceAst = $null
 
-    $ast = [System.Management.Automation.Language.Parser]::ParseFile($ScriptFile, [ref] $tokens, [ref] $parseErrors)
-
-    if ($parseErrors)
-    {
-        throw $parseErrors
+    $getClassAstParameters = @{
+        ScriptFile = $ScriptFile
     }
 
-    if ($PSBoundParameters.ContainsKey('ClassName') -and $ClassName)
+    if ($PSBoundParameters.ContainsKey('ClassName'))
     {
-        # Get only the specific class resource.
-        $astFilter = {
-            $args[0] -is [System.Management.Automation.Language.TypeDefinitionAst] `
-                -and $args[0].IsClass -eq $true `
-                -and $args[0].Name -eq $ClassName `
-                -and $args[0].Attributes.Extent.Text -imatch '\[DscResource\(.*\)\]'
-        }
+        $getClassAstParameters['ClassName'] = $ClassName
     }
-    else
+
+    $ast = Get-ClassAst @getClassAstParameters
+
+    # Only try to filter if there was at least one class returned.
+    if ($ast)
     {
-        # Get all class resources.
+        # Get only DSC class resource.
         $astFilter = {
             $args[0] -is [System.Management.Automation.Language.TypeDefinitionAst] `
                 -and $args[0].IsClass -eq $true `
                 -and $args[0].Attributes.Extent.Text -imatch '\[DscResource\(.*\)\]'
         }
-    }
 
-    $dscClassResourceAst = $ast.FindAll($astFilter, $true)
+        $dscClassResourceAst = $ast.FindAll($astFilter, $true)
+    }
 
     return $dscClassResourceAst
 }
