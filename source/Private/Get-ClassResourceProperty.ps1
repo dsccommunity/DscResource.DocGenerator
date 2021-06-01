@@ -95,15 +95,22 @@ function Get-ClassResourceProperty
                 $propertyAttribute['ValueMap'] = $propertyAttributeAsts.PositionalArguments.Value
             }
 
-            # The key name must be upper-case for it to match the right item in the list of parameters.
-            $propertyDescription = ($dscResourceCommentBasedHelp.Parameters[$propertyMemberAst.Name.ToUpper()] -replace '[\r|\n]+$')
+            if ($dscResourceCommentBasedHelp -and $dscResourceCommentBasedHelp.Parameters.Count -gt 0)
+            {
+                # The key name must be upper-case for it to match the right item in the list of parameters.
+                $propertyDescription = ($dscResourceCommentBasedHelp.Parameters[$propertyMemberAst.Name.ToUpper()] -replace '[\r|\n]+$')
 
-            $propertyDescription = $propertyDescription -replace '[\r|\n]+$' # Removes all blank rows at the end
-            $propertyDescription = $propertyDescription -replace '[ ]+\r\n', "`r`n" # Remove indentation from blank rows
-            $propertyDescription = $propertyDescription -replace '\r?\n', " " # Replace CRLF with one white space
-            $propertyDescription = $propertyDescription -replace '\|', " " # Replace vertical bar with white space
-            $propertyDescription = $propertyDescription -replace '  +', " " # Replace multiple whitespace with one single white space
-            $propertyDescription = $propertyDescription -replace ' +$' # Remove white space from end of row
+                $propertyDescription = $propertyDescription -replace '[\r|\n]+$' # Removes all blank rows at the end
+                $propertyDescription = $propertyDescription -replace '[ ]+\r\n', "`r`n" # Remove indentation from blank rows
+                $propertyDescription = $propertyDescription -replace '\r?\n', " " # Replace CRLF with one white space
+                $propertyDescription = $propertyDescription -replace '\|', " " # Replace vertical bar with white space
+                $propertyDescription = $propertyDescription -replace '  +', " " # Replace multiple whitespace with one single white space
+                $propertyDescription = $propertyDescription -replace ' +$' # Remove white space from end of row
+            }
+            else
+            {
+                $propertyDescription = ''
+            }
 
             $propertyAttribute['Description'] = $propertyDescription
 
