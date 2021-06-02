@@ -97,7 +97,7 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[1] -eq 'commit' -and
                     $Arguments[2] -eq '--message' -and
-                    $Arguments[3] -eq ($localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion) -and
+                    $Arguments[3] -eq "`"$($localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion)`"" -and
                     $Arguments[4] -eq '--quiet'
                 } -Exactly -Times 1 -Scope It
 
@@ -204,7 +204,7 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[1] -eq 'commit' -and
                     $Arguments[2] -eq '--message' -and
-                    $Arguments[3] -eq ($localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion) -and
+                    $Arguments[3] -eq "`"$($localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion)`"" -and
                     $Arguments[4] -eq '--quiet'
                 } -Exactly -Times 1 -Scope It
 
