@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `Publish_GitHub_Wiki_Content`
+  - Output message if `$GitHubToken` not specified which skips this task.
+    Fixes [Issue 75](https://github.com/dsccommunity/DscResource.DocGenerator/issues/75)
+
 ## [0.8.3] - 2021-04-10
 
 ### Added
