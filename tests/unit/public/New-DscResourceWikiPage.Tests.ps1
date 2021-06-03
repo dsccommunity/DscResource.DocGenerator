@@ -1441,7 +1441,7 @@ This is another row.
                 }
             }
 
-            Context 'When the resource have a parent class that also have a DSC property' {
+            Context 'When the resource has a parent class that also has a DSC property' {
                 BeforeAll {
                     # The class DSC resource in the built module.
                     $mockBuiltModuleScript = @'
