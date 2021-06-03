@@ -1622,7 +1622,7 @@ This is another row.
                 }
             }
 
-            Context 'When the resource have a parent class that also have a DSC property, but the property does not have parameter description' {
+            Context 'When the resource has a parent class that also have a DSC property, but the property does not have a parameter description' {
                 BeforeAll {
                     # The class DSC resource in the built module.
                     $mockBuiltModuleScript = @'

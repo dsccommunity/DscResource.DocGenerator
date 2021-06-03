@@ -51,7 +51,7 @@ function Get-ClassResourceAst
         # Get only DSC class resource.
         $astFilter = {
             $args[0] -is [System.Management.Automation.Language.TypeDefinitionAst] `
-                -and $args[0].IsClass -eq $true `
+                -and $args[0].IsClass `
                 -and $args[0].Attributes.Extent.Text -imatch '\[DscResource\(.*\)\]'
         }
 

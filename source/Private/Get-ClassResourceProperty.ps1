@@ -6,7 +6,7 @@
         The path to the source folder (in which the child folder 'Classes' exist).
 
     .PARAMETER BuiltModuleScriptFilePath
-        The path to the built module script file that contain the class.
+        The path to the built module script file that contains the class.
 
     .PARAMETER ClassName
         One or more class names to return properties for.
@@ -19,6 +19,7 @@
 function Get-ClassResourceProperty
 {
     [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable[]])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -34,7 +35,7 @@ function Get-ClassResourceProperty
         $ClassName
     )
 
-    $resourceProperty = @()
+    $resourceProperty = [System.Collections.Hashtable[]] @()
 
     foreach ($currentClassName in $ClassName)
     {
