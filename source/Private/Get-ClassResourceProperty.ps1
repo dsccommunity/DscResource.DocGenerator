@@ -53,9 +53,8 @@ function Get-ClassResourceProperty
         $propertyMemberAsts = $dscResourceAst.FindAll($astFilter, $true)
 
         <#
-            Looping through each resource property to build the hashtable
-            that should be passed to Get-DscResourceSchemaPropertyContent.
-            Hashtable should be in the format:
+            Looping through each resource property to build the resulting
+            hashtable. Hashtable will be in the format:
 
             @{
                 Name             = <System.String>
