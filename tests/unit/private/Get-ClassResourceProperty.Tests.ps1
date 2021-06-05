@@ -20,10 +20,6 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 
 InModuleScope $script:moduleName {
     Describe 'Get-ClassResourceProperty' {
-        BeforeAll {
-
-        }
-
         Context 'When the resource has a parent class that also has a DSC property' {
             BeforeAll {
                 $mockBuiltModulePath = Join-Path -Path $TestDrive -ChildPath 'output\MyClassModule\1.0.0'
@@ -213,12 +209,21 @@ class MyDscResource : ResourceBase
 
     [DscProperty(Key)]
     [System.String] $ProjectName
+
+    [DscProperty()]
+    [System.String] $DescriptionTestProperty
 }
 '@
             # Uses Microsoft.PowerShell.Utility\Out-File to override the stub that is needed for the mocks.
             $mockBuiltModuleScript | Microsoft.PowerShell.Utility\Out-File -FilePath "$mockBuiltModulePath\MyClassModule.psm1" -Encoding ascii -Force
 
-            # The source file of class DSC resource. This file is not actually referencing the base class to simplify the tests.
+            <#
+                The source file of class DSC resource. This file is not actually
+                referencing the base class to simplify the tests.
+
+                The property DescriptionTestProperty is used to test description
+                parsing.
+            #>
             $mockResourceSourceScript = @'
 <#
 .SYNOPSIS
@@ -229,6 +234,11 @@ class MyDscResource : ResourceBase
 
     .PARAMETER ProjectName
     ProjectName description.
+
+    .PARAMETER DescriptionTestProperty
+    DescriptionTestProperty description.
+
+    This is  a second row with | various tests like double space and vertical bar.
 #>
 [DscResource()]
 class MyDscResource
@@ -247,6 +257,9 @@ class MyDscResource
 
     [DscProperty(Key)]
     [System.String] $ProjectName
+
+    [DscProperty()]
+    [System.String] $DescriptionTestProperty
 }
 '@
             # Uses Microsoft.PowerShell.Utility\Out-File to override the stub that is needed for the mocks.
@@ -277,7 +290,7 @@ class ResourceBase
             }
 
             $getClassResourcePropertyResult = Get-ClassResourceProperty @mockGetClassResourcePropertyParameters
-            $getClassResourcePropertyResult | Should -HaveCount 2
+            $getClassResourcePropertyResult | Should -HaveCount 3
             $getClassResourcePropertyResult.Name | Should -Contain 'Ensure'
             $getClassResourcePropertyResult.Name | Should -Contain 'ProjectName'
 
@@ -290,6 +303,14 @@ class ResourceBase
             $ensurePropertyResult = $getClassResourcePropertyResult.Where({$_.Name -eq 'ProjectName'})
             $ensurePropertyResult.State | Should -Be 'Key'
             $ensurePropertyResult.Description | Should -Be 'ProjectName description.'
+            $ensurePropertyResult.DataType | Should -Be 'System.String'
+            $ensurePropertyResult.IsArray | Should -BeFalse
+
+            $ensurePropertyResult = $getClassResourcePropertyResult.Where({$_.Name -eq 'DescriptionTestProperty'})
+            $ensurePropertyResult.State | Should -Be 'Write'
+            $ensurePropertyResult.Description | Should -BeExactly @'
+DescriptionTestProperty description. This is a second row with various tests like double space and vertical bar.
+'@
             $ensurePropertyResult.DataType | Should -Be 'System.String'
             $ensurePropertyResult.IsArray | Should -BeFalse
         }

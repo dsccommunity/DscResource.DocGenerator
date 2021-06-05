@@ -47,7 +47,7 @@ function Get-ClassResourceProperty
 
         $astFilter = {
             $args[0] -is [System.Management.Automation.Language.PropertyMemberAst] `
-            -and $args[0].Attributes.TypeName.Name -eq 'DscProperty'
+                -and $args[0].Attributes.TypeName.Name -eq 'DscProperty'
         }
 
         $propertyMemberAsts = $dscResourceAst.FindAll($astFilter, $true)
@@ -98,14 +98,19 @@ function Get-ClassResourceProperty
             if ($dscResourceCommentBasedHelp -and $dscResourceCommentBasedHelp.Parameters.Count -gt 0)
             {
                 # The key name must be upper-case for it to match the right item in the list of parameters.
-                $propertyDescription = ($dscResourceCommentBasedHelp.Parameters[$propertyMemberAst.Name.ToUpper()] -replace '[\r|\n]+$')
+                $propertyDescription = $dscResourceCommentBasedHelp.Parameters[$propertyMemberAst.Name.ToUpper()]
 
-                $propertyDescription = $propertyDescription -replace '[\r|\n]+$' # Removes all blank rows at the end
-                $propertyDescription = $propertyDescription -replace '[ ]+\r\n', "`r`n" # Remove indentation from blank rows
-                $propertyDescription = $propertyDescription -replace '\r?\n', " " # Replace CRLF with one white space
-                $propertyDescription = $propertyDescription -replace '\|', " " # Replace vertical bar with white space
-                $propertyDescription = $propertyDescription -replace '  +', " " # Replace multiple whitespace with one single white space
-                $propertyDescription = $propertyDescription -replace ' +$' # Remove white space from end of row
+                if ($propertyDescription)
+                {
+                    $propertyDescription = Format-Text -Text $propertyDescription -Format @(
+                        'Remove_Blank_Rows_At_End_Of_String',
+                        'Remove_Indentation_From_Blank_Rows',
+                        'Replace_NewLine_With_One_Whitespace',
+                        'Replace_Vertical_Bar_With_One_Whitespace',
+                        'Replace_Multiple_Whitespace_With_One',
+                        'Remove_Whitespace_From_End_Of_String'
+                    )
+                }
             }
             else
             {
