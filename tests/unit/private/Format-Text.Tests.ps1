@@ -36,7 +36,7 @@ InModuleScope $script:moduleName {
 
         It 'Should remove indentations from blank rows when using CRLF' {
             $formatTextParameters = @{
-                Text = "First line`r`n`u{20}`u{20}`r`nSecond line"
+                Text = "First line`r`n  `r`nSecond line"
                 Format = @(
                     'Remove_Indentation_From_Blank_Rows'
                 )
@@ -49,7 +49,7 @@ InModuleScope $script:moduleName {
 
         It 'Should remove indentations from blank rows when using LF' {
             $formatTextParameters = @{
-                Text = "First line`n`u{20}`u{20}`nSecond line"
+                Text = "First line`n  `nSecond line"
                 Format = @(
                     'Remove_Indentation_From_Blank_Rows'
                 )
@@ -64,7 +64,7 @@ First line`n`nSecond line
 
         It 'Should remove indentations from blank rows when using both LF and CRLF' {
             $formatTextParameters = @{
-                Text = "First line`n`u{20}`u{20}`n`u{20}`u{20}`r`nSecond line"
+                Text = "First line`n  `n  `r`nSecond line"
                 Format = @(
                     'Remove_Indentation_From_Blank_Rows'
                 )
