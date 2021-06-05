@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     resources.
   - `Get-ClassResourceProperty` - Returns DSC class resource properties
     from the provided class or classes.
+  - `Format-Text` - Format a string according to predefined options.
 
 ### Changed
 
