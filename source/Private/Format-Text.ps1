@@ -39,7 +39,6 @@ function Format-Text
 
     $returnString = $Text
 
-    # This will loop through each format.
     switch ($Format)
     {
         # Replace multiple whitespace with one single white space
