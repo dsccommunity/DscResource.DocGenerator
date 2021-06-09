@@ -20,7 +20,7 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 
 InModuleScope $script:moduleName {
     Describe 'Publish-WikiContent' {
-        Context 'When publishing Wiki content' {
+        Context 'When cloning Wiki content fails' {
             BeforeAll {
                 Mock -CommandName Copy-WikiFolder
                 Mock -CommandName New-WikiSidebar
@@ -28,7 +28,22 @@ InModuleScope $script:moduleName {
                 Mock -CommandName Remove-Item
 
                 Mock -CommandName Invoke-Git -MockWith {
-                    return 0
+                    return @{
+                        'ExitCode' = 0
+                        'StandardOutput' = 'Standard Output 0'
+                        'StandardError' = 'Standard Error 0'
+                    }
+                }
+
+                Mock -CommandName Invoke-Git -MockWith {
+                    return @{
+                                'ExitCode' = 128
+                                'StandardOutput' = 'Standard Output 128'
+                                'StandardError' = 'fatal: remote error: access denied or repository not exported: /335792891.wiki.git'
+                            }
+                } -ParameterFilter {
+                    $Arguments[0] -eq 'clone' -and
+                    $Arguments[1] -eq "https://github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
                 }
             }
 
@@ -48,15 +63,121 @@ InModuleScope $script:moduleName {
                 { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[0] -eq 'clone' -and
+                    $Arguments[1] -eq "https://github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'config' -and
-                    $Arguments[1] -eq '--global' -and
+                    $Arguments[1] -eq '--local' -and
                     $Arguments[2] -eq 'core.autocrlf' -and
                     $Arguments[3] -eq 'true'
-                } -Exactly -Times 1 -Scope It
+                } -Exactly -Times 0 -Scope It
+
+                Assert-MockCalled -CommandName Copy-WikiFolder -Exactly -Times 0 -Scope It
+
+                Assert-MockCalled -CommandName New-WikiSidebar -Exactly -Times 0 -Scope It
+
+                Assert-MockCalled -CommandName New-WikiFooter -Exactly -Times 0 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[0] -eq 'config' -and
+                    $Arguments[1] -eq '--local' -and
+                    $Arguments[2] -eq 'user.email' -and
+                    $Arguments[3] -eq $mockPublishWikiContentParameters.GitUserEmail
+                } -Exactly -Times 0 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[0] -eq 'config' -and
+                    $Arguments[1] -eq '--local' -and
+                    $Arguments[2] -eq 'user.name' -and
+                    $Arguments[3] -eq $mockPublishWikiContentParameters.GitUserName
+                } -Exactly -Times 0 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[0] -eq 'remote' -and
+                    $Arguments[1] -eq 'set-url' -and
+                    $Arguments[2] -eq 'origin' -and
+                    $Arguments[3] -eq "https://$($mockPublishWikiContentParameters.GitUserName):$($mockPublishWikiContentParameters.GithubAccessToken)@github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
+                } -Exactly -Times 0 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[0] -eq 'add' -and
+                    $Arguments[1] -eq '*'
+                } -Exactly -Times 0 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[0] -eq 'commit' -and
+                    $Arguments[1] -eq '--message' -and
+                    $Arguments[2] -eq "`"$($localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion)`"" -and
+                    $Arguments[3] -eq '--quiet'
+                } -Exactly -Times 0 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[0] -eq 'tag' -and
+                    $Arguments[1] -eq '--annotate' -and
+                    $Arguments[2] -eq $mockPublishWikiContentParameters.ModuleVersion -and
+                    $Arguments[3] -eq '--message' -and
+                    $Arguments[4] -eq $mockPublishWikiContentParameters.ModuleVersion
+                } -Exactly -Times 0 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[0] -eq 'push' -and
+                    $Arguments[1] -eq 'origin' -and
+                    $Arguments[2] -eq '--quiet'
+                } -Exactly -Times 0 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[0] -eq 'push' -and
+                    $Arguments[1] -eq 'origin' -and
+                    $Arguments[2] -eq $mockPublishWikiContentParameters.ModuleVersion -and
+                    $Arguments[3] -eq '--quiet'
+                } -Exactly -Times 0 -Scope It
+
+                Assert-MockCalled -CommandName Remove-Item -Exactly -Times 1 -Scope It
+            }
+        }
+        Context 'When publishing Wiki content' {
+            BeforeAll {
+                Mock -CommandName Copy-WikiFolder
+                Mock -CommandName New-WikiSidebar
+                Mock -CommandName New-WikiFooter
+                Mock -CommandName Remove-Item
+
+                Mock -CommandName Invoke-Git -MockWith {
+                    return @{
+                                'ExitCode' = 0
+                                'StandardOutput' = 'Standard Output 0'
+                                'StandardError' = 'Standard Error 0'
+                            }
+                }
+            }
+
+            It 'Should not throw an exception and call the expected mocks' {
+                $mockPublishWikiContentParameters = @{
+                    Path               = $TestDrive
+                    OwnerName          = 'owner'
+                    RepositoryName     = 'repo'
+                    ModuleName         = 'TestModule'
+                    ModuleVersion      = '1.0.0'
+                    GitHubAccessToken  = 'token'
+                    GitUserEmail       = 'user@host.com'
+                    GitUserName        = 'User'
+                    GlobalCoreAutoCrLf = 'true'
+                }
+
+                { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'clone' -and
                     $Arguments[1] -eq "https://github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[0] -eq 'config' -and
+                    $Arguments[1] -eq '--local' -and
+                    $Arguments[2] -eq 'core.autocrlf' -and
+                    $Arguments[3] -eq 'true'
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Copy-WikiFolder -Exactly -Times 1 -Scope It
@@ -132,8 +253,25 @@ InModuleScope $script:moduleName {
                 Mock -CommandName Set-WikiModuleVersion
 
                 Mock -CommandName Invoke-Git -MockWith {
-                    return 1
+                    return @{
+                        'ExitCode' = 0
+                        'StandardOutput' = 'Standard Output 0'
+                        'StandardError' = 'Standard Error 0'
+                    }
                 }
+
+                Mock -CommandName Invoke-Git -MockWith {
+                    return @{
+                        'ExitCode' = 1
+                        'StandardOutput' = 'Standard Output 1'
+                        'StandardError' = 'Standard Error 1'
+                    }
+                } -ParameterFilter {
+                            $Arguments[0] -eq 'commit' -and
+                            $Arguments[1] -eq '--message' -and
+                            $Arguments[2] -eq "`"$($localizedData.UpdateWikiCommitMessage -f $ModuleVersion)`"" -and
+                            $Arguments[3] -eq '--quiet'
+                        }
             }
 
             It 'Should not throw an exception and call the expected mocks' {
@@ -152,15 +290,15 @@ InModuleScope $script:moduleName {
                 { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'config' -and
-                    $Arguments[1] -eq '--global' -and
-                    $Arguments[2] -eq 'core.autocrlf' -and
-                    $Arguments[3] -eq 'true'
+                    $Arguments[0] -eq 'clone' -and
+                    $Arguments[1] -eq "https://github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
-                    $Arguments[0] -eq 'clone' -and
-                    $Arguments[1] -eq "https://github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
+                    $Arguments[0] -eq 'config' -and
+                    $Arguments[1] -eq '--local' -and
+                    $Arguments[2] -eq 'core.autocrlf' -and
+                    $Arguments[3] -eq 'true'
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Copy-WikiFolder -Exactly -Times 1 -Scope It
