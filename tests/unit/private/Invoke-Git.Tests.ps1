@@ -21,7 +21,7 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 InModuleScope $script:moduleName {
     Describe 'Invoke-Git' {
         BeforeAll {
-            $workingDirectory = @{ [string] 'FullName' = "$TestDrive\TestWorkingDirectory" }
+            $WorkingDirectory = @{ [string] 'FullName' = "$TestDrive\TestWorkingDirectory" }
             $mockProcess = New-MockObject -Type System.Diagnostics.Process
             $mockProcess | Add-Member -MemberType ScriptMethod -Name 'Start' -Value { $true } -Force
             $mockProcess | Add-Member -MemberType ScriptMethod -Name 'WaitForExit' -Value { $true } -Force
@@ -33,7 +33,9 @@ InModuleScope $script:moduleName {
 
         Context 'When calling Invoke-Git' {
             It 'Should call without throwing' {
-                { Invoke-Git -Arguments $workingDirectory.FullName, 'config', '--local', 'user.email', 'user@host.com' } | Should -Not -Throw
+                {
+                    Invoke-Git -WorkingDirectory $WorkingDirectory.FullName -Arguments @( 'config', '--local', 'user.email', 'user@host.com' )
+                } | Should -Not -Throw
 
                 Assert-VerifiableMock
             }
@@ -45,7 +47,11 @@ InModuleScope $script:moduleName {
             }
 
             It 'Should call git but mask access token in debug message' {
-                { Invoke-Git -Arguments $workingDirectory.FullName, 'remote', 'set-url', 'origin', 'https://name:5ea239f132736de237492ff3@github.com/repository.wiki.git' -Debug } | Should -Not -Throw
+                {
+                    Invoke-Git -WorkingDirectory $WorkingDirectory.FullName `
+                        -Arguments @( 'remote', 'set-url', 'origin', 'https://name:5ea239f132736de237492ff3@github.com/repository.wiki.git' ) `
+                        -Debug
+                } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
                     $Message -match 'https://name:RedactedToken@github.com/repository.wiki.git'
@@ -61,12 +67,14 @@ InModuleScope $script:moduleName {
             }
 
             It 'Should not throw an exception' {
-                { Invoke-Git -Arguments $workingDirectory.FullName, 'status' } | Should -Not -Throw
+                {
+                    Invoke-Git -WorkingDirectory $WorkingDirectory.FullName -Arguments @( 'status' )
+                } | Should -Not -Throw
 
                 Assert-VerifiableMock
             }
             It 'Should return 1' {
-                $returnCode = Invoke-Git -Arguments $workingDirectory.FullName, 'status'
+                $returnCode = Invoke-Git -WorkingDirectory $WorkingDirectory.FullName -Arguments @( 'status' )
                 $returnCode | Should -BeExactly 1
 
                 Assert-VerifiableMock
@@ -91,23 +99,11 @@ InModuleScope $script:moduleName {
             }
 
             It 'Should produce ExitCode=128 and Write-Warning' {
-                $returnCode = Invoke-Git -Arguments $workingDirectory.FullName, 'status'
+                $returnCode = Invoke-Git -WorkingDirectory $workingDirectory.FullName -Arguments @( 'status' )
                 $returnCode | Should -BeExactly '128'
 
                 Assert-MockCalled -CommandName Write-Warning -ParameterFilter {
                     $Message -eq $($localizedData.UnexpectedInvokeGitReturnCode -f $mockProcess.ExitCode)
-                } -Exactly -Times 1 -Scope It
-                Assert-MockCalled -CommandName Write-Warning -ParameterFilter {
-                    $Message -eq $('  PWD: {0}' -f $($workingDirectory.FullName))
-                } -Exactly -Times 1 -Scope It
-                Assert-MockCalled -CommandName Write-Warning -ParameterFilter {
-                    $Message -eq '  git status'
-                } -Exactly -Times 1 -Scope It
-                Assert-MockCalled -CommandName Write-Warning -ParameterFilter {
-                    $Message -eq '  OUTPUT: Standard Output Message'
-                } -Exactly -Times 1 -Scope It
-                Assert-MockCalled -CommandName Write-Warning -ParameterFilter {
-                    $Message -eq '  ERROR: Standard Error Message'
                 } -Exactly -Times 1 -Scope It
 
                 Assert-VerifiableMock

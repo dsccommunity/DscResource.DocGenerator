@@ -2,11 +2,17 @@
     .SYNOPSIS
         Invokes the git command.
 
+    .PARAMETER WorkingDirectory
+        The path to the git working directory.
+
+    .PARAMETER Timeout
+        Seconds to wait for process to exit.
+
     .PARAMETER Arguments
-        The arguments to pass to the Git executable. First Argument MUST be the desired working directory.
+        The arguments to pass to the Git executable.
 
     .EXAMPLE
-        Invoke-Git D:\WorkingFolder clone https://github.com/X-Guardian/xActiveDirectory.wiki.git --quiet
+        Invoke-Git clone https://github.com/X-Guardian/xActiveDirectory.wiki.git --quiet
 
         Invokes the Git executable to clone the specified repository to the current working directory.
 #>
@@ -14,21 +20,23 @@
 function Invoke-Git
 {
     [CmdletBinding()]
+    [OutputType([System.Int32])]
     param
     (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $WorkingDirectory,
+
+        [Parameter(Mandatory = $false)]
+        [System.Int32]
+        $TimeOut = 120,
+
         [Parameter(ValueFromRemainingArguments = $true)]
         [System.String[]]
         $Arguments
     )
 
-    $workingDirectory = $Arguments[0]
-
-    for ($i=1; $i -lt $Arguments.Length; $i++)
-    {
-        [string[]] $cmdArguments += $Arguments[$i]
-    }
-
-    $argumentsJoined = $cmdArguments -join ' '
+    $argumentsJoined = $Arguments -join ' '
 
     # Trying to remove any access token from the debug output.
     if ($argumentsJoined -match ':[\d|a-f].*@')
@@ -40,23 +48,19 @@ function Invoke-Git
 
     try
     {
-        $process = New-Object System.Diagnostics.Process
-        $process.StartInfo.Arguments = $cmdArguments
+        $process = New-Object -TypeName System.Diagnostics.Process
+        $process.StartInfo.Arguments = $Arguments
         $process.StartInfo.CreateNoWindow = $true
         $process.StartInfo.FileName = 'git.exe'
         $process.StartInfo.RedirectStandardOutput = $true
         $process.StartInfo.RedirectStandardError = $true
         $process.StartInfo.UseShellExecute = $false
         $process.StartInfo.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden
-        $process.StartInfo.WorkingDirectory = $workingDirectory
+        $process.StartInfo.WorkingDirectory = $WorkingDirectory
 
         if ($process.Start() -eq $true)
         {
-            <#
-                -1 specifies an infinite wait. Suitable for large commits,
-                network issues, etc.
-            #>
-            if ($process.WaitForExit(-1) -eq $true)
+            if ($process.WaitForExit($TimeOut) -eq $true)
             {
                 <#
                     Assuming the error code 1 from git is warnings or informational like
@@ -66,33 +70,24 @@ function Invoke-Git
                 if ($process.ExitCode -gt 1)
                 {
                     Write-Warning -Message ($localizedData.UnexpectedInvokeGitReturnCode -f $process.ExitCode)
-                    Write-Warning -Message "  PWD: $workingDirectory"
-                    Write-Warning -Message "  git $argumentsJoined"
 
-                    [string] $invokeGitOutput = $process.StandardOutput.ReadToEnd()
-                    [string] $invokeGitError = $process.StandardError.ReadToEnd()
-
-                    if ([System.String]::IsNullOrWhiteSpace($invokeGitOutput) -eq $false)
-                    {
-                        Write-Warning -Message "  OUTPUT: $invokeGitOutput"
-                    }
-                    if ([System.String]::IsNullOrWhiteSpace($invokeGitError) -eq $false)
-                    {
-                        Write-Warning -Message "  ERROR: $invokeGitError"
-                    }
+                    Write-Debug -Message ($localizedData.InvokeGitStandardOutputReturn -f $process.StandardOutput.ReadToEnd())
+                    Write-Debug -Message ($localizedData.InvokeGitStandardErrorReturn -f $process.StandardError.ReadToEnd())
                 }
             }
         }
     }
-    catch {
-        $e = $_
-
-        Write-Error -Message $e.Exception.Message
+    catch
+    {
+        throw $_
     }
-    finally {
-
-        $exitCode = $process.ExitCode
-        $process.Dispose()
+    finally
+    {
+        if ($process)
+        {
+            $exitCode = $process.ExitCode
+            $process.Dispose()
+        }
     }
 
     return $exitCode
