@@ -178,22 +178,7 @@ function New-DscResourceWikiPage
         # Looping through each module file (normally just one).
         foreach ($builtModuleScriptFile in $builtModuleScriptFiles)
         {
-            $tokens, $parseErrors = $null
-
-            $ast = [System.Management.Automation.Language.Parser]::ParseFile($builtModuleScriptFile.FullName, [ref] $tokens, [ref] $parseErrors)
-
-            if ($parseErrors)
-            {
-                throw $parseErrors
-            }
-
-            $astFilter = {
-                $args[0] -is [System.Management.Automation.Language.TypeDefinitionAst] `
-                    -and $args[0].IsClass -eq $true `
-                    -and $args[0].Attributes.Extent.Text -imatch '\[DscResource\(.*\)\]'
-            }
-
-            $dscResourceAsts = $ast.FindAll($astFilter, $true)
+            $dscResourceAsts = Get-ClassResourceAst -ScriptFile $builtModuleScriptFile.FullName
 
             Write-Verbose -Message ($script:localizedData.FoundClassBasedMessage -f $dscResourceAsts.Count, $builtModuleScriptFile.FullName)
 
@@ -211,74 +196,17 @@ function New-DscResourceWikiPage
 
                 $sourceFilePath = Join-Path -Path $SourcePath -ChildPath ('Classes/*{0}.ps1' -f $dscResourceAst.Name)
 
-                $dscResourceCommentBasedHelp = Get-ClassResourceCommentBasedHelp -Path $sourceFilePath
+                $className = @()
 
-                $astFilter = {
-                    $args[0] -is [System.Management.Automation.Language.PropertyMemberAst]
-                }
-
-                $propertyMemberAsts = $dscResourceAst.FindAll($astFilter, $true)
-
-                $resourceProperty = @()
-
-                <#
-                    Looping through each resource property to build the hashtable
-                    that should be passed to Get-DscResourceSchemaPropertyContent.
-                    Hashtable should be in the format:
-
-                    @{
-                        Name             = <System.String>
-                        State            = 'Key' | 'Required' |'Write' | 'Read'
-                        Description      = <System.String>
-                        EmbeddedInstance = 'MSFT_Credential' | $null
-                        DataType         = 'System.String' | 'System.String[] | etc.
-                        IsArray          = $true | $false
-                        ValueMap         = @(<System.String> | ...)
-                    }
-                #>
-                foreach ($propertyMemberAst in $propertyMemberAsts)
+                if ($dscResourceAst.BaseTypes.Count -gt 0)
                 {
-                    Write-Verbose -Message ($script:localizedData.FoundClassResourcePropertyMessage -f $propertyMemberAst.Name, $dscResourceAst.Name)
-
-                    $propertyAttribute = @{
-                        Name             = $propertyMemberAst.Name
-                        DataType         = $propertyMemberAst.PropertyType.TypeName.FullName
-
-                        # Always set to null, correct type name is set in DataType.
-                        EmbeddedInstance = $null
-
-                        # Always set to $false - correct type name is set in DataType.
-                        IsArray          = $false
-                    }
-
-                    $propertyAttribute['State'] = Get-ClassResourcePropertyState -Ast $propertyMemberAst
-
-                    $astFilter = {
-                        $args[0] -is [System.Management.Automation.Language.AttributeAst] `
-                            -and $args[0].TypeName.Name -eq 'ValidateSet'
-                    }
-
-                    $propertyAttributeAsts = $propertyMemberAst.FindAll($astFilter, $true)
-
-                    if ($propertyAttributeAsts)
-                    {
-                        $propertyAttribute['ValueMap'] = $propertyAttributeAsts.PositionalArguments.Value
-                    }
-
-                    # The key name must be upper-case for it to match the right item in the list of parameters.
-                    $propertyDescription = ($dscResourceCommentBasedHelp.Parameters[$propertyMemberAst.Name.ToUpper()] -replace '[\r|\n]+$')
-
-                    $propertyDescription = $propertyDescription -replace '[\r|\n]+$' # Removes all blank rows at the end
-                    $propertyDescription = $propertyDescription -replace '[ ]+\r\n', "`r`n" # Remove indentation from blank rows
-                    $propertyDescription = $propertyDescription -replace '\r?\n', " " # Replace CRLF with one white space
-                    $propertyDescription = $propertyDescription -replace '\|', " " # Replace vertical bar with white space
-                    $propertyDescription = $propertyDescription -replace '  +', " " # Replace multiple whitespace with one single white space
-                    $propertyDescription = $propertyDescription -replace ' +$' # Remove white space from end of row
-
-                    $propertyAttribute['Description'] = $propertyDescription
-
-                    $resourceProperty += $propertyAttribute
+                    $className += @($dscResourceAst.BaseTypes.TypeName.Name)
                 }
+
+                $className += $dscResourceAst.Name
+
+                # Returns the properties for class and any existing parent class(es).
+                $resourceProperty = Get-ClassResourceProperty -ClassName $className -SourcePath $SourcePath -BuiltModuleScriptFilePath $builtModuleScriptFile.FullName
 
                 $propertyContent = Get-DscResourceSchemaPropertyContent -Property $resourceProperty -UseMarkdown
 
@@ -288,6 +216,8 @@ function New-DscResourceWikiPage
                 }
 
                 $null = $output.AppendLine()
+
+                $dscResourceCommentBasedHelp = Get-ClassResourceCommentBasedHelp -Path $sourceFilePath
 
                 $description = $dscResourceCommentBasedHelp.Description
                 $description = $description -replace '[\r|\n]+$' # Removes all blank rows and whitespace at the end

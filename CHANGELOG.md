@@ -5,9 +5,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added private functions:
+  - `Get-ClassAst` - Returns the AST for a single or all classes.
+  - `Get-ClassResourceAst` - Returns the AST for a single or all DSC class
+    resources.
+  - `Get-ClassResourceProperty` - Returns DSC class resource properties
+    from the provided class or classes.
+  - `Format-Text` - Format a string according to predefined options.
+
 ### Changed
 
+- `New-DscResourceWikiPage`
+  - If a class-based resource has a parent class that contains DSC resource
+    properties they will now also be returned as part of the DSC resource
+    parameters ([issue #62](https://github.com/dsccommunity/DscResource.DocGenerator/issues/62)).
 - Converted `Invoke-Git` cmdlet to use `System.Diagnostics.Process` for improved error handling.
+
+### Fixed
+
+- `Publish_GitHub_Wiki_Content`
+  - Output message if `$GitHubToken` not specified which skips this task.
+    Fixes [Issue 75](https://github.com/dsccommunity/DscResource.DocGenerator/issues/75)
 
 ## [0.8.3] - 2021-04-10
 

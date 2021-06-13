@@ -99,94 +99,102 @@ param
 )
 
 # Synopsis: This task publishes documentation to a GitHub Wiki repository.
-task Publish_GitHub_Wiki_Content -if ($GitHubToken) {
-    $OutputDirectory = Get-SamplerAbsolutePath -Path $OutputDirectory -RelativeTo $BuildRoot
-    "`tOutputDirectory       = '$OutputDirectory'"
-    $BuiltModuleSubdirectory = Get-SamplerAbsolutePath -Path $BuiltModuleSubdirectory -RelativeTo $OutputDirectory
+task Publish_GitHub_Wiki_Content {
 
-    if ($VersionedOutputDirectory)
+    if ([System.String]::IsNullOrEmpty($GitHubToken))
     {
-        # VersionedOutputDirectory is not [bool]'' nor $false nor [bool]$null
-        # Assume true, wherever it was set
-        $VersionedOutputDirectory = $true
+        Write-Build Yellow 'Skipping task. Variable $GitHubToken not set via parent scope, as an environment variable, or passed to the build task.'
     }
     else
     {
-        # VersionedOutputDirectory may be [bool]'' but we can't tell where it's
-        # coming from, so assume the build info (Build.yaml) is right
-        $VersionedOutputDirectory = $BuildInfo['VersionedOutputDirectory']
-    }
+        $OutputDirectory = Get-SamplerAbsolutePath -Path $OutputDirectory -RelativeTo $BuildRoot
+        "`tOutputDirectory       = '$OutputDirectory'"
+        $BuiltModuleSubdirectory = Get-SamplerAbsolutePath -Path $BuiltModuleSubdirectory -RelativeTo $OutputDirectory
 
-    $GetBuiltModuleManifestParams = @{
-        OutputDirectory          = $OutputDirectory
-        BuiltModuleSubdirectory  = $BuiltModuleSubDirectory
-        ModuleName               = $ProjectName
-        VersionedOutputDirectory = $VersionedOutputDirectory
-        ErrorAction              = 'Stop'
-    }
-
-    $builtModuleManifest = Get-SamplerBuiltModuleManifest @GetBuiltModuleManifestParams
-    $builtModuleManifest = [string](Get-Item -Path $builtModuleManifest).FullName
-    "`tBuilt Module Manifest         = '$builtModuleManifest'"
-
-    $builtModuleBase = Get-SamplerBuiltModuleBase @GetBuiltModuleManifestParams
-    $builtModuleBase = [string](Get-Item -Path $builtModuleBase).FullName
-    "`tBuilt Module Base             = '$builtModuleBase'"
-
-    $moduleVersion = Get-BuiltModuleVersion @GetBuiltModuleManifestParams
-    $moduleVersionObject = Split-ModuleVersion -ModuleVersion $moduleVersion
-    $moduleVersionFolder = $moduleVersionObject.Version
-    $preReleaseTag = $moduleVersionObject.PreReleaseString
-
-    "`tModule Version                = '$ModuleVersion'"
-    "`tModule Version Folder         = '$moduleVersionFolder'"
-    "`tPre-release Tag               = '$preReleaseTag'"
-
-    "`tProject Path                  = $ProjectPath"
-    "`tProject Name                  = $ProjectName"
-    "`tSource Path                   = $SourcePath"
-    "`tBuilt Module Base             = $builtModuleBase"
-
-    # If variables are not set then update variables from the property values in the build.yaml.
-    foreach ($gitHubConfigKey in @('GitHubConfigUserName', 'GitHubConfigUserEmail'))
-    {
-        if (-not (Get-Variable -Name $gitHubConfigKey -ValueOnly -ErrorAction 'SilentlyContinue'))
+        if ($VersionedOutputDirectory)
         {
-            # Variable is not set in context, use $BuildInfo.GitHubConfig.<varName>
-            $gitHubConfigKeyValue = $BuildInfo.GitHubConfig.($gitHubConfigKey)
-
-            Set-Variable -Name $gitHubConfigKey -Value $gitHubConfigKeyValue
-            Write-Build DarkGray "Set $gitHubConfigKey to $gitHubConfigKeyValue"
+            # VersionedOutputDirectory is not [bool]'' nor $false nor [bool]$null
+            # Assume true, wherever it was set
+            $VersionedOutputDirectory = $true
         }
+        else
+        {
+            # VersionedOutputDirectory may be [bool]'' but we can't tell where it's
+            # coming from, so assume the build info (Build.yaml) is right
+            $VersionedOutputDirectory = $BuildInfo['VersionedOutputDirectory']
+        }
+
+        $GetBuiltModuleManifestParams = @{
+            OutputDirectory          = $OutputDirectory
+            BuiltModuleSubdirectory  = $BuiltModuleSubDirectory
+            ModuleName               = $ProjectName
+            VersionedOutputDirectory = $VersionedOutputDirectory
+            ErrorAction              = 'Stop'
+        }
+
+        $builtModuleManifest = Get-SamplerBuiltModuleManifest @GetBuiltModuleManifestParams
+        $builtModuleManifest = [string](Get-Item -Path $builtModuleManifest).FullName
+        "`tBuilt Module Manifest         = '$builtModuleManifest'"
+
+        $builtModuleBase = Get-SamplerBuiltModuleBase @GetBuiltModuleManifestParams
+        $builtModuleBase = [string](Get-Item -Path $builtModuleBase).FullName
+        "`tBuilt Module Base             = '$builtModuleBase'"
+
+        $moduleVersion = Get-BuiltModuleVersion @GetBuiltModuleManifestParams
+        $moduleVersionObject = Split-ModuleVersion -ModuleVersion $moduleVersion
+        $moduleVersionFolder = $moduleVersionObject.Version
+        $preReleaseTag = $moduleVersionObject.PreReleaseString
+
+        "`tModule Version                = '$ModuleVersion'"
+        "`tModule Version Folder         = '$moduleVersionFolder'"
+        "`tPre-release Tag               = '$preReleaseTag'"
+
+        "`tProject Path                  = $ProjectPath"
+        "`tProject Name                  = $ProjectName"
+        "`tSource Path                   = $SourcePath"
+        "`tBuilt Module Base             = $builtModuleBase"
+
+        # If variables are not set then update variables from the property values in the build.yaml.
+        foreach ($gitHubConfigKey in @('GitHubConfigUserName', 'GitHubConfigUserEmail'))
+        {
+            if (-not (Get-Variable -Name $gitHubConfigKey -ValueOnly -ErrorAction 'SilentlyContinue'))
+            {
+                # Variable is not set in context, use $BuildInfo.GitHubConfig.<varName>
+                $gitHubConfigKeyValue = $BuildInfo.GitHubConfig.($gitHubConfigKey)
+
+                Set-Variable -Name $gitHubConfigKey -Value $gitHubConfigKeyValue
+                Write-Build DarkGray "Set $gitHubConfigKey to $gitHubConfigKeyValue"
+            }
+        }
+
+        $remoteURL = git remote get-url origin
+
+        # Parse the URL for owner name and repository name.
+        if ($remoteURL -match 'github')
+        {
+            $GHRepo = Get-GHOwnerRepoFromRemoteUrl -RemoteUrl $remoteURL
+        }
+        else
+        {
+            throw "Could not parse owner and repository from the git remote origin URL: '$remoteUrl'."
+        }
+
+        $wikiOutputPath = Join-Path -Path $OutputDirectory -ChildPath $WikiContentFolderName
+        "`tWiki Output Path              = $wikiOutputPath"
+
+        $publishWikiContentParameters = @{
+            Path              = $wikiOutputPath
+            OwnerName         = $GHRepo.Owner
+            RepositoryName    = $GHRepo.Repository
+            ModuleName        = $ProjectName
+            ModuleVersion     = $moduleVersion
+            GitHubAccessToken = $GitHubToken
+            GitUserEmail      = $GitHubConfigUserEmail
+            GitUserName       = $GitHubConfigUserName
+        }
+
+        Write-Build Magenta "Publishing Wiki content."
+
+        Publish-WikiContent @publishWikiContentParameters
     }
-
-    $remoteURL = git remote get-url origin
-
-    # Parse the URL for owner name and repository name.
-    if ($remoteURL -match 'github')
-    {
-        $GHRepo = Get-GHOwnerRepoFromRemoteUrl -RemoteUrl $remoteURL
-    }
-    else
-    {
-        throw "Could not parse owner and repository from the git remote origin URL: '$remoteUrl'."
-    }
-
-    $wikiOutputPath = Join-Path -Path $OutputDirectory -ChildPath $WikiContentFolderName
-    "`tWiki Output Path              = $wikiOutputPath"
-
-    $publishWikiContentParameters = @{
-        Path              = $wikiOutputPath
-        OwnerName         = $GHRepo.Owner
-        RepositoryName    = $GHRepo.Repository
-        ModuleName        = $ProjectName
-        ModuleVersion     = $moduleVersion
-        GitHubAccessToken = $GitHubToken
-        GitUserEmail      = $GitHubConfigUserEmail
-        GitUserName       = $GitHubConfigUserName
-    }
-
-    Write-Build Magenta "Publishing Wiki content."
-
-    Publish-WikiContent @publishWikiContentParameters
 }
