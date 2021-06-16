@@ -113,14 +113,18 @@ task Publish_GitHub_Wiki_Content {
 
         if ($VersionedOutputDirectory)
         {
-            # VersionedOutputDirectory is not [bool]'' nor $false nor [bool]$null
-            # Assume true, wherever it was set
+            <#
+                VersionedOutputDirectory is not [bool]'' nor $false nor [bool]$null
+                Assume true, wherever it was set
+            #>
             $VersionedOutputDirectory = $true
         }
         else
         {
-            # VersionedOutputDirectory may be [bool]'' but we can't tell where it's
-            # coming from, so assume the build info (Build.yaml) is right
+            <#
+                VersionedOutputDirectory may be [bool]'' but we can't tell where it's
+                coming from, so assume the build info (Build.yaml) is right
+            #>
             $VersionedOutputDirectory = $BuildInfo['VersionedOutputDirectory']
         }
 
