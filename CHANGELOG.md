@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Get-ClassResourceProperty` - Returns DSC class resource properties
     from the provided class or classes.
   - `Format-Text` - Format a string according to predefined options.
+  - `Get-TemporaryPath` - returns the appropriate temp path for the OS.
 
 ### Changed
 
@@ -23,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     parameters ([issue #62](https://github.com/dsccommunity/DscResource.DocGenerator/issues/62)).
   - Refactored to split into two private functions `New-DscMofResourceWikiPage` and
     `New-DscClassResourceWikiPage`.
+- `Get-MofSchemaObject`
+  - Refactored to reduce code duplication when adding functions for supporting
+    composite resources.
 
 ### Fixed
 
