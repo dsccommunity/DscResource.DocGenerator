@@ -12,9 +12,15 @@
         The arguments to pass to the Git executable.
 
     .EXAMPLE
-        Invoke-Git clone https://github.com/X-Guardian/xActiveDirectory.wiki.git --quiet
+        Invoke-Git -WorkingDirectory 'C:\SomeDirectory' -Arguments @( 'clone', 'https://github.com/X-Guardian/xActiveDirectory.wiki.git', '--quiet' )
 
-        Invokes the Git executable to clone the specified repository to the current working directory.
+        Invokes the Git executable to clone the specified repository to the working directory.
+
+    .EXAMPLE
+
+        Invoke-Git -WorkingDirectory 'C:\SomeDirectory' -Arguments @( 'status' ) -TimeOut 10
+
+        Invokes the Git executable to return the status while having a 10 second timeout.
 #>
 
 function Invoke-Git

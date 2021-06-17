@@ -21,7 +21,6 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 InModuleScope $script:moduleName {
     Describe 'Invoke-Git' {
         BeforeAll {
-            $WorkingDirectory = @{ [string] 'FullName' = "$TestDrive\TestWorkingDirectory" }
             $mockProcess = New-MockObject -Type System.Diagnostics.Process
             $mockProcess | Add-Member -MemberType ScriptMethod -Name 'Start' -Value { $true } -Force
             $mockProcess | Add-Member -MemberType ScriptMethod -Name 'WaitForExit' -Value { $true } -Force
@@ -34,7 +33,7 @@ InModuleScope $script:moduleName {
         Context 'When calling Invoke-Git' {
             It 'Should call without throwing' {
                 {
-                    Invoke-Git -WorkingDirectory $WorkingDirectory.FullName -Arguments @( 'config', '--local', 'user.email', 'user@host.com' )
+                    Invoke-Git -WorkingDirectory $TestDrive -Arguments @( 'config', '--local', 'user.email', 'user@host.com' )
                 } | Should -Not -Throw
 
                 Assert-VerifiableMock
@@ -48,7 +47,7 @@ InModuleScope $script:moduleName {
 
             It 'Should call git but mask access token in debug message' {
                 {
-                    Invoke-Git -WorkingDirectory $WorkingDirectory.FullName `
+                    Invoke-Git -WorkingDirectory $TestDrive `
                         -Arguments @( 'remote', 'set-url', 'origin', 'https://name:5ea239f132736de237492ff3@github.com/repository.wiki.git' ) `
                         -Debug
                 } | Should -Not -Throw
@@ -68,13 +67,13 @@ InModuleScope $script:moduleName {
 
             It 'Should not throw an exception' {
                 {
-                    Invoke-Git -WorkingDirectory $WorkingDirectory.FullName -Arguments @( 'status' )
+                    Invoke-Git -WorkingDirectory $TestDrive -Arguments @( 'status' )
                 } | Should -Not -Throw
 
                 Assert-VerifiableMock
             }
             It 'Should return 1' {
-                $returnCode = Invoke-Git -WorkingDirectory $WorkingDirectory.FullName -Arguments @( 'status' )
+                $returnCode = Invoke-Git -WorkingDirectory $TestDrive -Arguments @( 'status' )
                 $returnCode | Should -BeExactly 1
 
                 Assert-VerifiableMock
@@ -99,7 +98,7 @@ InModuleScope $script:moduleName {
             }
 
             It 'Should produce ExitCode=128 and Write-Warning' {
-                $returnCode = Invoke-Git -WorkingDirectory $workingDirectory.FullName -Arguments @( 'status' )
+                $returnCode = Invoke-Git -WorkingDirectory $TestDrive -Arguments @( 'status' )
                 $returnCode | Should -BeExactly '128'
 
                 Assert-MockCalled -CommandName Write-Warning -ParameterFilter {
