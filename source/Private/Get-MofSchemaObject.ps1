@@ -15,6 +15,13 @@
         $mof = Get-MofSchemaObject -FileName C:\repos\SharePointDsc\DSCRescoures\MSFT_SPSite\MSFT_SPSite.schema.mof
 
         This example parses a MOF schema file.
+
+    .NOTES
+        The function will thrown when run on MacOS because currently there is an
+        issue using the type
+        [Microsoft.PowerShell.DesiredStateConfiguration.Internal.DscClassCache]
+        on macOS. See issue https://github.com/PowerShell/PowerShell/issues/5970
+        and issue https://github.com/PowerShell/MMI/issues/33.
 #>
 function Get-MofSchemaObject
 {
@@ -27,34 +34,12 @@ function Get-MofSchemaObject
         $FileName
     )
 
-    $temporaryPath = $null
-
-    # Determine the correct $env:TEMP drive
-    switch ($true)
+    if ($IsMacOS)
     {
-        (-not (Test-Path -Path variable:IsWindows) -or $IsWindows)
-        {
-            # Windows PowerShell or PowerShell 6+
-            $temporaryPath = $env:TEMP
-        }
-
-        $IsMacOS
-        {
-            $temporaryPath = $env:TMPDIR
-
-            throw 'NotImplemented: Currently there is an issue using the type [Microsoft.PowerShell.DesiredStateConfiguration.Internal.DscClassCache] on macOS. See issue https://github.com/PowerShell/PowerShell/issues/5970 and issue https://github.com/PowerShell/MMI/issues/33.'
-        }
-
-        $IsLinux
-        {
-            $temporaryPath = '/tmp'
-        }
-
-        Default
-        {
-            throw 'Cannot set the temporary path. Unknown operating system.'
-        }
+        throw 'NotImplemented: Currently there is an issue using the type [Microsoft.PowerShell.DesiredStateConfiguration.Internal.DscClassCache] on macOS. See issue https://github.com/PowerShell/PowerShell/issues/5970 and issue https://github.com/PowerShell/MMI/issues/33.'
     }
+
+    $temporaryPath = Get-TemporaryPath
 
     #region Workaround for OMI_BaseResource inheritance not resolving.
 
