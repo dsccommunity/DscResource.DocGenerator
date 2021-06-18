@@ -19,11 +19,21 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 #endregion HEADER
 
 InModuleScope $script:moduleName {
-    Describe 'Get-ClassResourceCommentBasedHelp' {
+    Describe 'Get-CommentBasedHelp' {
         Context 'When there is a script parse error' {
             BeforeAll {
                 # Mock script have not declared a Set-method.
                 $mockScriptFileContent = @'
+<#
+.SYNOPSIS
+    A synopsis.
+
+.DESCRIPTION
+    A description.
+
+.PARAMETER ProjectName
+    ProjectName description.
+#>
 [DscResource()]
 class AzDevOpsProject
 {
@@ -48,7 +58,7 @@ class AzDevOpsProject
             }
 
             It 'Should not throw an exception and call the correct mock' {
-                { Get-ClassResourceCommentBasedHelp -Path $mockFilePath -Verbose } | Should -Not -Throw
+                { Get-CommentBasedHelp -Path $mockFilePath -Verbose } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
                     # Assert the localized string is part of the message
@@ -57,7 +67,7 @@ class AzDevOpsProject
             }
         }
 
-        Context 'When returning comment-based help' {
+        Context 'When returning comment-based help and comment block is at the top of the file' {
             BeforeAll {
                 $mockScriptFileContent = @'
 <#
@@ -94,10 +104,82 @@ class AzDevOpsProject
             }
 
             It 'Should return the correct comment-based help' {
-                $result = Get-ClassResourceCommentBasedHelp -Path $mockFilePath -Verbose
+                $result = Get-CommentBasedHelp -Path $mockFilePath -Verbose
 
                 # Parameter name must be upper-case. Also strip any new lines at the end of the string.
                 ($result.Parameters['PROJECTNAME'] -replace '\r?\n+$') | Should -Be 'ProjectName description.'
+            }
+        }
+
+        Context 'When returning comment-based help and comment block is not at the top of the file' {
+            BeforeAll {
+                $mockScriptFileContent = @'
+$errorActionPreference = 'Stop'
+Set-StrictMode -Version 'Latest'
+<#
+    .SYNOPSIS
+        A synopsis.
+
+    .DESCRIPTION
+        A description.
+
+    .PARAMETER ProjectName
+        ProjectName description.
+#>
+configuration CompositeHelperTest1
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String[]]
+        $ProjectName
+    )
+
+    # Composite resource code would be here.
+}
+'@
+                $mockFilePath = Join-Path -Path $TestDrive -ChildPath 'MyCompositeResource.schema.psm1'
+                $mockScriptFileContent | Out-File -FilePath $mockFilePath -Encoding ascii -Force
+            }
+
+            It 'Should return the correct comment-based help' {
+                $result = Get-CommentBasedHelp -Path $mockFilePath -Verbose
+
+                # Parameter name must be upper-case. Also strip any new lines at the end of the string.
+                ($result.Parameters['PROJECTNAME'] -replace '\r?\n+$') | Should -Be 'ProjectName description.'
+            }
+        }
+
+        Context 'When returning comment-based help and comment block does not exist in file' {
+            BeforeAll {
+                $mockScriptFileContent = @'
+$errorActionPreference = 'Stop'
+Set-StrictMode -Version 'Latest'
+
+configuration CompositeHelperTest1
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String[]]
+        $ProjectName
+    )
+
+    # Composite resource code would be here.
+}
+'@
+                $mockFilePath = Join-Path -Path $TestDrive -ChildPath 'MyCompositeResource.schema.psm1'
+                $mockScriptFileContent | Out-File -FilePath $mockFilePath -Encoding ascii -Force
+            }
+
+            It 'Should not throw exception' {
+                {
+                    Get-CommentBasedHelp -Path $mockFilePath -Verbose
+                } | Should -Not -Throw
             }
         }
     }

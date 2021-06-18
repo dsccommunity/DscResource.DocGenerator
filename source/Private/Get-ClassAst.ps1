@@ -9,7 +9,7 @@
         The specific class to return the AST for. Optional.
 
     .EXAMPLE
-        Get-ClassAst -ClassName 'myClass' -ScriptFile '.\output\MyModule\1.0.0\MyModule.psm1'
+        Get-ClassAst -ScriptFile '.\output\MyModule\1.0.0\MyModule.psm1'
 
         Returns AST for all the classes in the script file.
 
