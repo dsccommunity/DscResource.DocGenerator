@@ -28,28 +28,37 @@ function Get-CompositeSchemaObject
         $FileName
     )
 
-    $temporaryPath = Get-TemporaryPath
+    $manifestFileName = $FileName -replace '.schema.psm1','psd1'
+    $compositeName = [System.IO.Path]::GetFileName($FileName) -replace '.schema.psm1',''
+    $moduleVersion = Get-MetaData -Path $manifestFileName -PropertyName ModuleVersion
+    $description = Get-MetaData -Path $manifestFileName -PropertyName Description
+    $compositeResource = Get-ConfigurationAst
 
-    foreach ($compositeResource in $compositeCompositeFile)
+    if ($compositeResource.Count -gt 1)
     {
-        $attributes = foreach ($property in $compsiteResourceProperties)
-        {
-            @{
-                Name             = $property.Name
-                State            = $state
-                DataType         = $property.CimType
-                ValueMap         = $property.Qualifiers.Where( { $_.Name -eq 'ValueMap' }).Value
-                IsArray          = $property.CimType -gt 16
-                Description      = $property.Qualifiers.Where( { $_.Name -eq 'Description' }).Value
-                EmbeddedInstance = $property.Qualifiers.Where( { $_.Name -eq 'EmbeddedInstance' }).Value
-            }
-        }
+        throw ($script:localizedData.CompositeResourceMultiConfigError -f $FileName, $compositeResources.Count)
+    }
+
+    $commentBasedHelp = Get-CommentBasedHelp -Path $FileName
+
+    $attributes = foreach ($property in $compsiteResource.Body.ScriptBlock.ParamBlock.Parameters)
+    {
+        $propertyDescription = ''
 
         @{
-            ClassName    = $currentCimClass.CimClassName
-            Attributes   = $attributes
-            ClassVersion = '1.0.0'
-            FriendlyName = $currentCimClass.CimClassQualifiers.Where( { $_.Name -eq 'FriendlyName' }).Value
+            Name             = $property.Name
+            State            = (Get-CompositeResourcePropertyState -Ast $property)
+            DataType         = $property.StaticType.FullName
+            ValueMap         = $property.Qualifiers.Where( { $_.Name -eq 'ValueMap' }).Value
+            Description      = $propertyDescription
         }
+    }
+
+    @{
+
+        Name          = $compositeName
+        Attributes    = $attributes
+        ModuleVersion = $moduleVersion
+        Description   = $description
     }
 }
