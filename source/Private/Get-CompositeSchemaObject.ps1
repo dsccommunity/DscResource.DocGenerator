@@ -30,8 +30,11 @@ function Get-CompositeSchemaObject
 
     $manifestFileName = $FileName -replace '.schema.psm1','.psd1'
     $compositeName = [System.IO.Path]::GetFileName($FileName) -replace '.schema.psm1',''
-    $moduleVersion = Get-MetaData -Path $manifestFileName -PropertyName ModuleVersion
-    $description = Get-MetaData -Path $manifestFileName -PropertyName Description
+    $manifestData = Import-LocalizedData `
+        -BaseDirectory ([System.IO.Path]::GetDirectoryName($manifestFileName)) `
+        -FileName ([System.IO.Path]::GetFileName($manifestFileName))
+    $moduleVersion = $manifestData.ModuleVersion
+    $description = $manifestData.Description
     $compositeResource = Get-ConfigurationAst -ScriptFile $FileName
 
     if ($compositeResource.Count -gt 1)
