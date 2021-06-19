@@ -41,23 +41,22 @@ function Get-CompositeSchemaObject
 
     $commentBasedHelp = Get-CommentBasedHelp -Path $FileName
 
-    $attributes = foreach ($property in $compsiteResource.Body.ScriptBlock.ParamBlock.Parameters)
+    $parameters = foreach ($parameter in $compsiteResource.Body.ScriptBlock.ParamBlock.Parameters)
     {
-        $propertyDescription = ''
+        $parameterDescription = ''
 
         @{
-            Name             = $property.Name
-            State            = (Get-CompositeResourcePropertyState -Ast $property)
-            DataType         = $property.StaticType.FullName
-            ValueMap         = $property.Qualifiers.Where( { $_.Name -eq 'ValueMap' }).Value
-            Description      = $propertyDescription
+            Name             = $parameter.Name
+            State            = (Get-CompositeResourceParameterState -Ast $parameter)
+            Type             = $parameter.StaticType.FullName
+            ValidateSet      = (Get-CompositeResourceParameterValidateSet -Ast $parameter)
+            Description      = $parameterDescription
         }
     }
 
     @{
-
         Name          = $compositeName
-        Attributes    = $attributes
+        Parameters    = $parameters
         ModuleVersion = $moduleVersion
         Description   = $description
     }

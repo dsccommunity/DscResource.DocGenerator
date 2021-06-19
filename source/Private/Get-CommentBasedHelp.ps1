@@ -23,6 +23,14 @@
         This example parses the comment-based help from the PowerShell script file
         'c:\MyProject\source\Classes\010-MyResourceName.ps1' and returns an
         object of System.Management.Automation.Language.CommentHelpInfo.
+
+    .NOTES
+        PowerShell classes do not support comment-based help. There is
+        no GetHelpContent() on the TypeDefinitionAst.
+
+        We use the ScriptBlockAst to filter out our class-based resource
+        script block from the source file and use that to get the
+        comment-based help.
 #>
 function Get-CommentBasedHelp
 {
@@ -35,14 +43,6 @@ function Get-CommentBasedHelp
         $Path
     )
 
-    <#
-        PowerShell classes does not support comment-based help. There is
-        no GetHelpContent() on the TypeDefinitionAst.
-
-        We use the ScriptBlockAst to filter out our class-based resource
-        script block from the source file and use that to get the
-        comment-based help.
-    #>
     $Path = Resolve-Path -Path $Path
 
     Write-Verbose -Message ($script:localizedData.CommentBasedHelpMessage -f $Path)
