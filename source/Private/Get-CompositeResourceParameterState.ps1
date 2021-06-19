@@ -47,7 +47,7 @@ function Get-CompositeResourceParameterState
 
     if ($IsMacOS)
     {
-        throw $script:localizedData:MacOSNotSupportedError
+        throw $script:localizedData.MacOSNotSupportedError
     }
 
     $astFilterForMandatoryAttribute = {

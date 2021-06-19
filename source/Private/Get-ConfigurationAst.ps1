@@ -38,7 +38,7 @@ function Get-ConfigurationAst
 
     if ($IsMacOS)
     {
-        throw $script:localizedData:MacOSNotSupportedError
+        throw $script:localizedData.MacOSNotSupportedError
     }
 
     $tokens, $parseErrors = $null
