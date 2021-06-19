@@ -42,7 +42,9 @@ param
 )
 '@
 
-                    $parameterAst = $mockCompositeScript.Ast.FindAll($script:parameterAstFilter, $true)
+                    $compositeAst = [System.Management.Automation.Language.Parser]::ParseInput($mockCompositeScript, [ref] $script:tokens, [ref] $script:parseErrors)
+
+                    $parameterAst = $compositeAst.FindAll($script:parameterAstFilter, $true)
                 }
 
                 It 'Should throw a not implemented error on MacOS' {
