@@ -20,9 +20,9 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 
 InModuleScope $script:moduleName {
     Describe 'Get-CompositeResourceParameterValidateSet' {
-        Context 'When run on MacOS' {
-            if ($IsMacOS)
-            {
+        if ($IsMacOS)
+        {
+            Context 'When run on MacOS' {
                 BeforeAll {
                     $mockCompositeScript = {
                         param
