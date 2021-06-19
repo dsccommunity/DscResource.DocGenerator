@@ -21,14 +21,13 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 InModuleScope $script:moduleName {
     Describe Get-CompositeSchemaObject {
         BeforeAll {
-            $script:className = 'CompositeHelperTest'
-            $script:classVersion = '1.0.0'
-            $script:schemaFileName = '{0}.schema.psm1' -f $script:className
-            $script:tempSchemaFileName = '{0}.schema.ps1.tmp' -f $script:schemaFileName
+            $script:name = 'CompositeHelperTest'
+            $script:moduleVersion = '1.0.0'
+            $script:description = 'Composite resource.'
+            $script:schemaFileName = '{0}.schema.psm1' -f $script:name
             $script:schemaFilePath = Join-Path -Path $TestDrive -ChildPath $script:schemaFileName
-            $script:tempSchemaFilePath = Join-Path -Path $TestDrive -ChildPath $script:tempSchemaFileName
 
-            $script:schemaFileContent = @"
+            $script:schemaFileContent = @'
 <#
     .SYNOPSIS
         A composite DSC resource.
@@ -58,7 +57,6 @@ configuration CompositeHelperTest
         $Ensure,
 
         [Parameter()]
-        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential
@@ -66,70 +64,44 @@ configuration CompositeHelperTest
 
     # Composite resource code would be here.
 }
-"@
+'@
             Set-Content -Path $script:schemaFilePath -Value $script:schemaFileContent
 
-            $script:manifestFileName = '{0}.psd1' -f $script:className
-            $script:tempManifestFileName = '{0}.psd1.tmp' -f $script:manifestFileName
+            $script:manifestFileName = '{0}.psd1' -f $script:name
             $script:manifestFilePath = Join-Path -Path $TestDrive -ChildPath $script:manifestFileName
-            $script:tempManifestFilePath = Join-Path -Path $TestDrive -ChildPath $script:tempManifestFileName
 
             $script:manifestFileContent = @"
 @{
-    RootModule        = '$script:className.schema.psm1'
-    ModuleVersion     = '$script:classVersion'
+    RootModule        = '$script:name.schema.psm1'
+    ModuleVersion     = '$script:moduleVersion'
     GUID              = 'c5e227b5-52dc-4653-b08f-6d94e06bb90b'
     Author            = 'DSC Community'
     CompanyName       = 'DSC Community'
     Copyright         = 'Copyright the DSC Community contributors. All rights reserved.'
-    Description       = 'Composite resource.'
+    Description       = '$script:description'
     PowerShellVersion = '4.0'
 }
 "@
 
             Set-Content -Path $script:manifestFilePath -Value $script:manifestFileContent
-
-            Mock -CommandName Resolve-Path -MockWith {
-                [PSCustomObject]@{
-                    Path = $script:schemaFilePath
-                }
-            } -ParameterFilter {
-                $Path -eq $script:schemaFileName
-            }
-
-            Mock -CommandName Resolve-Path -MockWith {
-                [PSCustomObject]@{
-                    Path = $script:manifestFilePath
-                }
-            } -ParameterFilter {
-                $Path -eq $script:manifestFileName
-            }
-
-            Mock -CommandName Join-Path -MockWith {
-                $script:tempSchemaFilePath
-            }
-
-            Mock -CommandName Join-Path -MockWith {
-                $script:tempManifestFilePath
-            }
         }
 
-        It 'Should import the composite resource from the schema file without throwing' {
+        It 'Should process the composite resource from the schema file without throwing' {
             {
                 $script:schema = Get-CompositeSchemaObject -FileName $script:schemaFilePath -Verbose
             } | Should -Not -Throw
         }
 
-        It "Should import composite resource with className $script:className" {
-            $schema.ClassName | Should -Be $script:className
+        It "Should return the composite resource schema with name '$script:name'" {
+            $script:schema.Name | Should -Be $script:name
         }
 
-        It 'Should get composite resource version' {
-            $schema.ClassVersion | Should -Be $script:classVersion
+        It "Should return the composite resource schema with module version '$script:moduleVersion'" {
+            $script:schema.ModuleVersion | Should -Be $script:moduleVersion
         }
 
-        It "Should get FriendlyName with className $script:className" {
-            $schema.FriendlyName | Should -Be $script:className
+        It "Should return the composite resource schema with description '$script:description'" {
+            $script:schema.Description | Should -Be $script:description
         }
 
         It 'Should get property <PropertyName> with all correct properties' {
@@ -137,7 +109,7 @@ configuration CompositeHelperTest
             param (
                 [Parameter()]
                 [System.String]
-                $PropertyName,
+                $Name,
 
                 [Parameter()]
                 [System.String]
@@ -145,85 +117,48 @@ configuration CompositeHelperTest
 
                 [Parameter()]
                 [System.String]
-                $DataType,
-
-                [Parameter()]
-                [System.Boolean]
-                $IsArray,
+                $Type,
 
                 [Parameter()]
                 [System.String]
                 $Description
             )
 
-            $property = $schema.Attributes.Where({$_.Name -eq $PropertyName})
+            $parameter = $script:schema.Parameters.Where({
+                $_.Name -eq $Name
+            })
 
-            $property.State | Should -Be $State
-            $property.DataType | Should -Be $DataType
-            $property.Description | Should -Be $Description
-            $property.IsArray | Should -Be $IsArray
+            $parameter.State | Should -Be $State
+            $parameter.Type | Should -Be $Type
+            $parameter.Description | Should -Be $Description
         } -TestCases @(
             @{
-                PropertyName = 'Name'
-                State = 'Key'
-                DataType = 'String'
-                Description = 'Test key string property'
-                IsArray = $false
-            }
-            @{
-                PropertyName = 'Needed'
+                Name = 'Name'
                 State = 'Required'
-                DataType = 'String'
-                Description = 'Test required property'
-                IsArray = $false
+                Type = 'System.String[]'
+                Description = 'An array of the names.'
             }
             @{
-                PropertyName = 'MultipleValues'
+                Name = 'Ensure'
                 State = 'Write'
-                DataType = 'StringArray'
-                Description = 'Test writeable string array'
-                IsArray = $true
+                Type = 'System.String'
+                Description = 'Specifies whether or not the the thing should exist.'
             }
             @{
-                PropertyName = 'Switch'
+                Name = 'Credential'
                 State = 'Write'
-                DataType = 'Boolean'
-                Description = 'Test writeable boolean'
-                IsArray = $false
-            }
-            @{
-                PropertyName = 'ExecuteOn'
-                State = 'Write'
-                DataType = 'DateTime'
-                Description = 'Test writeable datetime'
-                IsArray = $false
-            }
-            @{
-                PropertyName = 'Credential'
-                State = 'Write'
-                DataType = 'Instance'
-                Description = 'Test credential'
-                IsArray = $false
-            }
-            @{
-                PropertyName = 'NoWrite'
-                State = 'Read'
-                DataType = 'Uint32'
-                Description = 'Test readonly integer'
-                IsArray = $false
+                Type = 'System.Management.Automation.PSCredential'
+                Description = 'The credential to use to set the thing.'
             }
         )
 
-        It 'Should return the proper ValueMap' {
-            $property = $schema.Attributes.Where({$_.Name -eq 'Needed'})
-            $property.ValueMap | Should -HaveCount 2
-            $property.ValueMap | Should -Contain 'Absent'
-            $property.ValueMap | Should -Contain 'Present'
-        }
-
-        It 'Should return the proper EmbeddedInstance for Credential' {
-            $property = $schema.Attributes.Where({$_.Name -eq 'Credential'})
-            $property.EmbeddedInstance | Should -Be 'MSFT_Credential'
+        It 'Should return the proper ValidateSet' {
+            $parameter = $script:schema.Parameters.Where({
+                $_.Name -eq 'Ensure'
+            })
+            $parameter.ValidateSet | Should -HaveCount 2
+            $parameter.ValidateSet | Should -Contain 'Absent'
+            $parameter.ValidateSet | Should -Contain 'Present'
         }
     }
 }
