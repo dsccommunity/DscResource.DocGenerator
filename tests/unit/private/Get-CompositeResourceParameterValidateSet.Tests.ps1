@@ -43,12 +43,23 @@ InModuleScope $script:moduleName {
                 $parameterAst = $mockCompositeScript.Ast.FindAll($astFilter, $true)
             }
 
-            It 'Should return the expected array' {
-                $result = Get-CompositeResourceParameterValidateSet -Ast $parameterAst[0] -Verbose
+            if ($IsMacOs)
+            {
+                It 'Should throw a not implemented error on MacOS' {
+                    {
+                        Get-CompositeResourceParameterValidateSet -Ast $parameterAst[0] -Verbose
+                    } | Should -Throw 'NotImplemented'
+                }
+            }
+            else
+            {
+                It 'Should return the expected array' {
+                    $result = Get-CompositeResourceParameterValidateSet -Ast $parameterAst[0] -Verbose
 
-                $result | Should -HaveCount 2
-                $result | Should -Contain 'Present'
-                $result | Should -Contain 'Absent'
+                    $result | Should -HaveCount 2
+                    $result | Should -Contain 'Present'
+                    $result | Should -Contain 'Absent'
+                }
             }
         }
 
@@ -75,11 +86,22 @@ InModuleScope $script:moduleName {
                 $parameterAst = $mockCompositeScript.Ast.FindAll($astFilter, $true)
             }
 
-            It 'Should return the expected array' {
-                $result = Get-CompositeResourceParameterValidateSet -Ast $parameterAst[0] -Verbose
+            if ($IsMacOs)
+            {
+                It 'Should throw a not implemented error on MacOS' {
+                    {
+                        Get-CompositeResourceParameterValidateSet -Ast $parameterAst[0] -Verbose
+                    } | Should -Throw 'NotImplemented'
+                }
+            }
+            else
+            {
+                It 'Should return the expected array' {
+                    $result = Get-CompositeResourceParameterValidateSet -Ast $parameterAst[0] -Verbose
 
-                $result | Should -HaveCount 1
-                $result | Should -Contain 'Present'
+                    $result | Should -HaveCount 1
+                    $result | Should -Contain 'Present'
+                }
             }
         }
 
@@ -105,10 +127,21 @@ InModuleScope $script:moduleName {
                 $parameterAst = $mockCompositeScript.Ast.FindAll($astFilter, $true)
             }
 
-            It 'Should return the expected array' {
-                $result = Get-CompositeResourceParameterValidateSet -Ast $parameterAst[0] -Verbose
+            if ($IsMacOs)
+            {
+                It 'Should throw a not implemented error on MacOS' {
+                    {
+                        Get-CompositeResourceParameterValidateSet -Ast $parameterAst[0] -Verbose
+                    } | Should -Throw 'NotImplemented'
+                }
+            }
+            else
+            {
+                It 'Should return the expected array' {
+                    $result = Get-CompositeResourceParameterValidateSet -Ast $parameterAst[0] -Verbose
 
-                $result | Should -BeNullOrEmpty
+                    $result | Should -BeNullOrEmpty
+                }
             }
         }
     }

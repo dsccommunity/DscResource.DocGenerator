@@ -34,4 +34,5 @@ ConvertFrom-StringData @'
     CommentBasedHelpBlockNotFound        = A comment-based help block in source file '{0}' could not be found.
     CommentBasedHelpBlockNotAtTopMessage = A comment-based help block in source file '{0}' was found, but is not at the top of the file.
     CompositeResourceMultiConfigError    = {1} composite resources were found in the source file '{0}'. This is not currently supported. Please separate these into different scripts.
+    MacOSNotSupportedError               = NotImplemented: MacOS is not supported for this operation because DSC can not be installed onto it. Please use an OS that DSC can be installed onto.
 '@

@@ -43,10 +43,21 @@ InModuleScope $script:moduleName {
                 $parameterAst = $mockCompositeScript.Ast.FindAll($astFilter, $true)
             }
 
-            It 'Should return the state as ''Required''' {
-                $result = Get-CompositeResourceParameterState -Ast $parameterAst[0] -Verbose
+            if ($IsMacOs)
+            {
+                It 'Should throw a not implemented error on MacOS' {
+                    {
+                        Get-CompositeResourceParameterState -Ast $parameterAst[0] -Verbose
+                    } | Should -Throw 'NotImplemented'
+                }
+            }
+            else
+            {
+                It 'Should return the state as ''Required''' {
+                    $result = Get-CompositeResourceParameterState -Ast $parameterAst[0] -Verbose
 
-                $result | Should -Be 'Required'
+                    $result | Should -Be 'Required'
+                }
             }
         }
 
@@ -73,10 +84,21 @@ InModuleScope $script:moduleName {
                 $parameterAst = $mockCompositeScript.Ast.FindAll($astFilter, $true)
             }
 
-            It 'Should return the state as ''Write''' {
-                $result = Get-CompositeResourceParameterState -Ast $parameterAst[0] -Verbose
+            if ($IsMacOs)
+            {
+                It 'Should throw a not implemented error on MacOS' {
+                    {
+                        Get-CompositeResourceParameterState -Ast $parameterAst[0] -Verbose
+                    } | Should -Throw 'NotImplemented'
+                }
+            }
+            else
+            {
+                It 'Should return the state as ''Write''' {
+                    $result = Get-CompositeResourceParameterState -Ast $parameterAst[0] -Verbose
 
-                $result | Should -Be 'Write'
+                    $result | Should -Be 'Write'
+                }
             }
         }
 
@@ -104,10 +126,21 @@ InModuleScope $script:moduleName {
                 $parameterAst = $mockCompositeScript.Ast.FindAll($astFilter, $true)
             }
 
-            It 'Should return the state as ''Write''' {
-                $result = Get-CompositeResourceParameterState -Ast $parameterAst[0] -Verbose
+            if ($IsMacOs)
+            {
+                It 'Should throw a not implemented error on MacOS' {
+                    {
+                        Get-CompositeResourceParameterState -Ast $parameterAst[0] -Verbose
+                    } | Should -Throw 'NotImplemented'
+                }
+            }
+            else
+            {
+                It 'Should return the state as ''Write''' {
+                    $result = Get-CompositeResourceParameterState -Ast $parameterAst[0] -Verbose
 
-                $result | Should -Be 'Write'
+                    $result | Should -Be 'Write'
+                }
             }
         }
     }

@@ -28,6 +28,11 @@
         }.Ast.Find({$args[0] -is [System.Management.Automation.Language.ParameterAst]}, $false)
 
         Returns the parameter state for the parameter 'Name' which will be 'Required'.
+
+    .NOTES
+        MacOS is not currently supported because DSC can not be installed on it.
+        DSC is required to process the AST for the configuration statement.
+
 #>
 function Get-CompositeResourceParameterState
 {
@@ -39,6 +44,11 @@ function Get-CompositeResourceParameterState
         [System.Management.Automation.Language.ParameterAst]
         $Ast
     )
+
+    if ($IsMacOS)
+    {
+        throw $script:localizedData:MacOSNotSupportedError
+    }
 
     $astFilterForMandatoryAttribute = {
         $args[0] -is [System.Management.Automation.Language.AttributeAst] `
