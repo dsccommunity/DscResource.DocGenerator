@@ -46,9 +46,20 @@ configuration CompositeHelperTest
                 $mockBuiltCompositeResourceScript | Microsoft.PowerShell.Utility\Out-File -FilePath $mockBuiltCompositeResourceScriptFilePath -Encoding ascii -Force
             }
 
-            It 'Should throw an error' {
-                # This evaluates just part of the expected error message.
-                { Get-ConfigurationAst -ScriptFile $mockBuiltCompositeResourceScriptFilePath } | Should -Throw "Undefined DSC resource 'Dummy'. Use Import-DSCResource to import the resource."
+            if ($IsMacOs)
+            {
+                It 'Should throw a not implemented error' {
+                    {
+                        Get-ConfigurationAst -ScriptFile $mockBuiltCompositeResourceScriptFilePath
+                    } | Should -Throw 'NotImplemented'
+                }
+            }
+            else
+            {
+                It 'Should throw an error' {
+                    # This evaluates just part of the expected error message.
+                    { Get-ConfigurationAst -ScriptFile $mockBuiltCompositeResourceScriptFilePath } | Should -Throw "Undefined DSC resource 'Dummy'. Use Import-DSCResource to import the resource."
+                }
             }
         }
 
@@ -118,21 +129,43 @@ configuration CompositeHelperTest2
             }
 
             Context 'When returning all Configurationes in the script file' {
-                It 'Should return the correct Configurationes' {
-                    $astResult = Get-ConfigurationAst -ScriptFile $mockBuiltCompositeResourceScriptFilePath
+                if ($IsMacOs)
+                {
+                    It 'Should throw a not implemented error on MacOS' {
+                        {
+                            Get-ConfigurationAst -ScriptFile $mockBuiltCompositeResourceScriptFilePath
+                        } | Should -Throw 'NotImplemented'
+                    }
+                }
+                else
+                {
+                    It 'Should return the correct Configurationes' {
+                        $astResult = Get-ConfigurationAst -ScriptFile $mockBuiltCompositeResourceScriptFilePath
 
-                    $astResult | Should -HaveCount 2
-                    $astResult.InstanceName.Value | Should -Contain 'CompositeHelperTest1'
-                    $astResult.InstanceName.Value | Should -Contain 'CompositeHelperTest2'
+                        $astResult | Should -HaveCount 2
+                        $astResult.InstanceName.Value | Should -Contain 'CompositeHelperTest1'
+                        $astResult.InstanceName.Value | Should -Contain 'CompositeHelperTest2'
+                    }
                 }
             }
 
             Context 'When returning a single Configuration from the script file' {
-                It 'Should return the correct Configurationes' {
-                    $astResult = Get-ConfigurationAst -ScriptFile $mockBuiltCompositeResourceScriptFilePath -ConfigurationName 'CompositeHelperTest2'
+                if ($IsMacOs)
+                {
+                    It 'Should throw a not implemented error on MacOS' {
+                        {
+                            Get-ConfigurationAst -ScriptFile $mockBuiltCompositeResourceScriptFilePath -ConfigurationName 'CompositeHelperTest2'
+                        } | Should -Throw 'NotImplemented'
+                    }
+                }
+                else
+                {
+                    It 'Should return the correct Configurationes' {
+                        $astResult = Get-ConfigurationAst -ScriptFile $mockBuiltCompositeResourceScriptFilePath -ConfigurationName 'CompositeHelperTest2'
 
-                    $astResult | Should -HaveCount 1
-                    $astResult.InstanceName.Value | Should -Be 'CompositeHelperTest2'
+                        $astResult | Should -HaveCount 1
+                        $astResult.InstanceName.Value | Should -Be 'CompositeHelperTest2'
+                    }
                 }
             }
         }

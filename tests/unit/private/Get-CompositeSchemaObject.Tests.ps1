@@ -86,79 +86,90 @@ configuration CompositeHelperTest
             Set-Content -Path $script:manifestFilePath -Value $script:manifestFileContent
         }
 
-        It 'Should process the composite resource from the schema file without throwing' {
-            {
-                $script:schema = Get-CompositeSchemaObject -FileName $script:schemaFilePath -Verbose
-            } | Should -Not -Throw
+        if ($IsMacOs)
+        {
+            It 'Should throw a not implemented error on MacOS' {
+                {
+                    Get-CompositeSchemaObject -FileName $script:schemaFilePath -Verbose
+                } | Should -Throw 'NotImplemented'
+            }
         }
+        else
+        {
+            It 'Should process the composite resource from the schema file without throwing' {
+                {
+                    $script:schema = Get-CompositeSchemaObject -FileName $script:schemaFilePath -Verbose
+                } | Should -Not -Throw
+            }
 
-        It "Should return the composite resource schema with name '$script:name'" {
-            $script:schema.Name | Should -Be $script:name
-        }
+            It "Should return the composite resource schema with name '$script:name'" {
+                $script:schema.Name | Should -Be $script:name
+            }
 
-        It "Should return the composite resource schema with module version '$script:moduleVersion'" {
-            $script:schema.ModuleVersion | Should -Be $script:moduleVersion
-        }
+            It "Should return the composite resource schema with module version '$script:moduleVersion'" {
+                $script:schema.ModuleVersion | Should -Be $script:moduleVersion
+            }
 
-        It "Should return the composite resource schema with description '$script:description'" {
-            $script:schema.Description | Should -Be $script:description
-        }
+            It "Should return the composite resource schema with description '$script:description'" {
+                $script:schema.Description | Should -Be $script:description
+            }
 
-        It 'Should get property <PropertyName> with all correct properties' {
-            [CmdletBinding()]
-            param (
-                [Parameter()]
-                [System.String]
-                $Name,
+            It 'Should get property <PropertyName> with all correct properties' {
+                [CmdletBinding()]
+                param (
+                    [Parameter()]
+                    [System.String]
+                    $Name,
 
-                [Parameter()]
-                [System.String]
-                $State,
+                    [Parameter()]
+                    [System.String]
+                    $State,
 
-                [Parameter()]
-                [System.String]
-                $Type,
+                    [Parameter()]
+                    [System.String]
+                    $Type,
 
-                [Parameter()]
-                [System.String]
-                $Description
+                    [Parameter()]
+                    [System.String]
+                    $Description
+                )
+
+                $parameter = $script:schema.Parameters.Where({
+                    $_.Name -eq $Name
+                })
+
+                $parameter.State | Should -Be $State
+                $parameter.Type | Should -Be $Type
+                $parameter.Description | Should -Be $Description
+            } -TestCases @(
+                @{
+                    Name = 'Name'
+                    State = 'Required'
+                    Type = 'System.String[]'
+                    Description = 'An array of the names.'
+                }
+                @{
+                    Name = 'Ensure'
+                    State = 'Write'
+                    Type = 'System.String'
+                    Description = 'Specifies whether or not the the thing should exist.'
+                }
+                @{
+                    Name = 'Credential'
+                    State = 'Write'
+                    Type = 'System.Management.Automation.PSCredential'
+                    Description = 'The credential to use to set the thing.'
+                }
             )
 
-            $parameter = $script:schema.Parameters.Where({
-                $_.Name -eq $Name
-            })
-
-            $parameter.State | Should -Be $State
-            $parameter.Type | Should -Be $Type
-            $parameter.Description | Should -Be $Description
-        } -TestCases @(
-            @{
-                Name = 'Name'
-                State = 'Required'
-                Type = 'System.String[]'
-                Description = 'An array of the names.'
+            It 'Should return the proper ValidateSet' {
+                $parameter = $script:schema.Parameters.Where({
+                    $_.Name -eq 'Ensure'
+                })
+                $parameter.ValidateSet | Should -HaveCount 2
+                $parameter.ValidateSet | Should -Contain 'Absent'
+                $parameter.ValidateSet | Should -Contain 'Present'
             }
-            @{
-                Name = 'Ensure'
-                State = 'Write'
-                Type = 'System.String'
-                Description = 'Specifies whether or not the the thing should exist.'
-            }
-            @{
-                Name = 'Credential'
-                State = 'Write'
-                Type = 'System.Management.Automation.PSCredential'
-                Description = 'The credential to use to set the thing.'
-            }
-        )
-
-        It 'Should return the proper ValidateSet' {
-            $parameter = $script:schema.Parameters.Where({
-                $_.Name -eq 'Ensure'
-            })
-            $parameter.ValidateSet | Should -HaveCount 2
-            $parameter.ValidateSet | Should -Contain 'Absent'
-            $parameter.ValidateSet | Should -Contain 'Present'
         }
     }
 }

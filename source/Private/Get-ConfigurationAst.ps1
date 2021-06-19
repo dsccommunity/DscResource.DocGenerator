@@ -17,6 +17,10 @@
         Get-ConfigurationAst -ConfigurationName 'myComposite' -ScriptFile '.\output\myModule\1.0.0\DSCResources\myComposite\myComposite.schema.psm1'
 
         Returns AST for the DSC configuration 'myComposite' from the script file.
+
+    .NOTES
+        MacOS is not currently supported because DSC can not be installed on it.
+        DSC is required to process the AST for the configuration statement.
 #>
 function Get-ConfigurationAst
 {
@@ -31,6 +35,11 @@ function Get-ConfigurationAst
         [System.String]
         $ConfigurationName
     )
+
+    if ($IsMacOS)
+    {
+        throw $script:localizedData:MacOSNotSupportedError
+    }
 
     $tokens, $parseErrors = $null
 

@@ -16,6 +16,10 @@
         $mof = Get-CompositeSchemaObject -FileName C:\repos\xPSDesiredStateConfiguration\DSCRescoures\xGroupSet\xGroupSet.schema.psm1
 
         This example parses a composite schema file and composite manifest file.
+
+    .NOTES
+        MacOS is not currently supported because DSC can not be installed on it.
+        DSC is required to process the AST for the configuration statement.
 #>
 function Get-CompositeSchemaObject
 {
@@ -27,6 +31,11 @@ function Get-CompositeSchemaObject
         [System.String]
         $FileName
     )
+
+    if ($IsMacOS)
+    {
+        throw $script:localizedData:MacOSNotSupportedError
+    }
 
     $manifestFileName = $FileName -replace '.schema.psm1','.psd1'
     $compositeName = [System.IO.Path]::GetFileName($FileName) -replace '.schema.psm1',''
