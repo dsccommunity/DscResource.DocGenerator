@@ -129,7 +129,7 @@ configuration CompositeHelperTest2
             }
 
             Context 'When returning all Configurationes in the script file' {
-                if ($IsMacOs)
+                if ($IsMacOS)
                 {
                     It 'Should throw a not implemented error on MacOS' {
                         {
@@ -150,7 +150,7 @@ configuration CompositeHelperTest2
             }
 
             Context 'When returning a single Configuration from the script file' {
-                if ($IsMacOs)
+                if ($IsMacOS)
                 {
                     It 'Should throw a not implemented error on MacOS' {
                         {
