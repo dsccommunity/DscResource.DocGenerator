@@ -20,25 +20,29 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 
 InModuleScope $script:moduleName {
     Describe 'Get-CompositeResourceParameterState' {
+        BeforeAll {
+            $script:tokens, $script:parseErrors = $null
+
+            $script:parameterAstFilter = {
+                $args[0] -is [System.Management.Automation.Language.ParameterAst]
+            }
+        }
+
         if ($IsMacOS)
         {
             Context 'When run on MacOS' {
                 BeforeAll {
-                    $mockCompositeScript = {
-                        param
-                        (
-                            [Parameter()]
-                            [ValidateSet('Present', 'Absent')]
-                            [System.String]
-                            $Ensure
-                        )
-                    }
+                    $mockCompositeScript = @'
+param
+(
+    [Parameter()]
+    [ValidateSet('Present', 'Absent')]
+    [System.String]
+    $Ensure
+)
+'@
 
-                    $astFilter = {
-                        $args[0] -is [System.Management.Automation.Language.ParameterAst]
-                    }
-
-                    $parameterAst = $mockCompositeScript.Ast.FindAll($astFilter, $true)
+                    $parameterAst = $mockCompositeScript.Ast.FindAll($script:parameterAstFilter, $true)
                 }
 
                 It 'Should throw a not implemented error on MacOS' {
@@ -52,25 +56,23 @@ InModuleScope $script:moduleName {
         {
             Context 'When a parameter has the attribute ''Mandatory = $true''' {
                 BeforeAll {
-                    $mockCompositeScript = {
-                        configuration CompositeHelperTest
-                        {
-                            [CmdletBinding()]
-                            param
-                            (
-                                [Parameter(Mandatory = $true)]
-                                [ValidateNotNullOrEmpty()]
-                                [System.String[]]
-                                $Name
-                            )
-                        }
-                    }
+                    $mockCompositeScript = @'
+configuration CompositeHelperTest
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String[]]
+        $Name
+    )
+}
+'@
 
-                    $astFilter = {
-                        $args[0] -is [System.Management.Automation.Language.ParameterAst]
-                    }
+                    $compositeAst = [System.Management.Automation.Language.Parser]::ParseInput($mockCompositeScript, [ref] $script:tokens, [ref] $script:parseErrors)
 
-                    $parameterAst = $mockCompositeScript.Ast.FindAll($astFilter, $true)
+                    $parameterAst = $compositeAst.FindAll($script:parameterAstFilter, $true)
                 }
 
                 It 'Should return the state as ''Required''' {
@@ -82,25 +84,23 @@ InModuleScope $script:moduleName {
 
             Context 'When a parameter has the attribute ''Mandatory = $false''' {
                 BeforeAll {
-                    $mockCompositeScript = {
-                        configuration CompositeHelperTest
-                        {
-                            [CmdletBinding()]
-                            param
-                            (
-                                [Parameter(Mandatory = $false)]
-                                [ValidateNotNullOrEmpty()]
-                                [System.String[]]
-                                $Name
-                            )
-                        }
-                    }
+                    $mockCompositeScript = @'
+    configuration CompositeHelperTest
+    {
+        [CmdletBinding()]
+        param
+        (
+            [Parameter(Mandatory = $false)]
+            [ValidateNotNullOrEmpty()]
+            [System.String[]]
+            $Name
+        )
+    }
+'@
 
-                    $astFilter = {
-                        $args[0] -is [System.Management.Automation.Language.ParameterAst]
-                    }
+                    $compositeAst = [System.Management.Automation.Language.Parser]::ParseInput($mockCompositeScript, [ref] $script:tokens, [ref] $script:parseErrors)
 
-                    $parameterAst = $mockCompositeScript.Ast.FindAll($astFilter, $true)
+                    $parameterAst = $compositeAst.FindAll($script:parameterAstFilter, $true)
                 }
 
                 It 'Should return the state as ''Write''' {
@@ -112,25 +112,23 @@ InModuleScope $script:moduleName {
 
             Context 'When a parameter does not have the attribute ''Mandatory''' {
                 BeforeAll {
-                    $mockCompositeScript = {
-                        configuration CompositeHelperTest
-                        {
-                            [CmdletBinding()]
-                            param
-                            (
-                                [Parameter()]
-                                [ValidateNotNullOrEmpty()]
-                                [System.String[]]
-                                $Name
-                            )
-                        }
-                    }
+                    $mockCompositeScript = @'
+configuration CompositeHelperTest
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.String[]]
+        $Name
+    )
+}
+'@
 
-                    $astFilter = {
-                        $args[0] -is [System.Management.Automation.Language.ParameterAst]
-                    }
+                    $compositeAst = [System.Management.Automation.Language.Parser]::ParseInput($mockCompositeScript, [ref] $script:tokens, [ref] $script:parseErrors)
 
-                    $parameterAst = $mockCompositeScript.Ast.FindAll($astFilter, $true)
+                    $parameterAst = $compositeAst.FindAll($script:parameterAstFilter, $true)
                 }
 
                 It 'Should return the state as ''Write''' {

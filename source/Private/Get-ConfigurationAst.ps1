@@ -52,7 +52,7 @@ function Get-ConfigurationAst
 
     if ($PSBoundParameters.ContainsKey('ConfigurationName') -and $ConfigurationName)
     {
-        # Get only the specific class resource.
+        # Get only the specific composite resources.
         $astFilter = {
             $args[0] -is [System.Management.Automation.Language.ConfigurationDefinitionAst] `
                 -and $args[0].ConfigurationType -eq [System.Management.Automation.Language.ConfigurationType]::Resource `
@@ -61,7 +61,7 @@ function Get-ConfigurationAst
     }
     else
     {
-        # Get all class resources.
+        # Get all composite resources.
         $astFilter = {
             $args[0] -is [System.Management.Automation.Language.ConfigurationDefinitionAst] `
             -and $args[0].ConfigurationType -eq [System.Management.Automation.Language.ConfigurationType]::Resource `

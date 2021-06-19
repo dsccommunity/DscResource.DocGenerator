@@ -27,7 +27,7 @@ ConvertFrom-StringData @'
     NothingToCommitToWiki                = There are no changes to the documentation to commit and push to the Wiki.
     FoundClassBasedMessage               = Found {0} class-based resources in the built module '{1}'.
     FoundClassResourcePropertyMessage    = Found property '{0}' in the resource '{1}'.
-    ClassBasedCommentBasedHelpMessage    = Reading comment-based help from source file '{0}'.
+    CommentBasedHelpMessage              = Reading comment-based help from source file '{0}'.
     FoundResourceExamplesMessage         = Found {0} examples.
     IgnoreAstParseErrorMessage           = Errors was found during parsing of comment-based help. These errors were ignored: {0}
     FoundCompositeFilesMessage           = Found {0} composite files in path '{1}'.
