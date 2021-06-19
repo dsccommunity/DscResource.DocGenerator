@@ -44,12 +44,12 @@ param
 
                     $compositeAst = [System.Management.Automation.Language.Parser]::ParseInput($mockCompositeScript, [ref] $script:tokens, [ref] $script:parseErrors)
 
-                    $parameterAst = $compositeAst.FindAll($script:parameterAstFilter, $true)
+                    $script:parameterAst = $compositeAst.FindAll($script:parameterAstFilter, $true)
                 }
 
                 It 'Should throw a not implemented error on MacOS' {
                     {
-                        Get-CompositeResourceParameterState -Ast $parameterAst[0] -Verbose
+                        Get-CompositeResourceParameterState -Ast $script:parameterAst[0] -Verbose
                     } | Should -Throw 'NotImplemented'
                 }
             }
@@ -74,11 +74,11 @@ configuration CompositeHelperTest
 
                     $compositeAst = [System.Management.Automation.Language.Parser]::ParseInput($mockCompositeScript, [ref] $script:tokens, [ref] $script:parseErrors)
 
-                    $parameterAst = $compositeAst.FindAll($script:parameterAstFilter, $true)
+                    $script:parameterAst = $compositeAst.FindAll($script:parameterAstFilter, $true)
                 }
 
                 It 'Should return the state as ''Required''' {
-                    $result = Get-CompositeResourceParameterState -Ast $parameterAst[0] -Verbose
+                    $result = Get-CompositeResourceParameterState -Ast $script:parameterAst[0] -Verbose
 
                     $result | Should -Be 'Required'
                 }
@@ -102,11 +102,11 @@ configuration CompositeHelperTest
 
                     $compositeAst = [System.Management.Automation.Language.Parser]::ParseInput($mockCompositeScript, [ref] $script:tokens, [ref] $script:parseErrors)
 
-                    $parameterAst = $compositeAst.FindAll($script:parameterAstFilter, $true)
+                    $script:parameterAst = $compositeAst.FindAll($script:parameterAstFilter, $true)
                 }
 
                 It 'Should return the state as ''Write''' {
-                    $result = Get-CompositeResourceParameterState -Ast $parameterAst[0] -Verbose
+                    $result = Get-CompositeResourceParameterState -Ast $script:parameterAst[0] -Verbose
 
                     $result | Should -Be 'Write'
                 }
@@ -130,11 +130,11 @@ configuration CompositeHelperTest
 
                     $compositeAst = [System.Management.Automation.Language.Parser]::ParseInput($mockCompositeScript, [ref] $script:tokens, [ref] $script:parseErrors)
 
-                    $parameterAst = $compositeAst.FindAll($script:parameterAstFilter, $true)
+                    $script:parameterAst = $compositeAst.FindAll($script:parameterAstFilter, $true)
                 }
 
                 It 'Should return the state as ''Write''' {
-                    $result = Get-CompositeResourceParameterState -Ast $parameterAst[0] -Verbose
+                    $result = Get-CompositeResourceParameterState -Ast $script:parameterAst[0] -Verbose
 
                     $result | Should -Be 'Write'
                 }

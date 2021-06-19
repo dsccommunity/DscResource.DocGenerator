@@ -38,7 +38,7 @@ Get-Help -Name <CmdletName> -Detailed
 
 Generates conceptual help based on the DSC resources and their examples in
 a DSC module. This currently only creates English (culture en-US) conceptual
-help. But MOF-and class-based resources are supported. Class-based resources
+help. MOF, class-based and composite resources are supported. Class-based resources
 must follow the template pattern of the [Sampler](https://github.com/gaelcolas/Sampler)
 project. See the project [AzureDevOpDsc](https://github.com/dsccommunity/AzureDevOpsDsc)
 for an example of the pattern.
