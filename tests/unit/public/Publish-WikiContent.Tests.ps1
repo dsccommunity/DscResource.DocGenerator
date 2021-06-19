@@ -22,9 +22,6 @@ InModuleScope $script:moduleName {
     Describe 'Publish-WikiContent' {
         Context 'When publishing Wiki content' {
             BeforeAll {
-                Mock -CommandName Push-Location
-                Mock -CommandName Pop-Location
-                Mock -CommandName Set-Location
                 Mock -CommandName Copy-WikiFolder
                 Mock -CommandName New-WikiSidebar
                 Mock -CommandName New-WikiFooter
@@ -50,8 +47,6 @@ InModuleScope $script:moduleName {
 
                 { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Not -Throw
 
-                Assert-MockCalled -CommandName Push-Location -Exactly -Times 1 -Scope It
-
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'config' -and
                     $Arguments[1] -eq '--global' -and
@@ -69,8 +64,6 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName New-WikiSidebar -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName New-WikiFooter -Exactly -Times 1 -Scope It
-
-                Assert-MockCalled -CommandName Set-Location -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'config' -and
@@ -101,7 +94,7 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'commit' -and
                     $Arguments[1] -eq '--message' -and
-                    $Arguments[2] -eq ($localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion) -and
+                    $Arguments[2] -eq "`"$($localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion)`"" -and
                     $Arguments[3] -eq '--quiet'
                 } -Exactly -Times 1 -Scope It
 
@@ -126,17 +119,12 @@ InModuleScope $script:moduleName {
                     $Arguments[3] -eq '--quiet'
                 } -Exactly -Times 1 -Scope It
 
-                Assert-MockCalled -CommandName Pop-Location -Exactly -Times 1 -Scope It
-
                 Assert-MockCalled -CommandName Remove-Item -Exactly -Times 1 -Scope It
             }
         }
 
         Context 'When there is no new content to publishing to Wiki' {
             BeforeAll {
-                Mock -CommandName Push-Location
-                Mock -CommandName Pop-Location
-                Mock -CommandName Set-Location
                 Mock -CommandName Copy-WikiFolder
                 Mock -CommandName New-WikiSidebar
                 Mock -CommandName New-WikiFooter
@@ -163,8 +151,6 @@ InModuleScope $script:moduleName {
 
                 { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Not -Throw
 
-                Assert-MockCalled -CommandName Push-Location -Exactly -Times 1 -Scope It
-
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'config' -and
                     $Arguments[1] -eq '--global' -and
@@ -182,8 +168,6 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName New-WikiSidebar -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName New-WikiFooter -Exactly -Times 1 -Scope It
-
-                Assert-MockCalled -CommandName Set-Location -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'config' -and
@@ -214,7 +198,7 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'commit' -and
                     $Arguments[1] -eq '--message' -and
-                    $Arguments[2] -eq ($localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion) -and
+                    $Arguments[2] -eq "`"$($localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion)`"" -and
                     $Arguments[3] -eq '--quiet'
                 } -Exactly -Times 1 -Scope It
 
@@ -238,8 +222,6 @@ InModuleScope $script:moduleName {
                     $Arguments[2] -eq $mockPublishWikiContentParameters.ModuleVersion -and
                     $Arguments[3] -eq '--quiet'
                 } -Exactly -Times 0 -Scope It
-
-                Assert-MockCalled -CommandName Pop-Location -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Remove-Item -Exactly -Times 1 -Scope It
             }

@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Get-MofSchemaObject`
   - Refactored to reduce code duplication when adding functions for supporting
     composite resources.
+- Converted `Invoke-Git` cmdlet to use `System.Diagnostics.Process` for improved error handling.
 
 ### Fixed
 

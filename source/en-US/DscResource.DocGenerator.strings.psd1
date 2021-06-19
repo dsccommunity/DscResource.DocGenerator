@@ -31,4 +31,7 @@ ConvertFrom-StringData @'
     FoundResourceExamplesMessage        = Found {0} examples.
     IgnoreAstParseErrorMessage          = Errors was found during parsing of comment-based help. These errors were ignored: {0}
     FoundCompositeFilesMessage          = Found {0} composite files in path '{1}'.
+    UnexpectedInvokeGitReturnCode       = Unexpected return code '{0}'. Run with -Debug to see details.
+    InvokeGitStandardOutputReturn       = Git Standard Output: '{0}'
+    InvokeGitStandardErrorReturn        = Git Standard Error: '{0}'
 '@
