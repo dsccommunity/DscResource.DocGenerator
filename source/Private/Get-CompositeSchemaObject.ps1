@@ -28,11 +28,11 @@ function Get-CompositeSchemaObject
         $FileName
     )
 
-    $manifestFileName = $FileName -replace '.schema.psm1','psd1'
+    $manifestFileName = $FileName -replace '.schema.psm1','.psd1'
     $compositeName = [System.IO.Path]::GetFileName($FileName) -replace '.schema.psm1',''
     $moduleVersion = Get-MetaData -Path $manifestFileName -PropertyName ModuleVersion
     $description = Get-MetaData -Path $manifestFileName -PropertyName Description
-    $compositeResource = Get-ConfigurationAst
+    $compositeResource = Get-ConfigurationAst -ScriptFile $FileName
 
     if ($compositeResource.Count -gt 1)
     {
@@ -41,12 +41,15 @@ function Get-CompositeSchemaObject
 
     $commentBasedHelp = Get-CommentBasedHelp -Path $FileName
 
-    $parameters = foreach ($parameter in $compsiteResource.Body.ScriptBlock.ParamBlock.Parameters)
+    $parameters = foreach ($parameter in $compositeResource.Body.ScriptBlock.ParamBlock.Parameters)
     {
-        $parameterDescription = ''
+        $parameterName = $parameter.Name.VariablePath.ToString()
+
+        # The parameter name in comment-based help is returned as upper so need to match correctly.
+        $parameterDescription = $commentBasedHelp.Parameters[$parameterName.ToUpper()] -replace '\r?\n+$'
 
         @{
-            Name             = $parameter.Name
+            Name             = $parameterName
             State            = (Get-CompositeResourceParameterState -Ast $parameter)
             Type             = $parameter.StaticType.FullName
             ValidateSet      = (Get-CompositeResourceParameterValidateSet -Ast $parameter)
@@ -54,7 +57,7 @@ function Get-CompositeSchemaObject
         }
     }
 
-    @{
+    return @{
         Name          = $compositeName
         Parameters    = $parameters
         ModuleVersion = $moduleVersion

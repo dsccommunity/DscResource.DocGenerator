@@ -125,6 +125,9 @@ Set-StrictMode -Version 'Latest'
 
     .PARAMETER ProjectName
         ProjectName description.
+
+    .PARAMETER ProjectType
+        ProjectType description.
 #>
 configuration CompositeHelperTest1
 {
@@ -134,7 +137,11 @@ configuration CompositeHelperTest1
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String[]]
-        $ProjectName
+        $ProjectName,
+
+        [Parameter()]
+        [System.String[]]
+        $ProjectType
     )
 
     # Composite resource code would be here.
@@ -166,7 +173,11 @@ configuration CompositeHelperTest1
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String[]]
-        $ProjectName
+        $ProjectName,
+
+        [Parameter()]
+        [System.String[]]
+        $ProjectType
     )
 
     # Composite resource code would be here.
