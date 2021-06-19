@@ -34,7 +34,7 @@ function Get-CompositeSchemaObject
 
     if ($IsMacOS)
     {
-        throw $script:localizedData:MacOSNotSupportedError
+        throw $script:localizedData.MacOSNotSupportedError
     }
 
     $manifestFileName = $FileName -replace '.schema.psm1','.psd1'

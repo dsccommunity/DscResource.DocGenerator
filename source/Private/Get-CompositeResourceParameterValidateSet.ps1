@@ -46,7 +46,7 @@ function Get-CompositeResourceParameterValidateSet
 
     if ($IsMacOS)
     {
-        throw $script:localizedData:MacOSNotSupportedError
+        throw $script:localizedData.MacOSNotSupportedError
     }
 
     $astFilterForValidateSetAttribute = {
