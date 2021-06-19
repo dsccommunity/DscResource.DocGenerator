@@ -20,14 +20,35 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 
 InModuleScope $script:moduleName {
     Describe Get-CompositeSchemaObject {
-        BeforeAll {
-            $script:name = 'CompositeHelperTest'
-            $script:moduleVersion = '1.0.0'
-            $script:description = 'Composite resource.'
-            $script:schemaFileName = '{0}.schema.psm1' -f $script:name
-            $script:schemaFilePath = Join-Path -Path $TestDrive -ChildPath $script:schemaFileName
+        if ($IsMacOS)
+        {
+            BeforeAll {
+                $script:name = 'CompositeHelperTest'
+                $script:schemaFileName = '{0}.schema.psm1' -f $script:name
+                $script:schemaFilePath = Join-Path -Path $TestDrive -ChildPath $script:schemaFileName
 
-            $script:schemaFileContent = @'
+                $script:schemaFileContent = ''
+                Set-Content -Path $script:schemaFilePath -Value $script:schemaFileContent
+            }
+
+            Context 'When run on MacOS' {
+                It 'Should throw a not implemented error on MacOS' {
+                    {
+                        Get-CompositeSchemaObject -FileName $script:schemaFilePath -Verbose
+                    } | Should -Throw 'NotImplemented'
+               }
+            }
+        }
+        else
+        {
+            BeforeAll {
+                $script:name = 'CompositeHelperTest'
+                $script:moduleVersion = '1.0.0'
+                $script:description = 'Composite resource.'
+                $script:schemaFileName = '{0}.schema.psm1' -f $script:name
+                $script:schemaFilePath = Join-Path -Path $TestDrive -ChildPath $script:schemaFileName
+
+                $script:schemaFileContent = @'
 <#
     .SYNOPSIS
         A composite DSC resource.
@@ -65,12 +86,12 @@ configuration CompositeHelperTest
     # Composite resource code would be here.
 }
 '@
-            Set-Content -Path $script:schemaFilePath -Value $script:schemaFileContent
+                Set-Content -Path $script:schemaFilePath -Value $script:schemaFileContent
 
-            $script:manifestFileName = '{0}.psd1' -f $script:name
-            $script:manifestFilePath = Join-Path -Path $TestDrive -ChildPath $script:manifestFileName
+                $script:manifestFileName = '{0}.psd1' -f $script:name
+                $script:manifestFilePath = Join-Path -Path $TestDrive -ChildPath $script:manifestFileName
 
-            $script:manifestFileContent = @"
+                $script:manifestFileContent = @"
 @{
     RootModule        = '$script:name.schema.psm1'
     ModuleVersion     = '$script:moduleVersion'
@@ -83,19 +104,9 @@ configuration CompositeHelperTest
 }
 "@
 
-            Set-Content -Path $script:manifestFilePath -Value $script:manifestFileContent
-        }
-
-        if ($IsMacOs)
-        {
-            It 'Should throw a not implemented error on MacOS' {
-                {
-                    Get-CompositeSchemaObject -FileName $script:schemaFilePath -Verbose
-                } | Should -Throw 'NotImplemented'
+                Set-Content -Path $script:manifestFilePath -Value $script:manifestFileContent
             }
-        }
-        else
-        {
+
             It 'Should process the composite resource from the schema file without throwing' {
                 {
                     $script:schema = Get-CompositeSchemaObject -FileName $script:schemaFilePath -Verbose
