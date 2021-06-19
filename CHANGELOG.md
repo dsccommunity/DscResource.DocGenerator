@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Get-CompositeResourceParameterState` - Determines the parameter state of a
     composite resource parameter. This is a meta attribute that will either be
     `Required` or `Write`.
+  - `Get-CompositeResourceParameterValidateSet` - Returns the array of values
+    contained in the ValidateSet parameter attributes if it exists.
 
 ### Changed
 
