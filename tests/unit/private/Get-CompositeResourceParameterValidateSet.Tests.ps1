@@ -20,20 +20,17 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 
 InModuleScope $script:moduleName {
     Describe 'Get-CompositeResourceParameterValidateSet' {
-        Context 'When a parameter has the attribute ''ValidateSet'' with two array values' {
+        if ($IsMacOs)
+        {
             BeforeAll {
                 $mockCompositeScript = {
-                    configuration CompositeHelperTest
-                    {
-                        [CmdletBinding()]
-                        param
-                        (
-                            [Parameter()]
-                            [ValidateSet('Present', 'Absent')]
-                            [System.String]
-                            $Ensure
-                        )
-                    }
+                    param
+                    (
+                        [Parameter()]
+                        [ValidateSet('Present', 'Absent')]
+                        [System.String]
+                        $Ensure
+                    )
                 }
 
                 $astFilter = {
@@ -43,16 +40,37 @@ InModuleScope $script:moduleName {
                 $parameterAst = $mockCompositeScript.Ast.FindAll($astFilter, $true)
             }
 
-            if ($IsMacOs)
-            {
-                It 'Should throw a not implemented error on MacOS' {
-                    {
-                        Get-CompositeResourceParameterValidateSet -Ast $parameterAst[0] -Verbose
-                    } | Should -Throw 'NotImplemented'
-                }
+            It 'Should throw a not implemented error on MacOS' {
+                {
+                    Get-CompositeResourceParameterValidateSet -Ast $parameterAst[0] -Verbose
+                } | Should -Throw 'NotImplemented'
             }
-            else
-            {
+        }
+        else
+        {
+            Context 'When a parameter has the attribute ''ValidateSet'' with two array values' {
+                BeforeAll {
+                    $mockCompositeScript = {
+                        configuration CompositeHelperTest
+                        {
+                            [CmdletBinding()]
+                            param
+                            (
+                                [Parameter()]
+                                [ValidateSet('Present', 'Absent')]
+                                [System.String]
+                                $Ensure
+                            )
+                        }
+                    }
+
+                    $astFilter = {
+                        $args[0] -is [System.Management.Automation.Language.ParameterAst]
+                    }
+
+                    $parameterAst = $mockCompositeScript.Ast.FindAll($astFilter, $true)
+                }
+
                 It 'Should return the expected array' {
                     $result = Get-CompositeResourceParameterValidateSet -Ast $parameterAst[0] -Verbose
 
@@ -61,41 +79,30 @@ InModuleScope $script:moduleName {
                     $result | Should -Contain 'Absent'
                 }
             }
-        }
 
-        Context 'When a parameter has the attribute ''ValidateSet'' with one array value' {
-            BeforeAll {
-                $mockCompositeScript = {
-                    configuration CompositeHelperTest
-                    {
-                        [CmdletBinding()]
-                        param
-                        (
-                            [Parameter()]
-                            [ValidateSet('Present')]
-                            [System.String]
-                            $Ensure
-                        )
+            Context 'When a parameter has the attribute ''ValidateSet'' with one array value' {
+                BeforeAll {
+                    $mockCompositeScript = {
+                        configuration CompositeHelperTest
+                        {
+                            [CmdletBinding()]
+                            param
+                            (
+                                [Parameter()]
+                                [ValidateSet('Present')]
+                                [System.String]
+                                $Ensure
+                            )
+                        }
                     }
+
+                    $astFilter = {
+                        $args[0] -is [System.Management.Automation.Language.ParameterAst]
+                    }
+
+                    $parameterAst = $mockCompositeScript.Ast.FindAll($astFilter, $true)
                 }
 
-                $astFilter = {
-                    $args[0] -is [System.Management.Automation.Language.ParameterAst]
-                }
-
-                $parameterAst = $mockCompositeScript.Ast.FindAll($astFilter, $true)
-            }
-
-            if ($IsMacOs)
-            {
-                It 'Should throw a not implemented error on MacOS' {
-                    {
-                        Get-CompositeResourceParameterValidateSet -Ast $parameterAst[0] -Verbose
-                    } | Should -Throw 'NotImplemented'
-                }
-            }
-            else
-            {
                 It 'Should return the expected array' {
                     $result = Get-CompositeResourceParameterValidateSet -Ast $parameterAst[0] -Verbose
 
@@ -103,40 +110,29 @@ InModuleScope $script:moduleName {
                     $result | Should -Contain 'Present'
                 }
             }
-        }
 
-        Context 'When a parameter does not have the attribute ''ValidateSet''' {
-            BeforeAll {
-                $mockCompositeScript = {
-                    configuration CompositeHelperTest
-                    {
-                        [CmdletBinding()]
-                        param
-                        (
-                            [Parameter()]
-                            [System.String]
-                            $Ensure
-                        )
+            Context 'When a parameter does not have the attribute ''ValidateSet''' {
+                BeforeAll {
+                    $mockCompositeScript = {
+                        configuration CompositeHelperTest
+                        {
+                            [CmdletBinding()]
+                            param
+                            (
+                                [Parameter()]
+                                [System.String]
+                                $Ensure
+                            )
+                        }
                     }
+
+                    $astFilter = {
+                        $args[0] -is [System.Management.Automation.Language.ParameterAst]
+                    }
+
+                    $parameterAst = $mockCompositeScript.Ast.FindAll($astFilter, $true)
                 }
 
-                $astFilter = {
-                    $args[0] -is [System.Management.Automation.Language.ParameterAst]
-                }
-
-                $parameterAst = $mockCompositeScript.Ast.FindAll($astFilter, $true)
-            }
-
-            if ($IsMacOs)
-            {
-                It 'Should throw a not implemented error on MacOS' {
-                    {
-                        Get-CompositeResourceParameterValidateSet -Ast $parameterAst[0] -Verbose
-                    } | Should -Throw 'NotImplemented'
-                }
-            }
-            else
-            {
                 It 'Should return the expected array' {
                     $result = Get-CompositeResourceParameterValidateSet -Ast $parameterAst[0] -Verbose
 
