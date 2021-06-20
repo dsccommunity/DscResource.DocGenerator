@@ -107,7 +107,7 @@ function New-DscClassResourceWikiPage
 
                 $null = $output.AppendLine()
 
-                $dscResourceCommentBasedHelp = Get-ClassResourceCommentBasedHelp -Path $sourceFilePath
+                $dscResourceCommentBasedHelp = Get-CommentBasedHelp -Path $sourceFilePath
 
                 $description = $dscResourceCommentBasedHelp.Description
                 $description = $description -replace '[\r|\n]+$' # Removes all blank rows and whitespace at the end

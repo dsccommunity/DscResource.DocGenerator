@@ -43,7 +43,7 @@ function Get-ClassResourceProperty
 
         $sourceFilePath = Join-Path -Path $SourcePath -ChildPath ('Classes/*{0}.ps1' -f $currentClassName)
 
-        $dscResourceCommentBasedHelp = Get-ClassResourceCommentBasedHelp -Path $sourceFilePath
+        $dscResourceCommentBasedHelp = Get-CommentBasedHelp -Path $sourceFilePath
 
         $astFilter = {
             $args[0] -is [System.Management.Automation.Language.PropertyMemberAst] `

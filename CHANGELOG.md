@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     from the provided class or classes.
   - `Format-Text` - Format a string according to predefined options.
   - `Get-TemporaryPath` - returns the appropriate temp path for the OS.
+  - `Get-ConfigurationAst` - Returns the AST for a single or all configurations.
+  - `Get-CompositeSchemaObject` - Returns an object containing the parameters
+    and other properties related to a composite resource. The object that is
+    returned is different format to a MOF or class-based object and the property
+    names are aligned to a configuration parameter block rather than MOF.
+  - `Get-CompositeResourceParameterState` - Determines the parameter state of a
+    composite resource parameter. This is a meta attribute that will either be
+    `Required` or `Write`.
+  - `Get-CompositeResourceParameterValidateSet` - Returns the array of values
+    contained in the ValidateSet parameter attributes if it exists.
 
 ### Changed
 
@@ -28,6 +38,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Refactored to reduce code duplication when adding functions for supporting
     composite resources.
 - Converted `Invoke-Git` cmdlet to use `System.Diagnostics.Process` for improved error handling.
+- `Get-ClassResourceCommentBasedHelp`
+  - Renamed this function to `Get-CommentBasedHelp` so that it made sense to
+    use with composite DSC resources.
+  - Enabled the function to extract the comment block if it is not at the top
+    of the script file to support composite resources.
 
 ### Fixed
 

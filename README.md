@@ -25,6 +25,16 @@ full release to [PowerShell Gallery](https://www.powershellgallery.com/).
 Please check out the DSC Community [contributing guidelines](https://dsccommunity.org/guidelines/contributing).
 This repository align to the [DSC Community Style Guidelines](https://dsccommunity.org/styleguidelines).
 
+## Known Issues
+
+### Composite Resources and Linux
+
+The cmdlets and tasks that generate documentation for composite resources require
+the `configuration` statement that is provided by DSC. DSC is not installed
+on Linux by default, so these cmdlets This cmdlet will fail on Linux if the DSC
+resource module contains any composite resources. To enable these cmdlets to work
+on Linux, please install [PowerShell DSC for Linux](https://github.com/Microsoft/PowerShell-DSC-for-Linux).
+
 ## Cmdlets
 
 Refer to the comment-based help for more information about these helper
@@ -38,7 +48,7 @@ Get-Help -Name <CmdletName> -Detailed
 
 Generates conceptual help based on the DSC resources and their examples in
 a DSC module. This currently only creates English (culture en-US) conceptual
-help. But MOF-and class-based resources are supported. Class-based resources
+help. MOF, class-based and composite resources are supported. Class-based resources
 must follow the template pattern of the [Sampler](https://github.com/gaelcolas/Sampler)
 project. See the project [AzureDevOpDsc](https://github.com/dsccommunity/AzureDevOpsDsc)
 for an example of the pattern.
@@ -52,7 +62,7 @@ to parse the parameter descriptions in the schema MOF. The regular expression
 must be written so that the capture group 0 is the full match and the
 capture group 1 is the text that should be kept.
 
->**NOTE:** This cmdlet does not work on macOS and will throw an error due 
+>**NOTE:** This cmdlet does not work on macOS and will throw an error due
 >to the problem discussed in issue https://github.com/PowerShell/PowerShell/issues/5970
 >and issue https://github.com/PowerShell/MMI/issues/33.
 

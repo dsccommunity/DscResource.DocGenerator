@@ -287,7 +287,7 @@ function New-DscResourcePowerShellHelp
 
                 $sourceFilePath = Join-Path -Path $ModulePath -ChildPath ('Classes/*{0}.ps1' -f $dscResourceAst.Name)
 
-                $dscResourceCommentBasedHelp = Get-ClassResourceCommentBasedHelp -Path $sourceFilePath
+                $dscResourceCommentBasedHelp = Get-CommentBasedHelp -Path $sourceFilePath
 
                 $synopsis = $dscResourceCommentBasedHelp.Synopsis
                 $synopsis = $synopsis -replace '[\r|\n]+$' # Removes all blank rows at the end
