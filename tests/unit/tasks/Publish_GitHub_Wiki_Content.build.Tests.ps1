@@ -65,7 +65,7 @@ Describe 'Publish_GitHub_Wiki_Content' {
         }
 
         AfterAll {
-            $GitHubToken = $null
+            Remove-Variable -Name GitHubToken
         }
 
         It 'Should export the build script alias' {
@@ -120,7 +120,7 @@ Describe 'Publish_GitHub_Wiki_Content' {
         }
 
         AfterAll {
-            $GitHubToken = $null
+            Remove-Variable -Name GitHubToken
         }
 
         It 'Should run the build task and throw' {
