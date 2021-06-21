@@ -110,8 +110,7 @@ InModuleScope $script:moduleName {
             }
 
             It 'Should complete with ExitCode=128' {
-                $result = Invoke-Git -WorkingDirectory $TestDrive `
-                                -Arguments @( 'status' )
+                $result = Invoke-Git -WorkingDirectory $TestDrive -Arguments @( 'status' )
 
                 $result.ExitCode | Should -BeExactly 128
 
