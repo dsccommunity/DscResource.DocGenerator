@@ -21,6 +21,7 @@
 function Get-ClassAst
 {
     [CmdletBinding()]
+    [OutputType([System.Collections.Generic.IEnumerable`1[System.Management.Automation.Language.Ast]])]
     param
     (
         [Parameter(Mandatory = $true)]

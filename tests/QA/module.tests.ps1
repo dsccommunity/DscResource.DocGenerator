@@ -91,10 +91,20 @@ Describe "Quality for module" -Tags 'TestQuality' {
     }
 
     It "<Name> has a unit test" -TestCases $testCases {
+        param
+        (
+            $Name
+        )
+
         Get-ChildItem "tests\" -Recurse -Include "$Name.Tests.ps1" | Should -Not -BeNullOrEmpty
     }
 
     It "Script Analyzer for <Name>" -TestCases $testCases -Skip:(-not $scriptAnalyzerRules) {
+        param
+        (
+            $Name
+        )
+
         $functionFile = Get-ChildItem -path $sourcePath -Recurse -Include "$Name.ps1"
 
         $pssaResult = (Invoke-ScriptAnalyzer -Path $functionFile.FullName)
@@ -106,6 +116,11 @@ Describe "Quality for module" -Tags 'TestQuality' {
 
 Describe "Help for module" -Tags 'helpQuality' {
     It '<Name> has a SYNOPSIS' -TestCases $testCases {
+        param
+        (
+            $Name
+        )
+
         $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
 
         $AbstractSyntaxTree = [System.Management.Automation.Language.Parser]::
@@ -121,6 +136,11 @@ Describe "Help for module" -Tags 'helpQuality' {
     }
 
     It '<Name> has a Description, with length > 40' -TestCases $testCases {
+        param
+        (
+            $Name
+        )
+
         $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
 
         $AbstractSyntaxTree = [System.Management.Automation.Language.Parser]::
@@ -136,6 +156,11 @@ Describe "Help for module" -Tags 'helpQuality' {
     }
 
     It '<Name> has at least 1 example' -TestCases $testCases {
+        param
+        (
+            $Name
+        )
+
         $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
 
         $AbstractSyntaxTree = [System.Management.Automation.Language.Parser]::
@@ -154,6 +179,11 @@ Describe "Help for module" -Tags 'helpQuality' {
     }
 
     It '<Name> has described the parameters' -TestCases $testCases {
+        param
+        (
+            $Name
+        )
+
         $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
 
         $AbstractSyntaxTree = [System.Management.Automation.Language.Parser]::
@@ -166,6 +196,7 @@ Describe "Help for module" -Tags 'helpQuality' {
         $functionHelp = $parsedFunction.GetHelpContent()
 
         $parameters = $parsedFunction.Body.ParamBlock.Parameters.Name.VariablePath.ForEach{ $_.ToString() }
+
         foreach ($parameter in $parameters)
         {
             $functionHelp.Parameters.($parameter.ToUpper()) | Should -Not -BeNullOrEmpty -Because ('the parameter {0} must have a description' -f $parameter)

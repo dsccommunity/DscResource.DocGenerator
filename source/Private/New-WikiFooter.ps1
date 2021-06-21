@@ -15,6 +15,7 @@
 #>
 function New-WikiFooter
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding()]
     param
     (

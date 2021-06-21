@@ -19,6 +19,7 @@
 #>
 function Set-WikiModuleVersion
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding()]
     param
     (

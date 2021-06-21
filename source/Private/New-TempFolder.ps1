@@ -15,6 +15,7 @@
 #>
 function New-TempFolder
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding()]
     [OutputType([System.IO.DirectoryInfo])]
     param

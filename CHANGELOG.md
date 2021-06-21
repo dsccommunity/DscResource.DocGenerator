@@ -44,6 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     use with composite DSC resources.
   - Enabled the function to extract the comment block if it is not at the top
     of the script file to support composite resources.
+- Updated code to pass newly added quality checks.
 
 ### Fixed
 

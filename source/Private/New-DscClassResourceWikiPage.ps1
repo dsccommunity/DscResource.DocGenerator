@@ -30,6 +30,7 @@
 #>
 function New-DscClassResourceWikiPage
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding()]
     param
     (
