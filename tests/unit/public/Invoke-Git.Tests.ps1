@@ -21,7 +21,6 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 InModuleScope $script:moduleName {
     Describe 'Invoke-Git' {
         BeforeAll {
-            $mockWorkingDirectory = @{ [System.String] 'FullName' = "$TestDrive\TestWorkingDirectory" }
             $mockProcess = New-MockObject -Type System.Diagnostics.Process
             $mockProcess | Add-Member -MemberType ScriptMethod -Name 'Start' -Value { $true } -Force
             $mockProcess | Add-Member -MemberType ScriptMethod -Name 'WaitForExit' -Value { $true } -Force
@@ -45,7 +44,7 @@ InModuleScope $script:moduleName {
             }
             It 'Should complete with ExitCode=0' {
 
-                $result = Invoke-Git -WorkingDirectory $mockWorkingDirectory.FullName `
+                $result = Invoke-Git -WorkingDirectory $TestDrive `
                                 -Arguments @( 'config', '--local', 'user.email', 'user@host.com' )
 
                 $result.ExitCode | Should -BeExactly 0
@@ -77,7 +76,7 @@ InModuleScope $script:moduleName {
 
             It 'Should complete with ExitCode=1 and mask access token in debug message' {
 
-                $result = Invoke-Git -WorkingDirectory $mockWorkingDirectory.FullName `
+                $result = Invoke-Git -WorkingDirectory $TestDrive `
                             -Arguments @( 'remote', 'set-url', 'origin', 'https://name:5ea239f132736de237492ff3@github.com/repository.wiki.git' ) `
                             -Debug
 
@@ -111,8 +110,7 @@ InModuleScope $script:moduleName {
             }
 
             It 'Should complete with ExitCode=128' {
-                $result = Invoke-Git -WorkingDirectory $mockWorkingDirectory.FullName `
-                                -Arguments @( 'status' )
+                $result = Invoke-Git -WorkingDirectory $TestDrive -Arguments @( 'status' )
 
                 $result.ExitCode | Should -BeExactly 128
 
