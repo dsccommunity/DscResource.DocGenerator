@@ -173,9 +173,8 @@ Describe "Help for module" -Tags 'helpQuality' {
         $functionHelp = $parsedFunction.GetHelpContent()
 
         $functionHelp.Examples.Count | Should -BeGreaterThan 0
-        $functionHelp.Examples[0] | Should -Match ([regex]::Escape($function.Name))
-        $functionHelp.Examples[0].Length | Should -BeGreaterThan ($function.Name.Length + 10)
-
+        $functionHelp.Examples[0] | Should -Match ([regex]::Escape($Name))
+        $functionHelp.Examples[0].Length | Should -BeGreaterThan ($Name.Length + 10)
     }
 
     It '<Name> has described the parameters' -TestCases $testCases {

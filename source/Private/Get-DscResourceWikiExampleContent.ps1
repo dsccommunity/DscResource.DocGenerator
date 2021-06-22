@@ -12,8 +12,8 @@
     .PARAMETER ExamplePath
         The path to the example file.
 
-    .PARAMETER ModulePath
-        The number of the example.
+    .PARAMETER ExampleNumber
+        The (order) number of the example.
 
     .EXAMPLE
         Get-DscResourceWikiExampleContent -ExamplePath 'C:\repos\NetworkingDsc\Examples\Resources\DhcpClient\1-DhcpClient_EnableDHCP.ps1' -ExampleNumber 1

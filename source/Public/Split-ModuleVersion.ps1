@@ -8,7 +8,7 @@
         which each of the module version's parts.
 
     .PARAMETER ModuleVersion
-        The module to parse.
+        The module version for which to return the module version's parts.
 
     .EXAMPLE
         Split-ModuleVersion -ModuleVersion '1.15.0-pr0224-0022+Sha.47ae45eb'

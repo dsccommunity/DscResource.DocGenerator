@@ -16,6 +16,9 @@
     .PARAMETER WikiSourcePath
         The name of the folder that contains the source Wiki files.
 
+    .PARAMETER Force
+        If present, copies files forcefully, overwriting any existing files.
+
     .EXAMPLE
         Copy-WikiFolder -Path '.\output\WikiContent' -DestinationPath 'c:\repoName.wiki.git' -WikiSourcePath '.\source\WikiSource'
 

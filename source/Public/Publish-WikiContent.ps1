@@ -33,6 +33,11 @@
     .PARAMETER GitUserName
         The user name to use for the Git commit.
 
+    .PARAMETER GlobalCoreAutoCrLf
+        Specifies how line breaks should be handled when cloning the
+        GitHub wiki repository. Valid values are 'true', 'false', or
+        'input'.
+
     .EXAMPLE
         Publish-WikiContent `
             -Path '.\output\WikiContent' `

@@ -11,6 +11,18 @@
         The Abstract Syntax Tree (AST) for class-based DSC resource property.
         The passed value must be an AST of the type 'PropertyMemberAst'.
 
+    .PARAMETER IsKey
+        Specifies if the parameter is expected to have the type qualifier Key.
+
+    .PARAMETER IsMandatory
+        Specifies if the parameter is expected to have the type qualifier Mandatory.
+
+    .PARAMETER IsWrite
+        Specifies if the parameter is expected to have the type qualifier Write.
+
+    .PARAMETER IsRead
+        Specifies if the parameter is expected to have the type qualifier Read.
+
     .EXAMPLE
         Test-PropertyMemberAst -IsKey -Ast {
             [DscResource()]
