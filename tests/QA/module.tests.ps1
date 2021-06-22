@@ -18,12 +18,12 @@ Describe 'Changelog Management' -Tag 'Changelog' {
         ) {
         # Get the list of changed files compared with master
         $headCommit = & git rev-parse HEAD
-        $defaultBranchCommit = & git rev-parse origin/master
+        $defaultBranchCommit = & git rev-parse origin/main
         $filesChanged = & git @('diff', "$defaultBranchCommit...$headCommit", '--name-only')
 
         if ($headCommit -ne $defaultBranchCommit)
         {
-            # If we're not testing same commit (i.e. master..master)
+            # If we're not testing same commit (i.e. main..main)
             $filesChanged.Where{ (Split-Path $_ -Leaf) -match '^changelog' } | Should -Not -BeNullOrEmpty
         }
     }
