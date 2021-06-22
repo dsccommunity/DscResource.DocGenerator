@@ -2,6 +2,9 @@
     .SYNOPSIS
         Returns the AST for a single or all configurations.
 
+    .DESCRIPTION
+        Returns the AST for a single or all configurations.
+
     .PARAMETER ScriptFile
         The path to the source file that contain the configuration.
 

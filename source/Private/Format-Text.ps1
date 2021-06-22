@@ -2,6 +2,9 @@
     .SYNOPSIS
         Formats a string using predefined format options.
 
+    .DESCRIPTION
+        Formats a string using predefined format options.
+
     .PARAMETER Text
         The string to format.
 

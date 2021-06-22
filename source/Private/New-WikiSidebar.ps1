@@ -2,6 +2,9 @@
     .SYNOPSIS
         Creates the Wiki side bar file from the list of markdown files in the path.
 
+    .DESCRIPTION
+        Creates the Wiki side bar file from the list of markdown files in the path.
+
     .PARAMETER ModuleName
         The name of the module to generate a new Wiki Sidebar file for.
 

@@ -2,6 +2,9 @@
     .SYNOPSIS
         Returns DSC class resource properties from the provided class or classes.
 
+    .DESCRIPTION
+        Returns DSC class resource properties from the provided class or classes.
+
     .PARAMETER SourcePath
         The path to the source folder (in which the child folder 'Classes' exist).
 

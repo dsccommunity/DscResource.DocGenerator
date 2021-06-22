@@ -2,6 +2,9 @@
     .SYNOPSIS
         Creates a new temporary folder with a random name.
 
+    .DESCRIPTION
+        Creates a new temporary folder with a random name.
+
     .EXAMPLE
         New-TempFolder
 

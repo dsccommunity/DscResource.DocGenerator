@@ -2,6 +2,9 @@
     .SYNOPSIS
         Returns the AST for a single or all DSC class resources.
 
+    .DESCRIPTION
+        Returns the AST for a single or all DSC class resources.
+
     .PARAMETER ScriptFile
         The path to the source file that contain the DSC class resource.
 

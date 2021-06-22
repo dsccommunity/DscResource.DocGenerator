@@ -3,6 +3,10 @@
         This function parses a module version string as returns a PSCustomObject
         which each of the module version's parts.
 
+    .DESCRIPTION
+        This function parses a module version string as returns a PSCustomObject
+        which each of the module version's parts.
+
     .PARAMETER ModuleVersion
         The module to parse.
 

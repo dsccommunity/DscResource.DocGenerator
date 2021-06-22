@@ -2,6 +2,9 @@
     .SYNOPSIS
         Returns the AST for a single or all classes.
 
+    .DESCRIPTION
+        Returns the AST for a single or all classes.
+
     .PARAMETER ScriptFile
         The path to the source file that contain the class.
 
