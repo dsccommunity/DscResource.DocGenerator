@@ -59,7 +59,7 @@ $mut = Get-Module -Name $script:moduleName -ListAvailable |
     Import-Module -Force -ErrorAction 'Stop' -PassThru
 
 # Must use the imported module to build test cases.
-$allModuleFunctions = & $mut {Get-Command -Module $args[0] -CommandType Function } $script:moduleName
+$allModuleFunctions = & $mut { Get-Command -Module $args[0] -CommandType Function } $script:moduleName
 
 # Build test cases.
 $testCases = @()
@@ -73,7 +73,7 @@ foreach ($function in $allModuleFunctions)
 }
 #endregion Build test cases
 
-Describe "Quality for module" -Tags 'TestQuality' {
+Describe 'Quality for module' -Tags 'TestQuality' {
     if (Get-Command -Name Invoke-ScriptAnalyzer -ErrorAction SilentlyContinue)
     {
         $scriptAnalyzerRules = Get-ScriptAnalyzerRule
@@ -82,15 +82,15 @@ Describe "Quality for module" -Tags 'TestQuality' {
     {
         if ($ErrorActionPreference -ne 'Stop')
         {
-            Write-Warning -Message "ScriptAnalyzer not found!"
+            Write-Warning -Message 'ScriptAnalyzer not found!'
         }
         else
         {
-            throw "ScriptAnalyzer not found!"
+            throw 'ScriptAnalyzer not found!'
         }
     }
 
-    It "<Name> has a unit test" -TestCases $testCases {
+    It '<Name> has a unit test' -TestCases $testCases {
         param
         (
             $Name
@@ -99,7 +99,7 @@ Describe "Quality for module" -Tags 'TestQuality' {
         Get-ChildItem "tests\" -Recurse -Include "$Name.Tests.ps1" | Should -Not -BeNullOrEmpty
     }
 
-    It "Script Analyzer for <Name>" -TestCases $testCases -Skip:(-not $scriptAnalyzerRules) {
+    It 'Script Analyzer for <Name>' -TestCases $testCases -Skip:(-not $scriptAnalyzerRules) {
         param
         (
             $Name
@@ -114,7 +114,7 @@ Describe "Quality for module" -Tags 'TestQuality' {
     }
 }
 
-Describe "Help for module" -Tags 'helpQuality' {
+Describe 'Help for module' -Tags 'helpQuality' {
     It '<Name> has a SYNOPSIS' -TestCases $testCases {
         param
         (
@@ -123,12 +123,15 @@ Describe "Help for module" -Tags 'helpQuality' {
 
         $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
 
-        $AbstractSyntaxTree = [System.Management.Automation.Language.Parser]::
-        ParseInput((Get-Content -Raw $functionFile.FullName), [ref] $null, [ref] $null)
+        $scriptFileRawContent = Get-Content -Raw -Path $functionFile.FullName
+
+        $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
 
         $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
-        $parsedFunction = $AbstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
-            Where-Object -FilterScript { $_.Name -eq $Name }
+        $parsedFunction = $abstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
+            Where-Object -FilterScript {
+                $_.Name -eq $Name
+            }
 
         $functionHelp = $parsedFunction.GetHelpContent()
 
@@ -143,12 +146,15 @@ Describe "Help for module" -Tags 'helpQuality' {
 
         $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
 
-        $AbstractSyntaxTree = [System.Management.Automation.Language.Parser]::
-        ParseInput((Get-Content -Raw $functionFile.FullName), [ref] $null, [ref] $null)
+        $scriptFileRawContent = Get-Content -Raw -Path $functionFile.FullName
+
+        $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
 
         $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
-        $parsedFunction = $AbstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
-            Where-Object -FilterScript { $_.Name -eq $Name }
+        $parsedFunction = $abstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
+            Where-Object -FilterScript {
+                $_.Name -eq $Name
+            }
 
         $functionHelp = $parsedFunction.GetHelpContent()
 
@@ -163,12 +169,15 @@ Describe "Help for module" -Tags 'helpQuality' {
 
         $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
 
-        $AbstractSyntaxTree = [System.Management.Automation.Language.Parser]::
-        ParseInput((Get-Content -Raw $functionFile.FullName), [ref] $null, [ref] $null)
+        $scriptFileRawContent = Get-Content -Raw -Path $functionFile.FullName
+
+        $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
 
         $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
-        $parsedFunction = $AbstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
-            Where-Object -FilterScript { $_.Name -eq $Name }
+        $parsedFunction = $abstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
+            Where-Object -FilterScript {
+                $_.Name -eq $Name
+            }
 
         $functionHelp = $parsedFunction.GetHelpContent()
 
@@ -185,16 +194,19 @@ Describe "Help for module" -Tags 'helpQuality' {
 
         $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
 
-        $AbstractSyntaxTree = [System.Management.Automation.Language.Parser]::
-        ParseInput((Get-Content -Raw $functionFile.FullName), [ref] $null, [ref] $null)
+        $scriptFileRawContent = Get-Content -Raw -Path $functionFile.FullName
+
+        $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
 
         $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
-        $parsedFunction = $AbstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
-            Where-Object -FilterScript { $_.Name -eq $Name }
+        $parsedFunction = $abstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
+            Where-Object -FilterScript {
+                $_.Name -eq $Name
+            }
 
         $functionHelp = $parsedFunction.GetHelpContent()
 
-        $parameters = $parsedFunction.Body.ParamBlock.Parameters.Name.VariablePath.ForEach{ $_.ToString() }
+        $parameters = $parsedFunction.Body.ParamBlock.Parameters.Name.VariablePath.ForEach({ $_.ToString() })
 
         foreach ($parameter in $parameters)
         {

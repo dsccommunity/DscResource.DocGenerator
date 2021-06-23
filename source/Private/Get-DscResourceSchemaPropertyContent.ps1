@@ -12,7 +12,7 @@
         the property Attributes.
 
     .PARAMETER UseMarkdown
-        If certain texts should be output as markdown, for example values of the
+        If certain text should be output as markdown, for example values of the
         hashtable property ValueMap.
 
     .EXAMPLE
