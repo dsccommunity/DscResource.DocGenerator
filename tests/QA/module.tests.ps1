@@ -22,7 +22,7 @@ $sourcePath = (
 ).Directory.FullName
 
 Describe 'Changelog Management' -Tag 'Changelog' {
-    It 'Changelog has been updated' -skip:(
+    It 'Should have updated the Changelog' -skip:(
         -not (
             [System.Boolean] (Get-Command -Name git -ErrorAction 'SilentlyContinue') -and
             [System.Boolean] (& (Get-Process -Id $PID).Path -NoProfile -Command 'git rev-parse --is-inside-work-tree 2>$null')
@@ -40,7 +40,7 @@ Describe 'Changelog Management' -Tag 'Changelog' {
         }
     }
 
-    It 'Changelog format compliant with keepachangelog format' -skip:(-not [System.Boolean] (Get-Command git -ErrorAction 'SilentlyContinue')) {
+    It 'Should have the Changelog compliant with the Keepachangelog format' -skip:(-not [System.Boolean] (Get-Command git -ErrorAction 'SilentlyContinue')) {
         {
             Get-ChangelogData -Path (Join-Path -Path $ProjectPath -ChildPath 'CHANGELOG.md') -ErrorAction 'Stop'
         } | Should -Not -Throw
@@ -48,16 +48,16 @@ Describe 'Changelog Management' -Tag 'Changelog' {
 }
 
 Describe 'General module control' -Tags 'FunctionalQuality' {
-    It 'imports without errors' {
+    It 'Should import without errors' {
         { Import-Module -Name $script:moduleName -Force -ErrorAction Stop } | Should -Not -Throw
 
-        Get-Module $script:moduleName | Should -Not -BeNullOrEmpty
+        Get-Module -Name $script:moduleName | Should -Not -BeNullOrEmpty
     }
 
-    It 'Removes without error' {
+    It 'Should remove without error' {
         { Remove-Module -Name $script:moduleName -ErrorAction Stop } | Should -Not -Throw
 
-        Get-Module $script:moduleName | Should -BeNullOrEmpty
+        Get-Module -Name $script:moduleName | Should -BeNullOrEmpty
     }
 }
 
@@ -102,7 +102,7 @@ Describe 'Quality for module' -Tags 'TestQuality' {
         }
     }
 
-    It '<Name> has a unit test' -TestCases $testCases {
+    It 'Should have a unit test for <Name>' -TestCases $testCases {
         param
         (
             $Name
@@ -111,7 +111,7 @@ Describe 'Quality for module' -Tags 'TestQuality' {
         Get-ChildItem "tests\" -Recurse -Include "$Name.Tests.ps1" | Should -Not -BeNullOrEmpty
     }
 
-    It 'Script Analyzer for <Name>' -TestCases $testCases -Skip:(-not $scriptAnalyzerRules) {
+    It 'Should pass Script Analyzer for <Name>' -TestCases $testCases -Skip:(-not $scriptAnalyzerRules) {
         param
         (
             $Name
@@ -127,7 +127,7 @@ Describe 'Quality for module' -Tags 'TestQuality' {
 }
 
 Describe 'Help for module' -Tags 'helpQuality' {
-    It '<Name> has a SYNOPSIS' -TestCases $testCases {
+    It 'Should have .SYNOPSIS for <Name>' -TestCases $testCases {
         param
         (
             $Name
@@ -140,6 +140,7 @@ Describe 'Help for module' -Tags 'helpQuality' {
         $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
 
         $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
+
         $parsedFunction = $abstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
             Where-Object -FilterScript {
                 $_.Name -eq $Name
@@ -150,7 +151,7 @@ Describe 'Help for module' -Tags 'helpQuality' {
         $functionHelp.Synopsis | Should -Not -BeNullOrEmpty
     }
 
-    It '<Name> has a Description, with length > 40' -TestCases $testCases {
+    It 'Should have a .DESCRIPTION with length greater than 40 characters for <Name>' -TestCases $testCases {
         param
         (
             $Name
@@ -163,6 +164,7 @@ Describe 'Help for module' -Tags 'helpQuality' {
         $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
 
         $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
+
         $parsedFunction = $abstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
             Where-Object -FilterScript {
                 $_.Name -eq $Name
@@ -173,7 +175,7 @@ Describe 'Help for module' -Tags 'helpQuality' {
         $functionHelp.Description.Length | Should -BeGreaterThan 40
     }
 
-    It '<Name> has at least 1 example' -TestCases $testCases {
+    It 'Should have at least one (1) example for <Name>' -TestCases $testCases {
         param
         (
             $Name
@@ -186,6 +188,7 @@ Describe 'Help for module' -Tags 'helpQuality' {
         $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
 
         $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
+
         $parsedFunction = $abstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
             Where-Object -FilterScript {
                 $_.Name -eq $Name
@@ -198,7 +201,7 @@ Describe 'Help for module' -Tags 'helpQuality' {
         $functionHelp.Examples[0].Length | Should -BeGreaterThan ($Name.Length + 10)
     }
 
-    It '<Name> has described the parameters' -TestCases $testCases {
+    It 'Should have described all parameters for <Name>' -TestCases $testCases {
         param
         (
             $Name
@@ -211,6 +214,7 @@ Describe 'Help for module' -Tags 'helpQuality' {
         $abstractSyntaxTree = [System.Management.Automation.Language.Parser]::ParseInput($scriptFileRawContent, [ref] $null, [ref] $null)
 
         $astSearchDelegate = { $args[0] -is [System.Management.Automation.Language.FunctionDefinitionAst] }
+
         $parsedFunction = $abstractSyntaxTree.FindAll( $astSearchDelegate, $true ) |
             Where-Object -FilterScript {
                 $_.Name -eq $Name
