@@ -1,7 +1,7 @@
 
 $script:moduleName = 'DscResource.DocGenerator'
 
-# Convert-path required for PS7 or Join-Path fails
+# Convert-Path required for PS7 or Join-Path fails
 $projectPath = "$($PSScriptRoot)\..\.." | Convert-Path
 
 $sourcePath = (
@@ -117,7 +117,7 @@ Describe 'Quality for module' -Tags 'TestQuality' {
             $Name
         )
 
-        $functionFile = Get-ChildItem -path $sourcePath -Recurse -Include "$Name.ps1"
+        $functionFile = Get-ChildItem -Path $sourcePath -Recurse -Include "$Name.ps1"
 
         $pssaResult = (Invoke-ScriptAnalyzer -Path $functionFile.FullName)
         $report = $pssaResult | Format-Table -AutoSize | Out-String -Width 110
