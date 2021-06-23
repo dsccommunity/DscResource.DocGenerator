@@ -108,7 +108,7 @@ Describe 'Quality for module' -Tags 'TestQuality' {
             $Name
         )
 
-        Get-ChildItem "tests\" -Recurse -Include "$Name.Tests.ps1" | Should -Not -BeNullOrEmpty
+        Get-ChildItem -Path 'tests\' -Recurse -Include "$Name.Tests.ps1" | Should -Not -BeNullOrEmpty
     }
 
     It 'Should pass Script Analyzer for <Name>' -TestCases $testCases -Skip:(-not $scriptAnalyzerRules) {
