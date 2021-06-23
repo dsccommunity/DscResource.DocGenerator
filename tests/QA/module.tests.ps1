@@ -4,9 +4,21 @@ $script:moduleName = 'DscResource.DocGenerator'
 # Convert-path required for PS7 or Join-Path fails
 $projectPath = "$($PSScriptRoot)\..\.." | Convert-Path
 
-$sourcePath = (Get-ChildItem $projectPath\*\*.psd1 | Where-Object {
-    ($_.Directory.Name -match 'source|src' -or $_.Directory.Name -eq $_.BaseName) -and
-    $(try { Test-ModuleManifest $_.FullName -ErrorAction Stop }catch { $false }) }
+$sourcePath = (
+    Get-ChildItem -Path $projectPath\*\*.psd1 |
+        Where-Object -FilterScript {
+            ($_.Directory.Name -match 'source|src' -or $_.Directory.Name -eq $_.BaseName) `
+            -and $(
+                try
+                {
+                    Test-ModuleManifest -Path $_.FullName -ErrorAction 'Stop'
+                }
+                catch
+                {
+                    $false
+                }
+            )
+        }
 ).Directory.FullName
 
 Describe 'Changelog Management' -Tag 'Changelog' {
