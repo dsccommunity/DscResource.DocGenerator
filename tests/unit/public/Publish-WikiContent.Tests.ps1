@@ -69,10 +69,10 @@ InModuleScope $script:moduleName {
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'config' -and
-                    $Arguments[1] -eq '--local' -and
+                    $Arguments[1] -eq '--global' -and
                     $Arguments[2] -eq 'core.autocrlf' -and
                     $Arguments[3] -eq 'true'
-                } -Exactly -Times 0 -Scope It
+                } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Copy-WikiFolder -Exactly -Times 0 -Scope It
 
@@ -176,7 +176,7 @@ InModuleScope $script:moduleName {
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'config' -and
-                    $Arguments[1] -eq '--local' -and
+                    $Arguments[1] -eq '--global' -and
                     $Arguments[2] -eq 'core.autocrlf' -and
                     $Arguments[3] -eq 'true'
                 } -Exactly -Times 1 -Scope It
@@ -297,7 +297,7 @@ InModuleScope $script:moduleName {
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'config' -and
-                    $Arguments[1] -eq '--local' -and
+                    $Arguments[1] -eq '--global' -and
                     $Arguments[2] -eq 'core.autocrlf' -and
                     $Arguments[3] -eq 'true'
                 } -Exactly -Times 1 -Scope It

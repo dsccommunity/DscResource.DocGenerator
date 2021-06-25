@@ -47,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Invoke-Git` 
   - Converted to public function.
   - Updated to use `System.Diagnostics.Process` for improved error handling.
-  - Returns object.
+  - Returns object, allowing caller to process result.
 
 ### Fixed
 
