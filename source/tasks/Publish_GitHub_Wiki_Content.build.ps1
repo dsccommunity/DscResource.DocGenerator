@@ -171,7 +171,13 @@ task Publish_GitHub_Wiki_Content {
             }
         }
 
-        $remoteURL = git remote get-url origin
+        $gitRemoteResult = Invoke-Git -WorkingDirectory $BuildRoot `
+                                -Arguments @( 'remote', 'get-url', 'origin' )
+
+        if ($gitRemoteResult.ExitCode -eq 0)
+        {
+            $remoteURL = $gitRemoteResult.StandardOutput
+        }
 
         # Parse the URL for owner name and repository name.
         if ($remoteURL -match 'github')

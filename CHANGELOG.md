@@ -38,13 +38,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Get-MofSchemaObject`
   - Refactored to reduce code duplication when adding functions for supporting
     composite resources.
-- Converted `Invoke-Git` cmdlet to use `System.Diagnostics.Process` for improved error handling.
 - `Get-ClassResourceCommentBasedHelp`
   - Renamed this function to `Get-CommentBasedHelp` so that it made sense to
     use with composite DSC resources.
   - Enabled the function to extract the comment block if it is not at the top
     of the script file to support composite resources.
 - Updated code to pass newly added quality checks.
+- `Invoke-Git` 
+  - Converted to public function.
+  - Updated to use `System.Diagnostics.Process` for improved error handling.
+  - Returns object.
 
 ### Fixed
 
