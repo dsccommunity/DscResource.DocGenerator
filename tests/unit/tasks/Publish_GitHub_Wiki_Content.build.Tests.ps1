@@ -33,10 +33,10 @@ Describe 'Publish_GitHub_Wiki_Content' {
                 'StandardError' = 'Standard Error 0'
             }
         } -ParameterFilter {
-                $Arguments[0] -eq 'remote' -and
-                $Arguments[1] -eq 'get-url' -and
-                $Arguments[2] -eq 'origin'
-            }
+            $Arguments[0] -eq 'remote' -and
+            $Arguments[1] -eq 'get-url' -and
+            $Arguments[2] -eq 'origin'
+        }
 
         Mock -Command Get-BuiltModuleVersion -MockWith {
             return [PSCustomObject]@{
@@ -113,10 +113,10 @@ Describe 'Publish_GitHub_Wiki_Content' {
                     'StandardError' = 'fatal: not a git repository (or any of the parent directories): .git'
                 }
             } -ParameterFilter {
-                    $Arguments[0] -eq 'remote' -and
-                    $Arguments[1] -eq 'get-url' -and
-                    $Arguments[2] -eq 'origin'
-                }
+                $Arguments[0] -eq 'remote' -and
+                $Arguments[1] -eq 'get-url' -and
+                $Arguments[2] -eq 'origin'
+            }
         }
 
         AfterAll {

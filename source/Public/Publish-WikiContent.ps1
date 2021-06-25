@@ -101,10 +101,17 @@ function Publish-WikiContent
     Write-Verbose -Message $script:localizedData.CreateTempDirMessage
 
     $tempPath = New-TempFolder
+    $wikiRepoName = "https://github.com/$OwnerName/$RepositoryName.wiki.git"
 
     try
     {
-        $wikiRepoName = "https://github.com/$OwnerName/$RepositoryName.wiki.git"
+        Write-Verbose -Message $script:localizedData.ConfigGlobalGitMessage
+
+        if ($PSBoundParameters.ContainsKey('GlobalCoreAutoCrLf'))
+        {
+            $null = Invoke-Git -WorkingDirectory $tempPath.FullName `
+                        -Arguments @( 'config', '--global', 'core.autocrlf', $GlobalCoreAutoCrLf )
+        }
 
         Write-Verbose -Message ($script:localizedData.CloneWikiGitRepoMessage -f $WikiRepoName)
 
@@ -113,14 +120,6 @@ function Publish-WikiContent
 
         if ($gitCloneResult.ExitCode -eq 0)
         {
-            Write-Verbose -Message $script:localizedData.ConfigGlobalGitMessage
-
-            if ($PSBoundParameters.ContainsKey('GlobalCoreAutoCrLf'))
-            {
-                $null = Invoke-Git -WorkingDirectory $tempPath.FullName `
-                            -Arguments @( 'config', '--local', 'core.autocrlf', $GlobalCoreAutoCrLf )
-            }
-
             $copyWikiFileParameters = @{
                 Path            = $Path
                 DestinationPath = $tempPath

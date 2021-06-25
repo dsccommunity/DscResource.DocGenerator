@@ -137,6 +137,7 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Remove-Item -Exactly -Times 1 -Scope It
             }
         }
+
         Context 'When publishing Wiki content' {
             BeforeAll {
                 Mock -CommandName Copy-WikiFolder
@@ -267,11 +268,11 @@ InModuleScope $script:moduleName {
                         'StandardError' = 'Standard Error 1'
                     }
                 } -ParameterFilter {
-                            $Arguments[0] -eq 'commit' -and
-                            $Arguments[1] -eq '--message' -and
-                            $Arguments[2] -eq "`"$($localizedData.UpdateWikiCommitMessage -f $ModuleVersion)`"" -and
-                            $Arguments[3] -eq '--quiet'
-                        }
+                        $Arguments[0] -eq 'commit' -and
+                        $Arguments[1] -eq '--message' -and
+                        $Arguments[2] -eq "`"$($localizedData.UpdateWikiCommitMessage -f $ModuleVersion)`"" -and
+                        $Arguments[3] -eq '--quiet'
+                    }
             }
 
             It 'Should not throw an exception and call the expected mocks' {
