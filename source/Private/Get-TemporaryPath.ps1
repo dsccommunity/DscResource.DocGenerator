@@ -8,6 +8,11 @@
         on Windows OS, '/tmp' when run in Linux and $ENV:TMPDIR when
         run on MacOS.
 
+    .EXAMPLE
+        Get-TemporaryPath
+
+        Get the temporary path (which will differ between operating system).
+
     .NOTES
         We use Get-Variable to determine if the OS specific variables are
         defined so that we can mock these during testing. We also use Get-Item

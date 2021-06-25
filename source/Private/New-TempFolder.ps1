@@ -2,6 +2,9 @@
     .SYNOPSIS
         Creates a new temporary folder with a random name.
 
+    .DESCRIPTION
+        Creates a new temporary folder with a random name.
+
     .EXAMPLE
         New-TempFolder
 
@@ -15,6 +18,7 @@
 #>
 function New-TempFolder
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding()]
     [OutputType([System.IO.DirectoryInfo])]
     param

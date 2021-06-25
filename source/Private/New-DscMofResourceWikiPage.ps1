@@ -20,6 +20,9 @@
         The path to the root of the built DSC resource module, e.g.
         'output/MyResource/1.0.0'.
 
+    .PARAMETER Force
+        Overwrites any existing file when outputting the generated content.
+
     .EXAMPLE
         New-DscMofResourceWikiPage `
             -SourcePath C:\repos\MyResource\source `
@@ -30,6 +33,8 @@
 #>
 function New-DscMofResourceWikiPage
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding()]
     param
     (

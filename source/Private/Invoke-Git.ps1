@@ -1,6 +1,9 @@
 <#
     .SYNOPSIS
-        Invokes the git command.
+        Invokes a git command.
+
+    .DESCRIPTION
+        Invokes a git command with command line arguments.
 
     .PARAMETER WorkingDirectory
         The path to the git working directory.

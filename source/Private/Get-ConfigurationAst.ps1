@@ -2,6 +2,9 @@
     .SYNOPSIS
         Returns the AST for a single or all configurations.
 
+    .DESCRIPTION
+        Returns the AST for a single or all configurations.
+
     .PARAMETER ScriptFile
         The path to the source file that contain the configuration.
 
@@ -25,6 +28,7 @@
 function Get-ConfigurationAst
 {
     [CmdletBinding()]
+    [OutputType([System.Collections.Generic.IEnumerable`1[System.Management.Automation.Language.Ast]])]
     param
     (
         [Parameter(Mandatory = $true)]

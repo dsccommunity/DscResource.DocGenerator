@@ -99,6 +99,7 @@
 #>
 function New-DscResourcePowerShellHelp
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding()]
     param
     (

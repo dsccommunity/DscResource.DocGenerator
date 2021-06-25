@@ -2,6 +2,9 @@
     .SYNOPSIS
         Creates the Wiki footer file if one does not already exist.
 
+    .DESCRIPTION
+        Creates the Wiki footer file if one does not already exist.
+
     .PARAMETER Path
         The path for the Wiki footer file.
 
@@ -15,6 +18,7 @@
 #>
 function New-WikiFooter
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding()]
     param
     (

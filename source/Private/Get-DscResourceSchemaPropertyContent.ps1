@@ -7,9 +7,13 @@
         Get-DscResourceSchemaPropertyContent is used to generate the parameter content
         for the wiki page.
 
-    .PARAMETER Attribute
+    .PARAMETER Property
         A hash table with properties that is returned by Get-MofSchemaObject in
         the property Attributes.
+
+    .PARAMETER UseMarkdown
+        If certain text should be output as markdown, for example values of the
+        hashtable property ValueMap.
 
     .EXAMPLE
         $content = Get-DscResourceSchemaPropertyContent -Property @(
