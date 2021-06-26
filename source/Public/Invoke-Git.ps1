@@ -3,7 +3,7 @@
         Invokes a git command.
 
     .DESCRIPTION
-        Invokes a git command with command line arguments.
+        Invokes a git command with command line arguments using System.Diagnostics.Process.
 
     .PARAMETER WorkingDirectory
         The path to the git working directory.
@@ -20,7 +20,6 @@
         Invokes the Git executable to clone the specified repository to the working directory.
 
     .EXAMPLE
-
         Invoke-Git -WorkingDirectory 'C:\SomeDirectory' -Arguments @( 'status' ) -TimeOut 10
 
         Invokes the Git executable to return the status while having a 10 second timeout.
@@ -29,7 +28,7 @@
 function Invoke-Git
 {
     [CmdletBinding()]
-    [OutputType([System.Int32])]
+    [OutputType([System.Collections.Hashtable])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -44,6 +43,12 @@ function Invoke-Git
         [System.String[]]
         $Arguments
     )
+
+    $returnValue = @{
+        'ExitCode'       = -1
+        'StandardOutput' = ''
+        'StandardError'  = ''
+    }
 
     $argumentsJoined = $Arguments -join ' '
 
@@ -71,18 +76,9 @@ function Invoke-Git
         {
             if ($process.WaitForExit($TimeOut) -eq $true)
             {
-                <#
-                    Assuming the error code 1 from git is warnings or informational like
-                    "nothing to commit, working tree clean" and those are returned instead
-                    of throwing an exception.
-                #>
-                if ($process.ExitCode -gt 1)
-                {
-                    Write-Warning -Message ($localizedData.UnexpectedInvokeGitReturnCode -f $process.ExitCode)
-
-                    Write-Debug -Message ($localizedData.InvokeGitStandardOutputReturn -f $process.StandardOutput.ReadToEnd())
-                    Write-Debug -Message ($localizedData.InvokeGitStandardErrorReturn -f $process.StandardError.ReadToEnd())
-                }
+                $returnValue.ExitCode = $process.ExitCode
+                $returnValue.StandardOutput = $process.StandardOutput.ReadToEnd()
+                $returnValue.StandardError = $process.StandardError.ReadToEnd()
             }
         }
     }
@@ -94,10 +90,9 @@ function Invoke-Git
     {
         if ($process)
         {
-            $exitCode = $process.ExitCode
             $process.Dispose()
         }
     }
 
-    return $exitCode
+    return $returnValue
 }
