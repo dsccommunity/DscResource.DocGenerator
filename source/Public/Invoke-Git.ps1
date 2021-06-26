@@ -9,7 +9,7 @@
         The path to the git working directory.
 
     .PARAMETER Timeout
-        Seconds to wait for process to exit.
+        Milliseconds to wait for process to exit.
 
     .PARAMETER Arguments
         The arguments to pass to the Git executable.
@@ -20,9 +20,9 @@
         Invokes the Git executable to clone the specified repository to the working directory.
 
     .EXAMPLE
-        Invoke-Git -WorkingDirectory 'C:\SomeDirectory' -Arguments @( 'status' ) -TimeOut 10
+        Invoke-Git -WorkingDirectory 'C:\SomeDirectory' -Arguments @( 'status' ) -TimeOut 10000
 
-        Invokes the Git executable to return the status while having a 10 second timeout.
+        Invokes the Git executable to return the status while having a 10000 millisecond timeout.
 #>
 
 function Invoke-Git
@@ -37,7 +37,7 @@ function Invoke-Git
 
         [Parameter(Mandatory = $false)]
         [System.Int32]
-        $TimeOut = 120,
+        $TimeOut = 120000,
 
         [Parameter(ValueFromRemainingArguments = $true)]
         [System.String[]]
