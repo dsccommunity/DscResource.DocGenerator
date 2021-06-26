@@ -100,7 +100,6 @@ param
 
 # Synopsis: This task publishes documentation to a GitHub Wiki repository.
 task Publish_GitHub_Wiki_Content {
-
     if ([System.String]::IsNullOrEmpty($GitHubToken))
     {
         Write-Build Yellow 'Skipping task. Variable $GitHubToken not set via parent scope, as an environment variable, or passed to the build task.'
@@ -172,7 +171,7 @@ task Publish_GitHub_Wiki_Content {
         }
 
         $gitRemoteResult = Invoke-Git -WorkingDirectory $ProjectPath `
-                                -Arguments @( 'remote', 'get-url', 'origin' )
+                                -Arguments @( 'remote', 'get-url', 'origin' ) -Verbose -Debug
 
         if ($gitRemoteResult.ExitCode -eq 0)
         {
@@ -205,6 +204,6 @@ task Publish_GitHub_Wiki_Content {
 
         Write-Build Magenta "Publishing Wiki content."
 
-        Publish-WikiContent @publishWikiContentParameters
+        Publish-WikiContent @publishWikiContentParameters -Verbose -Debug
     }
 }
