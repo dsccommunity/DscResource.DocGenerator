@@ -171,7 +171,7 @@ task Publish_GitHub_Wiki_Content {
         }
 
         $gitRemoteResult = Invoke-Git -WorkingDirectory $ProjectPath `
-                                -Arguments @( 'remote', 'get-url', 'origin' )
+                                -Arguments @( 'remote', 'get-url', 'origin' ) -Verbose -Debug
 
         if ($gitRemoteResult.ExitCode -eq 0)
         {
@@ -204,6 +204,6 @@ task Publish_GitHub_Wiki_Content {
 
         Write-Build Magenta "Publishing Wiki content."
 
-        Publish-WikiContent @publishWikiContentParameters
+        Publish-WikiContent @publishWikiContentParameters -Verbose -Debug
     }
 }
