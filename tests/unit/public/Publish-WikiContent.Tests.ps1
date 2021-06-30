@@ -227,7 +227,13 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'push' -and
                     $Arguments[1] -eq 'origin'
-                } -Exactly -Times 2 -Scope It
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
+                    $Arguments[0] -eq 'push' -and
+                    $Arguments[1] -eq 'origin' -and
+                    $Arguments[2] -eq "$($mockPublishWikiContentParameters.ModuleVersion)"
+                } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Remove-Item -Exactly -Times 1 -Scope It
             }
