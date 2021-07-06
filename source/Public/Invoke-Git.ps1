@@ -65,7 +65,7 @@ function Invoke-Git
         $process = New-Object -TypeName System.Diagnostics.Process
         $process.StartInfo.Arguments = $Arguments
         $process.StartInfo.CreateNoWindow = $true
-        $process.StartInfo.FileName = 'git.exe'
+        $process.StartInfo.FileName = 'git'
         $process.StartInfo.RedirectStandardOutput = $true
         $process.StartInfo.RedirectStandardError = $true
         $process.StartInfo.UseShellExecute = $false
