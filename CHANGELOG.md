@@ -59,6 +59,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Invoke-Git`
   - Set `$TimeOut` to Milliseconds
     Fixes [Issue 84](https://github.com/dsccommunity/DscResource.DocGenerator/issues/84)
+  - Calls `git` so it works on both Windows and Linux.
+- `Publish-WikiContent`
+  - Remove a unnecessary `Set-Location` so it is possible to remove the 
+    temporary folder.
 
 ## [0.8.3] - 2021-04-10
 
