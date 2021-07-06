@@ -131,8 +131,6 @@ function Publish-WikiContent
             New-WikiSidebar -ModuleName $ModuleName -Path $tempPath
             New-WikiFooter -Path $tempPath
 
-            Set-Location -Path $tempPath
-
             Write-Verbose -Message $script:localizedData.ConfigLocalGitMessage
 
             $null = Invoke-Git -WorkingDirectory $tempPath.FullName `
