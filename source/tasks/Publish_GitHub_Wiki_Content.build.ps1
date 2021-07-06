@@ -171,7 +171,7 @@ task Publish_GitHub_Wiki_Content {
             }
         }
 
-        $gitRemoteResult = Invoke-Git -WorkingDirectory $BuildRoot `
+        $gitRemoteResult = Invoke-Git -WorkingDirectory $ProjectPath `
                                 -Arguments @( 'remote', 'get-url', 'origin' )
 
         if ($gitRemoteResult.ExitCode -eq 0)

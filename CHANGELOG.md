@@ -55,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Publish_GitHub_Wiki_Content`
   - Output message if `$GitHubToken` not specified which skips this task.
     Fixes [Issue 75](https://github.com/dsccommunity/DscResource.DocGenerator/issues/75)
+  - Change working folder for the call to `git` with the argument `remote`.
 - `Invoke-Git`
   - Set `$TimeOut` to Milliseconds
     Fixes [Issue 84](https://github.com/dsccommunity/DscResource.DocGenerator/issues/84)
