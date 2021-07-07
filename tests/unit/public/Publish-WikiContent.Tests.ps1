@@ -37,10 +37,10 @@ InModuleScope $script:moduleName {
 
                 Mock -CommandName Invoke-Git -MockWith {
                     return @{
-                                'ExitCode' = 128
-                                'StandardOutput' = 'Standard Output 128'
-                                'StandardError' = 'fatal: remote error: access denied or repository not exported: /335792891.wiki.git'
-                            }
+                        'ExitCode' = 128
+                        'StandardOutput' = 'Standard Output 128'
+                        'StandardError' = 'fatal: remote error: access denied or repository not exported: /335792891.wiki.git'
+                    }
                 } -ParameterFilter {
                     $Arguments[0] -eq 'clone' -and
                     $Arguments[1] -eq "https://github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
@@ -144,10 +144,10 @@ InModuleScope $script:moduleName {
 
                 Mock -CommandName Invoke-Git -MockWith {
                     return @{
-                                'ExitCode' = 0
-                                'StandardOutput' = 'Standard Output 0'
-                                'StandardError' = 'Standard Error 0'
-                            }
+                        'ExitCode' = 0
+                        'StandardOutput' = 'Standard Output 0'
+                        'StandardError' = 'Standard Error 0'
+                    }
                 }
             }
 
