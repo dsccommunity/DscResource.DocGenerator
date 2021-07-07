@@ -193,8 +193,8 @@ task Publish_GitHub_Wiki_Content {
 
         $publishWikiContentParameters = @{
             Path              = $wikiOutputPath
-            OwnerName         = 'dsccommunity'
-            RepositoryName    = 'DscResource.DocGenerator'
+            OwnerName         = $GHRepo.Owner
+            RepositoryName    = $GHRepo.Repository
             ModuleName        = $ProjectName
             ModuleVersion     = $moduleVersion
             GitHubAccessToken = $GitHubToken
