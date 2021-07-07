@@ -105,10 +105,10 @@ function Publish-WikiContent
 
     try
     {
-        Write-Verbose -Message $script:localizedData.ConfigGlobalGitMessage
-
         if ($PSBoundParameters.ContainsKey('GlobalCoreAutoCrLf'))
         {
+            Write-Verbose -Message $script:localizedData.ConfigGlobalGitMessage
+
             $null = Invoke-Git -WorkingDirectory $tempPath.FullName `
                         -Arguments @( 'config', '--global', 'core.autocrlf', $GlobalCoreAutoCrLf )
         }

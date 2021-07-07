@@ -100,7 +100,6 @@ param
 
 # Synopsis: This task publishes documentation to a GitHub Wiki repository.
 task Publish_GitHub_Wiki_Content {
-
     if ([System.String]::IsNullOrEmpty($GitHubToken))
     {
         Write-Build Yellow 'Skipping task. Variable $GitHubToken not set via parent scope, as an environment variable, or passed to the build task.'
