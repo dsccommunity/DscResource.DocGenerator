@@ -64,10 +64,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Output properties in return value if called with the `Debug` optional
     common parameter.
 - `Publish-WikiContent`
-  - Remove a unnecessary `Set-Location` so it is possible to remove the 
+  - Remove a unnecessary `Set-Location` so it is possible to remove the
     temporary folder.
-  - Fix code style in tests.
+  - Fixed code style in tests.
   - Moved verbose statement so it is only outputted in the right context.
+  - Fixed bug that prevented the repo to be cloned.
 
 ## [0.8.3] - 2021-04-10
 
