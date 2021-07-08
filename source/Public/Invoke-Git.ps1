@@ -94,5 +94,9 @@ function Invoke-Git
         }
     }
 
+    Write-Debug -Message ('{0}: {1}' -f $MyInvocation.MyCommand.Name, ($localizedData.InvokeGitExitCodeMessage -f $returnValue.ExitCode))
+    Write-Debug -Message ('{0}: {1}' -f $MyInvocation.MyCommand.Name, ($localizedData.InvokeGitStandardOutputMessage -f $returnValue.StandardOutput))
+    Write-Debug -Message ('{0}: {1}' -f $MyInvocation.MyCommand.Name, ($localizedData.InvokeGitStandardErrorMessage -f $returnValue.StandardError))
+
     return $returnValue
 }

@@ -106,8 +106,21 @@ task Publish_GitHub_Wiki_Content {
     }
     else
     {
+        $debugTask = $BuildInfo.'DscResource.DocGenerator'.Publish_GitHub_Wiki_Content.Debug
+
+        # Only show debug information if Debug was set to 'true' in build configuration.
+        if ($debugTask)
+        {
+            "Running task with debug information."
+
+            $local:VerbosePreference = 'Continue'
+            $local:DebugPreference = 'Continue'
+        }
+
         $OutputDirectory = Get-SamplerAbsolutePath -Path $OutputDirectory -RelativeTo $BuildRoot
+
         "`tOutputDirectory       = '$OutputDirectory'"
+
         $BuiltModuleSubdirectory = Get-SamplerAbsolutePath -Path $BuiltModuleSubdirectory -RelativeTo $OutputDirectory
 
         if ($VersionedOutputDirectory)
@@ -137,10 +150,12 @@ task Publish_GitHub_Wiki_Content {
 
         $builtModuleManifest = Get-SamplerBuiltModuleManifest @GetBuiltModuleManifestParams
         $builtModuleManifest = [string](Get-Item -Path $builtModuleManifest).FullName
+
         "`tBuilt Module Manifest         = '$builtModuleManifest'"
 
         $builtModuleBase = Get-SamplerBuiltModuleBase @GetBuiltModuleManifestParams
         $builtModuleBase = [string](Get-Item -Path $builtModuleBase).FullName
+
         "`tBuilt Module Base             = '$builtModuleBase'"
 
         $moduleVersion = Get-BuiltModuleVersion @GetBuiltModuleManifestParams
@@ -170,8 +185,18 @@ task Publish_GitHub_Wiki_Content {
             }
         }
 
-        $gitRemoteResult = Invoke-Git -WorkingDirectory $ProjectPath `
-                                -Arguments @( 'remote', 'get-url', 'origin' )
+        $invokeGitParameters = @{
+            WorkingDirectory = $ProjectPath
+            Arguments        = @('remote', 'get-url', 'origin')
+        }
+
+        if ($debugTask)
+        {
+            $invokeGitParameters.Verbose = $true
+            $invokeGitParameters.Debug = $true
+        }
+
+        $gitRemoteResult = Invoke-Git @invokeGitParameters
 
         if ($gitRemoteResult.ExitCode -eq 0)
         {
@@ -189,6 +214,7 @@ task Publish_GitHub_Wiki_Content {
         }
 
         $wikiOutputPath = Join-Path -Path $OutputDirectory -ChildPath $WikiContentFolderName
+
         "`tWiki Output Path              = $wikiOutputPath"
 
         $publishWikiContentParameters = @{
@@ -200,6 +226,12 @@ task Publish_GitHub_Wiki_Content {
             GitHubAccessToken = $GitHubToken
             GitUserEmail      = $GitHubConfigUserEmail
             GitUserName       = $GitHubConfigUserName
+        }
+
+        if ($debugTask)
+        {
+            $publishWikiContentParameters.Verbose = $true
+            $publishWikiContentParameters.Debug = $true
         }
 
         Write-Build Magenta "Publishing Wiki content."

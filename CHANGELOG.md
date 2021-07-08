@@ -56,10 +56,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Output message if `$GitHubToken` not specified which skips this task.
     Fixes [Issue 75](https://github.com/dsccommunity/DscResource.DocGenerator/issues/75)
   - Change working folder for the call to `git` with the argument `remote`.
+  - Added optional debug configuration option in `build.yml`.
 - `Invoke-Git`
   - Set `$TimeOut` to Milliseconds
     Fixes [Issue 84](https://github.com/dsccommunity/DscResource.DocGenerator/issues/84)
   - Calls `git` so it works on both Windows and Linux.
+  - Output properties in return value if called with the `Debug` optional
+    common parameter.
 - `Publish-WikiContent`
   - Remove a unnecessary `Set-Location` so it is possible to remove the 
     temporary folder.

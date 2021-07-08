@@ -378,3 +378,12 @@ BuildWorkflow:
     - publish_module_to_gallery
     - Publish_GitHub_Wiki_Content
 ```
+
+It is also possible to enable debug output information for the task when
+it is run by adding this to the build configuration:
+
+```yaml
+DscResource.DocGenerator:
+  Publish_GitHub_Wiki_Content:
+    Debug: true
+```
