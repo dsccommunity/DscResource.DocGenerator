@@ -79,6 +79,10 @@ function Invoke-Git
                 $returnValue.ExitCode = $process.ExitCode
                 $returnValue.StandardOutput = $process.StandardOutput.ReadToEnd()
                 $returnValue.StandardError = $process.StandardError.ReadToEnd()
+
+                # Remove all new lines at end of string.
+                $returnValue.StandardOutput = $returnValue.StandardOutput -replace '[\r?\n]+$'
+                $returnValue.StandardError = $returnValue.StandardError -replace '[\r?\n]+$'
             }
         }
     }
