@@ -113,16 +113,14 @@ task Publish_GitHub_Wiki_Content {
         {
             "Running task with debug information."
 
-            # Task should output verbose and debug information
-            $previousVerbosePreference = $VerbosePreference
-            $previousDebugPreference = $DebugPreference
-
-            $VerbosePreference = 'Continue'
-            $DebugPreference = 'Continue'
+            $local:VerbosePreference = 'Continue'
+            $local:DebugPreference = 'Continue'
         }
 
         $OutputDirectory = Get-SamplerAbsolutePath -Path $OutputDirectory -RelativeTo $BuildRoot
+
         "`tOutputDirectory       = '$OutputDirectory'"
+
         $BuiltModuleSubdirectory = Get-SamplerAbsolutePath -Path $BuiltModuleSubdirectory -RelativeTo $OutputDirectory
 
         if ($VersionedOutputDirectory)
@@ -152,10 +150,12 @@ task Publish_GitHub_Wiki_Content {
 
         $builtModuleManifest = Get-SamplerBuiltModuleManifest @GetBuiltModuleManifestParams
         $builtModuleManifest = [string](Get-Item -Path $builtModuleManifest).FullName
+
         "`tBuilt Module Manifest         = '$builtModuleManifest'"
 
         $builtModuleBase = Get-SamplerBuiltModuleBase @GetBuiltModuleManifestParams
         $builtModuleBase = [string](Get-Item -Path $builtModuleBase).FullName
+
         "`tBuilt Module Base             = '$builtModuleBase'"
 
         $moduleVersion = Get-BuiltModuleVersion @GetBuiltModuleManifestParams
@@ -188,14 +188,12 @@ task Publish_GitHub_Wiki_Content {
         $invokeGitParameters = @{
             WorkingDirectory = $ProjectPath
             Arguments        = @('remote', 'get-url', 'origin')
-            Verbose          = $VerbosePreference
-            Debug            = $DebugPreference
         }
 
         if ($debugTask)
         {
             $invokeGitParameters.Verbose = $true
-            $invokeGitParameters.Debug  = $true
+            $invokeGitParameters.Debug = $true
         }
 
         $gitRemoteResult = Invoke-Git @invokeGitParameters
@@ -216,12 +214,13 @@ task Publish_GitHub_Wiki_Content {
         }
 
         $wikiOutputPath = Join-Path -Path $OutputDirectory -ChildPath $WikiContentFolderName
+
         "`tWiki Output Path              = $wikiOutputPath"
 
         $publishWikiContentParameters = @{
             Path              = $wikiOutputPath
-            OwnerName         = 'dsccommunity'
-            RepositoryName    = 'DscResource.DocGenerator'
+            OwnerName         = $GHRepo.Owner
+            RepositoryName    = $GHRepo.Repository
             ModuleName        = $ProjectName
             ModuleVersion     = $moduleVersion
             GitHubAccessToken = $GitHubToken
@@ -232,17 +231,11 @@ task Publish_GitHub_Wiki_Content {
         if ($debugTask)
         {
             $publishWikiContentParameters.Verbose = $true
-            $publishWikiContentParameters.Debug  = $true
+            $publishWikiContentParameters.Debug = $true
         }
 
         Write-Build Magenta "Publishing Wiki content."
 
         Publish-WikiContent @publishWikiContentParameters
-
-        if ($debugTask)
-        {
-            $VerbosePreference = $previousVerbosePreference
-            $DebugPreference = $previousDebugPreference
-        }
     }
 }
