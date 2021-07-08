@@ -106,6 +106,20 @@ task Publish_GitHub_Wiki_Content {
     }
     else
     {
+        $debugTask = $BuildInfo.'DscResource.DocGenerator'.Publish_GitHub_Wiki_Content.Debug
+
+        if ($debugTask)
+        {
+            "Running task with debug information."
+
+            # Task should output verbose and debug information
+            $previousVerbosePreference = $VerbosePreference
+            $previousDebugPreference = $DebugPreference
+
+            $VerbosePreference = 'Continue'
+            $DebugPreference = 'Continue'
+        }
+
         $OutputDirectory = Get-SamplerAbsolutePath -Path $OutputDirectory -RelativeTo $BuildRoot
         "`tOutputDirectory       = '$OutputDirectory'"
         $BuiltModuleSubdirectory = Get-SamplerAbsolutePath -Path $BuiltModuleSubdirectory -RelativeTo $OutputDirectory
@@ -204,6 +218,12 @@ task Publish_GitHub_Wiki_Content {
 
         Write-Build Magenta "Publishing Wiki content."
 
-        Publish-WikiContent @publishWikiContentParameters -Verbose -Debug
+        Publish-WikiContent @publishWikiContentParameters
+
+        if ($debugTask)
+        {
+            $VerbosePreference = $previousVerbosePreference
+            $DebugPreference = $previousDebugPreference
+        }
     }
 }
