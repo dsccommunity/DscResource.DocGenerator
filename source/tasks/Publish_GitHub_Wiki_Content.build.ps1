@@ -108,6 +108,7 @@ task Publish_GitHub_Wiki_Content {
     {
         $debugTask = $BuildInfo.'DscResource.DocGenerator'.Publish_GitHub_Wiki_Content.Debug
 
+        # Only show debug information if Debug was set to 'true' in build configuration.
         if ($debugTask)
         {
             "Running task with debug information."
@@ -184,8 +185,20 @@ task Publish_GitHub_Wiki_Content {
             }
         }
 
-        $gitRemoteResult = Invoke-Git -WorkingDirectory $ProjectPath `
-                                -Arguments @( 'remote', 'get-url', 'origin' )
+        $invokeGitParameters = @{
+            WorkingDirectory = $ProjectPath
+            Arguments        = @('remote', 'get-url', 'origin')
+            Verbose          = $VerbosePreference
+            Debug            = $DebugPreference
+        }
+
+        if ($debugTask)
+        {
+            $invokeGitParameters.Verbose = $true
+            $invokeGitParameters.Debug  = $true
+        }
+
+        $gitRemoteResult = Invoke-Git @invokeGitParameters
 
         if ($gitRemoteResult.ExitCode -eq 0)
         {
@@ -214,6 +227,12 @@ task Publish_GitHub_Wiki_Content {
             GitHubAccessToken = $GitHubToken
             GitUserEmail      = $GitHubConfigUserEmail
             GitUserName       = $GitHubConfigUserName
+        }
+
+        if ($debugTask)
+        {
+            $publishWikiContentParameters.Verbose = $true
+            $publishWikiContentParameters.Debug  = $true
         }
 
         Write-Build Magenta "Publishing Wiki content."
