@@ -44,12 +44,6 @@ function Invoke-Git
         $Arguments
     )
 
-    $returnValue = @{
-        'ExitCode'       = -1
-        'StandardOutput' = ''
-        'StandardError'  = ''
-    }
-
     $argumentsJoined = $Arguments -join ' '
 
     # Trying to remove any access token from the debug output.
@@ -59,6 +53,14 @@ function Invoke-Git
     }
 
     Write-Debug -Message ($localizedData.InvokingGitMessage -f $argumentsJoined)
+
+    $returnValue = @{
+        'ExitCode'         = -1
+        'StandardOutput'   = ''
+        'StandardError'    = ''
+        'Command'          = $argumentsJoined
+        'WorkingDirectory' = $WorkingDirectory
+    }
 
     try
     {
