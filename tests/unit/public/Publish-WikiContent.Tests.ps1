@@ -26,12 +26,15 @@ InModuleScope $script:moduleName {
                 Mock -CommandName New-WikiSidebar
                 Mock -CommandName New-WikiFooter
                 Mock -CommandName Remove-Item
+                Mock -CommandName Show-InvokeGitReturn
 
                 Mock -CommandName Invoke-Git -MockWith {
                     return @{
                         'ExitCode' = 0
                         'StandardOutput' = 'Standard Output 0'
                         'StandardError' = 'Standard Error 0'
+                        'Command' = 'some command'
+                        'WorkingDirectory' = 'c:\some\directory'
                     }
                 }
 
@@ -40,6 +43,8 @@ InModuleScope $script:moduleName {
                         'ExitCode' = 128
                         'StandardOutput' = 'Standard Output 128'
                         'StandardError' = 'fatal: remote error: access denied or repository not exported: /335792891.wiki.git'
+                        'Command' = "clone https://github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
+                        'WorkingDirectory' = 'c:\some\directory'
                     }
                 } -ParameterFilter {
                     $Arguments[0] -eq 'clone' -and
@@ -73,6 +78,8 @@ InModuleScope $script:moduleName {
                     $Arguments[2] -eq 'core.autocrlf' -and
                     $Arguments[3] -eq 'true'
                 } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Show-InvokeGitReturn -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Copy-WikiFolder -Exactly -Times 0 -Scope It
 
@@ -141,12 +148,15 @@ InModuleScope $script:moduleName {
                 Mock -CommandName New-WikiSidebar
                 Mock -CommandName New-WikiFooter
                 Mock -CommandName Remove-Item
+                Mock -CommandName Show-InvokeGitReturn
 
                 Mock -CommandName Invoke-Git -MockWith {
                     return @{
                         'ExitCode' = 0
                         'StandardOutput' = 'Standard Output 0'
                         'StandardError' = 'Standard Error 0'
+                        'Command' = 'some command'
+                        'WorkingDirectory' = 'c:\some\directory'
                     }
                 }
             }
@@ -165,6 +175,8 @@ InModuleScope $script:moduleName {
                 }
 
                 { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Show-InvokeGitReturn -Exactly -Times 0 -Scope It
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'clone' -and
@@ -247,12 +259,15 @@ InModuleScope $script:moduleName {
                 Mock -CommandName New-WikiFooter
                 Mock -CommandName Remove-Item
                 Mock -CommandName Set-WikiModuleVersion
+                Mock -CommandName Show-InvokeGitReturn
 
                 Mock -CommandName Invoke-Git -MockWith {
                     return @{
                         'ExitCode' = 0
                         'StandardOutput' = 'Standard Output 0'
                         'StandardError' = 'Standard Error 0'
+                        'Command' = 'some command'
+                        'WorkingDirectory' = 'c:\some\directory'
                     }
                 }
 
@@ -261,6 +276,8 @@ InModuleScope $script:moduleName {
                         'ExitCode' = 1
                         'StandardOutput' = 'Standard Output 1'
                         'StandardError' = 'Standard Error 1'
+                        'Command' = 'some command'
+                        'WorkingDirectory' = 'c:\some\directory'
                     }
                 } -ParameterFilter {
                         $Arguments[0] -eq 'commit' -and
@@ -283,6 +300,8 @@ InModuleScope $script:moduleName {
                 }
 
                 { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Show-InvokeGitReturn -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'clone' -and
