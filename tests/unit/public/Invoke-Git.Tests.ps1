@@ -77,6 +77,8 @@ InModuleScope $script:moduleName {
 
             It 'Should complete with ExitCode=1, mask access token in debug message, & call Show-InvokeGitReturn' {
 
+                $debugArgs = 'remote set-url origin https://name:RedactedToken@github.com/repository.wiki.git'
+
                 $result = Invoke-Git -WorkingDirectory $TestDrive `
                             -Arguments @( 'remote', 'set-url', 'origin', 'https://name:5ea239f132736de237492ff3@github.com/repository.wiki.git' ) `
                             -Debug
@@ -88,7 +90,7 @@ InModuleScope $script:moduleName {
                 $result.StandardError | Should -BeExactly 'Standard Error Message 1'
 
                 Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
-                    $Message -contains 'https://name:RedactedToken@github.com/repository.wiki.git'
+                    $Message -eq "$($localizedData.InvokingGitMessage -f $debugArgs)"
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Show-InvokeGitReturn -Exactly -Times 1 -Scope It
