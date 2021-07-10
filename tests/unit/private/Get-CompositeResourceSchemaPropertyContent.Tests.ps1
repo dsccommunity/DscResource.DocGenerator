@@ -40,9 +40,9 @@ InModuleScope $script:moduleName {
                     Description      = 'Any description'
                 }
                 @{
-                    Name             = 'StringWriteProperty'
+                    Name             = 'StringArrayWriteProperty'
                     State            = 'Write'
-                    Type             = 'String'
+                    Type             = 'String[]'
                     ValidateSet      = $null
                     Description      = 'Any description'
                 }
@@ -54,9 +54,9 @@ InModuleScope $script:moduleName {
 
             $result[0] | Should -Be '| Parameter | Attribute | DataType | Description | Allowed Values |'
             $result[1] | Should -Be '| --- | --- | --- | --- | --- |'
-            $result[2] | Should -Be '| **StringProperty** | Key | String | Any description | |'
-            $result[3] | Should -Be '| **StringValueMapProperty** | Key | String | Any description | Value1, Value2 |'
-            $result[4] | Should -Be '| **StringWriteProperty** | Write | String[] | Any description | |'
+            $result[2] | Should -Be '| **StringProperty** | Required | String | Any description | |'
+            $result[3] | Should -Be '| **StringValueMapProperty** | Required | String | Any description | Value1, Value2 |'
+            $result[4] | Should -Be '| **StringArrayWriteProperty** | Write | String[] | Any description | |'
         }
     }
 }
