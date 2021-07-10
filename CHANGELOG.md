@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `Required` or `Write`.
   - `Get-CompositeResourceParameterValidateSet` - Returns the array of values
     contained in the ValidateSet parameter attributes if it exists.
+  - `Get-CompositeResourceSchemaPropertyContent` - Returns markdown for
+    composite resource properties returned by `Get-CompositeSchemaObject`.
+  - `New-DscCompositeResourceWikiPage` - Returns the markdown content for a
+    wiki page for a DSC composite resource.
 - Added QA test to do some quality checks on the module code and change log.
 
 ### Changed
