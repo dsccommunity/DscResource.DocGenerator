@@ -4,11 +4,11 @@
         to use as public documentation for a module.
 
     .DESCRIPTION
-        The New-DscResourceWikiPage cmdlet will review all of the MOF-based and
-        class-based resources in a specified module directory and will output the
-        Markdown files to the specified directory. These help files include details
-        on the property types for each resource, as well as a text description and
-        examples where they exist.
+        The New-DscResourceWikiPage cmdlet will review all of the MOF-based,
+        class-based and composite resources in a specified module directory and will
+        output the Markdown files to the specified directory. These help files include
+        details on the property types for each resource, as well as a text description
+        and examples where they exist.
 
     .PARAMETER OutputPath
         Where should the files be saved to.
@@ -58,4 +58,6 @@ function New-DscResourceWikiPage
     New-DscMofResourceWikiPage @PSBoundParameters
 
     New-DscClassResourceWikiPage @PSBoundParameters
+
+    New-DscCompositeResourceWikiPage @PSBoundParameters
 }
