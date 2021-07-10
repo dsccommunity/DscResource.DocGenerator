@@ -72,9 +72,10 @@ InModuleScope $script:moduleName {
                 } -Force
 
                 Mock -CommandName Write-Debug
+                Mock -CommandName Show-InvokeGitReturn
             }
 
-            It 'Should complete with ExitCode=1 and mask access token in debug message' {
+            It 'Should complete with ExitCode=1, mask access token in debug message, & call Show-InvokeGitReturn' {
 
                 $result = Invoke-Git -WorkingDirectory $TestDrive `
                             -Arguments @( 'remote', 'set-url', 'origin', 'https://name:5ea239f132736de237492ff3@github.com/repository.wiki.git' ) `
@@ -87,8 +88,10 @@ InModuleScope $script:moduleName {
                 $result.StandardError | Should -BeExactly 'Standard Error Message 1'
 
                 Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
-                    $Message -match 'https://name:RedactedToken@github.com/repository.wiki.git'
+                    $Message -contains 'https://name:RedactedToken@github.com/repository.wiki.git'
                 } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Show-InvokeGitReturn -Exactly -Times 1 -Scope It
 
                 Assert-VerifiableMock
             }

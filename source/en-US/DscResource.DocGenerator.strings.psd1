@@ -41,4 +41,5 @@ ConvertFrom-StringData @'
     MacOSNotSupportedError               = NotImplemented: MacOS is not supported for this operation because DSC can not be installed onto it. Please use an OS that DSC can be installed onto.
     InvokeGitCommandDebug                = Command: git {0}
     InvokeGitWorkingDirectoryDebug       = git Working Directory: '{0}'
+    PublishWikiContentStepDebug          = Publish-WikiContent Step: '{0}'
 '@

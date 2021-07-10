@@ -106,99 +106,105 @@ function Publish-WikiContent
 
     $wikiRepoName = "https://github.com/$OwnerName/$RepositoryName.wiki.git"
 
+    $invokeGitResult = -1
+
     try
     {
-        if ($PSBoundParameters.ContainsKey('GlobalCoreAutoCrLf'))
+        for ($i=0; $i -lt 20; $i++)
         {
-            Write-Verbose -Message $script:localizedData.ConfigGlobalGitMessage
+            Write-Debug -Message ($script:localizedData.PublishWikiContentStepDebug -f $i)
 
-            $null = Invoke-Git -WorkingDirectory $tempPath `
-                        -Arguments @( 'config', '--global', 'core.autocrlf', $GlobalCoreAutoCrLf )
-        }
-
-        Write-Verbose -Message ($script:localizedData.CloneWikiGitRepoMessage -f $WikiRepoName)
-
-        $gitCloneResult = Invoke-Git -WorkingDirectory $tempPath `
-                            -Arguments @( 'clone', $wikiRepoName, $tempPath )
-
-        if ($gitCloneResult.ExitCode -eq 0)
-        {
-            $copyWikiFileParameters = @{
-                Path            = $Path
-                DestinationPath = $tempPath
-                Force           = $true
-            }
-
-            Copy-WikiFolder @copyWikiFileParameters
-
-            New-WikiSidebar -ModuleName $ModuleName -Path $tempPath
-            New-WikiFooter -Path $tempPath
-
-            Write-Verbose -Message $script:localizedData.ConfigLocalGitMessage
-
-            $gitLocalCommands = @{
-                'Email'  = @( 'config', '--local', 'user.email', $GitUserEmail )
-                'Name'   = @( 'config', '--local', 'user.name', $GitUserName )
-                'Remote' = @( 'remote', 'set-url', 'origin', "https://$($GitUserName):$($GitHubAccessToken)@github.com/$OwnerName/$RepositoryName.wiki.git" )
-            }
-
-            foreach ($key in $gitLocalCommands.Keys)
+            switch ($i)
             {
-                $gitLocalResult = Invoke-Git -WorkingDirectory $tempPath.FullName -Arguments $gitLocalCommands[$key]
-
-                if ($gitLocalResult.ExitCode -ne 0)
+                0
                 {
-                    Show-InvokeGitReturn @gitLocalResult
+                    if ($PSBoundParameters.ContainsKey('GlobalCoreAutoCrLf'))
+                    {
+                        Write-Verbose -Message $script:localizedData.ConfigGlobalGitMessage
+
+                        $invokeGitResult = Invoke-Git -WorkingDirectory $tempPath `
+                                                -Arguments @( 'config', '--global', 'core.autocrlf', $GlobalCoreAutoCrLf )
+                    }
                 }
-            }
+                1
+                {
+                    Write-Verbose -Message ($script:localizedData.CloneWikiGitRepoMessage -f $WikiRepoName)
 
-            Write-Verbose -Message $localizedData.AddWikiContentToGitRepoMessage
+                    $invokeGitResult = Invoke-Git -WorkingDirectory $tempPath `
+                                            -Arguments @( 'clone', $wikiRepoName, $tempPath )
+                }
+                2
+                {
+                    $copyWikiFileParameters = @{
+                        Path            = $Path
+                        DestinationPath = $tempPath
+                        Force           = $true
+                    }
 
-            $gitAddResult = Invoke-Git -WorkingDirectory $tempPath.FullName `
-                                -Arguments @( 'add', '*' )
+                    Copy-WikiFolder @copyWikiFileParameters
 
-            if ($gitAddResult.ExitCode -eq 0)
-            {
-                Write-Verbose -Message ($localizedData.CommitAndTagRepoChangesMessage -f $ModuleVersion)
+                    New-WikiSidebar -ModuleName $ModuleName -Path $tempPath
+                    New-WikiFooter -Path $tempPath
 
-                $gitCommitResult = Invoke-Git -WorkingDirectory $tempPath.FullName `
-                                        -Arguments @( 'commit', '--message', "`"$($localizedData.UpdateWikiCommitMessage -f $ModuleVersion)`"" )
+                    Write-Verbose -Message $script:localizedData.ConfigLocalGitMessage
+                }
+                3
+                {
+                    $invokeGitResult = Invoke-Git -WorkingDirectory $tempPath `
+                                            -Arguments @( 'config', '--local', 'user.email', $GitUserEmail )
+                }
+                4
+                {
+                    $invokeGitResult = Invoke-Git -WorkingDirectory $tempPath `
+                                            -Arguments @( 'config', '--local', 'user.name', $GitUserName )
+                }
+                5
+                {
+                    $invokeGitResult = Invoke-Git -WorkingDirectory $tempPath `
+                                            -Arguments @( 'remote', 'set-url', 'origin', "https://$($GitUserName):$($GitHubAccessToken)@github.com/$OwnerName/$RepositoryName.wiki.git" )
+                }
+                6
+                {
+                    Write-Verbose -Message $localizedData.AddWikiContentToGitRepoMessage
 
-                if ($gitCommitResult.ExitCode -eq 0)
+                    $invokeGitResult = Invoke-Git -WorkingDirectory $tempPath -Arguments @( 'add', '*' )
+                }
+                7
+                {
+                    Write-Verbose -Message ($localizedData.CommitAndTagRepoChangesMessage -f $ModuleVersion)
+
+                    $invokeGitResult = Invoke-Git -WorkingDirectory $tempPath `
+                                            -Arguments @( 'commit', '--message', "`"$($localizedData.UpdateWikiCommitMessage -f $ModuleVersion)`"" )
+                }
+                8
                 {
                     Write-Verbose -Message $localizedData.PushUpdatedRepoMessage
 
-                    $gitPushCommands = @{
-                        'Tag' = @( 'tag', '--annotate', $ModuleVersion, '--message', $ModuleVersion )
-                        'Push' = @( 'push', 'origin' )
-                        'PushModuleVersion' = @( 'push', 'origin', $ModuleVersion )
-                    }
-
-                    foreach ($key in $gitPushCommands.Keys)
-                    {
-                        $gitPushResult = Invoke-Git -WorkingDirectory $tempPath.FullName -Arguments $gitPushCommands[$key]
-
-                        if ($gitPushResult.ExitCode -ne 0)
-                        {
-                            Show-InvokeGitReturn @gitPushResult
-                        }
-                    }
-
+                    $invokeGitResult = Invoke-Git -WorkingDirectory $tempPath `
+                                        -Arguments @( 'tag', '--annotate', $ModuleVersion, '--message', $ModuleVersion )
+                }
+                9
+                {
+                    $invokeGitResult = Invoke-Git -WorkingDirectory $tempPath -Arguments @( 'push', 'origin' )
+                }
+                10
+                {
+                    $invokeGitResult = Invoke-Git -WorkingDirectory $tempPath -Arguments @( 'push', 'origin', $ModuleVersion )
+                }
+                11
+                {
                     Write-Verbose -Message $localizedData.PublishWikiContentCompleteMessage
                 }
-                else
+                default
                 {
-                    Show-InvokeGitReturn @gitCommitResult
+                    $i = 20
                 }
             }
-            else
+
+            if ($invokeGitResult.ExitCode -ne 0)
             {
-                Show-InvokeGitReturn @gitAddResult
+                $i = 20
             }
-        }
-        else
-        {
-            Show-InvokeGitReturn @gitCloneResult
         }
     }
     finally
