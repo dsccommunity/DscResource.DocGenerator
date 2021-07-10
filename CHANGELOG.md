@@ -25,8 +25,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     `Required` or `Write`.
   - `Get-CompositeResourceParameterValidateSet` - Returns the array of values
     contained in the ValidateSet parameter attributes if it exists.
-  - `Show-InvokeGitReturn` - Displays `Invoke-Git` returned hashtable
-    via Write-Verbose and Write-Debug. Providing better feedback.
 - Added QA test to do some quality checks on the module code and change log.
 
 ### Changed
@@ -67,6 +65,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     temporary folder.
   - Fix code style in tests.
   - Moved verbose statement so it is only outputted in the right context.
+  - `Show-InvokeGitReturn` - Displays `Invoke-Git` returned hashtable
+    via Write-Verbose and Write-Debug. Providing better feedback.
+    Fixes [Issue 90](https://github.com/dsccommunity/DscResource.DocGenerator/issues/90)
 
 ## [0.8.3] - 2021-04-10
 
