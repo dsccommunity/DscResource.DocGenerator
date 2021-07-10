@@ -126,5 +126,33 @@ InModuleScope $script:moduleName {
                 Assert-VerifiableMock
             }
         }
+
+        Context 'When output contains access token' {
+            BeforeAll {
+                $mockProcess | Add-Member -MemberType ScriptProperty -Name 'ExitCode' -Value { 0 } -Force
+
+                $mockProcess | Add-Member -MemberType ScriptProperty -Name 'StandardOutput' -Value {
+                    New-Object -TypeName 'Object' | `
+                        Add-Member -MemberType ScriptMethod -Name 'ReadToEnd' -Value { 'Standard Output Message https://name:5ea239f132736de237492ff3@github.com/repository.wiki.git' } -PassThru -Force
+                } -Force
+
+                $mockProcess | Add-Member -MemberType ScriptProperty -Name 'StandardError' -Value {
+                    New-Object -TypeName 'Object' | `
+                        Add-Member -MemberType ScriptMethod -Name 'ReadToEnd' -Value { 'Standard Error Message https://name:5ea239f132736de237492ff3@github.com/repository.wiki.git' } -PassThru -Force
+                } -Force
+            }
+
+            It 'Should mask access token in Standard Output & Standard Error' {
+                $result = Invoke-Git -WorkingDirectory $TestDrive -Arguments @( 'status' )
+
+                $result.ExitCode | Should -BeExactly 0
+
+                $result.StandardOutput | Should -BeExactly 'Standard Output Message https://name:RedactedToken@github.com/repository.wiki.git'
+
+                $result.StandardError | Should -BeExactly 'Standard Error Message https://name:RedactedToken@github.com/repository.wiki.git'
+
+                Assert-VerifiableMock
+            }
+        }
     }
 }

@@ -106,7 +106,7 @@ function Publish-WikiContent
 
     $wikiRepoName = "https://github.com/$OwnerName/$RepositoryName.wiki.git"
 
-    $invokeGitResult = -1
+    $invokeGitResult = 0
 
     try
     {
@@ -181,7 +181,7 @@ function Publish-WikiContent
                     Write-Verbose -Message $localizedData.PushUpdatedRepoMessage
 
                     $invokeGitResult = Invoke-Git -WorkingDirectory $tempPath `
-                                        -Arguments @( 'tag', '--annotate', $ModuleVersion, '--message', $ModuleVersion )
+                                            -Arguments @( 'tag', '--annotate', $ModuleVersion, '--message', $ModuleVersion )
                 }
                 9
                 {
