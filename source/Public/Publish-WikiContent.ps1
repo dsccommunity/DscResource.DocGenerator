@@ -100,7 +100,10 @@ function Publish-WikiContent
 
     Write-Verbose -Message $script:localizedData.CreateTempDirMessage
 
-    $tempPath = New-TempFolder
+    $tempFolder = New-TempFolder
+
+    $tempPath = $tempFolder.FullName
+
     $wikiRepoName = "https://github.com/$OwnerName/$RepositoryName.wiki.git"
 
     try
@@ -109,13 +112,13 @@ function Publish-WikiContent
         {
             Write-Verbose -Message $script:localizedData.ConfigGlobalGitMessage
 
-            $null = Invoke-Git -WorkingDirectory $tempPath.FullName `
+            $null = Invoke-Git -WorkingDirectory $tempPath `
                         -Arguments @( 'config', '--global', 'core.autocrlf', $GlobalCoreAutoCrLf )
         }
 
         Write-Verbose -Message ($script:localizedData.CloneWikiGitRepoMessage -f $WikiRepoName)
 
-        $gitCloneResult = Invoke-Git -WorkingDirectory $tempPath.FullName `
+        $gitCloneResult = Invoke-Git -WorkingDirectory $tempPath `
                             -Arguments @( 'clone', $wikiRepoName, $tempPath )
 
         if ($gitCloneResult.ExitCode -eq 0)

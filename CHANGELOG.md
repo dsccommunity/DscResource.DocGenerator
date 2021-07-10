@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2021-07-08
+
 ### Added
 
 - Added private functions:
@@ -44,11 +46,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Enabled the function to extract the comment block if it is not at the top
     of the script file to support composite resources.
 - Updated code to pass newly added quality checks.
-- `Invoke-Git` 
+- `Invoke-Git`
   - Converted to public function.
   - Updated to use `System.Diagnostics.Process` for improved error handling.
   - Returns object, allowing caller to process result.
   - `git` commands no longer use `--quiet` to populate returned object.
+  - No longer write a new line to the end of string for the returned properties
+    `StandardOutput` and `StandardError`.
 
 ### Fixed
 
@@ -56,18 +60,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Output message if `$GitHubToken` not specified which skips this task.
     Fixes [Issue 75](https://github.com/dsccommunity/DscResource.DocGenerator/issues/75)
   - Change working folder for the call to `git` with the argument `remote`.
+  - Added optional debug configuration option in `build.yml`.
 - `Invoke-Git`
   - Set `$TimeOut` to Milliseconds
     Fixes [Issue 84](https://github.com/dsccommunity/DscResource.DocGenerator/issues/84)
   - Calls `git` so it works on both Windows and Linux.
+  - Output properties in return value if called with the `Debug` optional
+    common parameter.
 - `Publish-WikiContent`
-  - Remove a unnecessary `Set-Location` so it is possible to remove the 
+  - Remove a unnecessary `Set-Location` so it is possible to remove the
     temporary folder.
-  - Fix code style in tests.
+  - Fixed code style in tests.
   - Moved verbose statement so it is only outputted in the right context.
-  - `Show-InvokeGitReturn` - Displays `Invoke-Git` returned hashtable
-    via Write-Verbose and Write-Debug. Providing better feedback.
-    Fixes [Issue 90](https://github.com/dsccommunity/DscResource.DocGenerator/issues/90)
+  - Fixed bug that prevented the repo to be cloned.
+- `Show-InvokeGitReturn`
+  - Added to display `Invoke-Git` returned hashtable via Write-Verbose 
+    and Write-Debug; providing better feedback.
+  - Fixes [Issue 90](https://github.com/dsccommunity/DscResource.DocGenerator/issues/90)
 
 ## [0.8.3] - 2021-04-10
 

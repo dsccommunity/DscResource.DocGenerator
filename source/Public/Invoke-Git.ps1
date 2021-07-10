@@ -81,6 +81,10 @@ function Invoke-Git
                 $returnValue.ExitCode = $process.ExitCode
                 $returnValue.StandardOutput = $process.StandardOutput.ReadToEnd()
                 $returnValue.StandardError = $process.StandardError.ReadToEnd()
+
+                # Remove all new lines at end of string.
+                $returnValue.StandardOutput = $returnValue.StandardOutput -replace '[\r?\n]+$'
+                $returnValue.StandardError = $returnValue.StandardError -replace '[\r?\n]+$'
             }
         }
     }
@@ -95,6 +99,10 @@ function Invoke-Git
             $process.Dispose()
         }
     }
+
+    Write-Debug -Message ('{0}: {1}' -f $MyInvocation.MyCommand.Name, ($localizedData.InvokeGitExitCodeMessage -f $returnValue.ExitCode))
+    Write-Debug -Message ('{0}: {1}' -f $MyInvocation.MyCommand.Name, ($localizedData.InvokeGitStandardOutputMessage -f $returnValue.StandardOutput))
+    Write-Debug -Message ('{0}: {1}' -f $MyInvocation.MyCommand.Name, ($localizedData.InvokeGitStandardErrorMessage -f $returnValue.StandardError))
 
     return $returnValue
 }

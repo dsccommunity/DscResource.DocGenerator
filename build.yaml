@@ -113,3 +113,7 @@ GitHubConfig:
   GitHubConfigUserName: dscbot
   GitHubConfigUserEmail: dsccommunity@outlook.com
   UpdateChangelogOnPrerelease: false
+
+DscResource.DocGenerator:
+  Publish_GitHub_Wiki_Content:
+    Debug: true
