@@ -83,8 +83,8 @@ function Invoke-Git
                 $gitResult.StandardError = $process.StandardError.ReadToEnd()
 
                 # Remove all new lines at end of string.
-                $gitResult.StandardOutput = $returnValue.StandardOutput -replace '[\r?\n]+$'
-                $gitResult.StandardError = $returnValue.StandardError -replace '[\r?\n]+$'
+                $gitResult.StandardOutput = $gitResult.StandardOutput -replace '[\r?\n]+$'
+                $gitResult.StandardError = $gitResult.StandardError -replace '[\r?\n]+$'
 
                 if ($gitResult.StandardOutput -match ':[\d|a-f].*@')
                 {
