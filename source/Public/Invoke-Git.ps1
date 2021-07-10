@@ -54,7 +54,7 @@ function Invoke-Git
 
     Write-Debug -Message ($localizedData.InvokingGitMessage -f $argumentsJoined)
 
-    $returnValue = @{
+    $gitResult = @{
         'ExitCode'         = -1
         'StandardOutput'   = ''
         'StandardError'    = ''
@@ -78,13 +78,23 @@ function Invoke-Git
         {
             if ($process.WaitForExit($TimeOut) -eq $true)
             {
-                $returnValue.ExitCode = $process.ExitCode
-                $returnValue.StandardOutput = $process.StandardOutput.ReadToEnd()
-                $returnValue.StandardError = $process.StandardError.ReadToEnd()
+                $gitResult.ExitCode = $process.ExitCode
+                $gitResult.StandardOutput = $process.StandardOutput.ReadToEnd()
+                $gitResult.StandardError = $process.StandardError.ReadToEnd()
 
                 # Remove all new lines at end of string.
-                $returnValue.StandardOutput = $returnValue.StandardOutput -replace '[\r?\n]+$'
-                $returnValue.StandardError = $returnValue.StandardError -replace '[\r?\n]+$'
+                $gitResult.StandardOutput = $returnValue.StandardOutput -replace '[\r?\n]+$'
+                $gitResult.StandardError = $returnValue.StandardError -replace '[\r?\n]+$'
+
+                if ($gitResult.StandardOutput -match ':[\d|a-f].*@')
+                {
+                    $gitResult.StandardOutput = $gitResult.StandardOutput -replace ':[\d|a-f].*@', ':RedactedToken@'
+                }
+
+                if ($gitResult.StandardError -match ':[\d|a-f].*@')
+                {
+                    $gitResult.StandardError = $gitResult.StandardError -replace ':[\d|a-f].*@', ':RedactedToken@'
+                }
             }
         }
     }
@@ -98,11 +108,15 @@ function Invoke-Git
         {
             $process.Dispose()
         }
+
+        if ($VerbosePreference -ne 'SilentlyContinue' -or `
+            $DebugPreference -ne 'SilentlyContinue' -or `
+            $PSBoundParameters['Verbose'] -eq $true -or `
+            $PSBoundParameters['Debug'] -eq $true)
+        {
+            Show-InvokeGitReturn @gitResult
+        }
     }
 
-    Write-Debug -Message ('{0}: {1}' -f $MyInvocation.MyCommand.Name, ($localizedData.InvokeGitExitCodeMessage -f $returnValue.ExitCode))
-    Write-Debug -Message ('{0}: {1}' -f $MyInvocation.MyCommand.Name, ($localizedData.InvokeGitStandardOutputMessage -f $returnValue.StandardOutput))
-    Write-Debug -Message ('{0}: {1}' -f $MyInvocation.MyCommand.Name, ($localizedData.InvokeGitStandardErrorMessage -f $returnValue.StandardError))
-
-    return $returnValue
+    return $gitResult
 }

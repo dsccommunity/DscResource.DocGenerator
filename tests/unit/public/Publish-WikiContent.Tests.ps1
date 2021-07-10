@@ -26,7 +26,6 @@ InModuleScope $script:moduleName {
                 Mock -CommandName New-WikiSidebar
                 Mock -CommandName New-WikiFooter
                 Mock -CommandName Remove-Item
-                Mock -CommandName Show-InvokeGitReturn
 
                 Mock -CommandName Invoke-Git -MockWith {
                     return @{
@@ -78,8 +77,6 @@ InModuleScope $script:moduleName {
                     $Arguments[2] -eq 'core.autocrlf' -and
                     $Arguments[3] -eq 'true'
                 } -Exactly -Times 1 -Scope It
-
-                Assert-MockCalled -CommandName Show-InvokeGitReturn -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Copy-WikiFolder -Exactly -Times 0 -Scope It
 
@@ -148,7 +145,6 @@ InModuleScope $script:moduleName {
                 Mock -CommandName New-WikiSidebar
                 Mock -CommandName New-WikiFooter
                 Mock -CommandName Remove-Item
-                Mock -CommandName Show-InvokeGitReturn
 
                 Mock -CommandName Invoke-Git -MockWith {
                     return @{
@@ -175,8 +171,6 @@ InModuleScope $script:moduleName {
                 }
 
                 { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Not -Throw
-
-                Assert-MockCalled -CommandName Show-InvokeGitReturn -Exactly -Times 0 -Scope It
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'clone' -and
@@ -252,14 +246,13 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Context 'When there is no new content to publishing to Wiki' {
+        Context 'When there is no new content to publish to Wiki' {
             BeforeAll {
                 Mock -CommandName Copy-WikiFolder
                 Mock -CommandName New-WikiSidebar
                 Mock -CommandName New-WikiFooter
                 Mock -CommandName Remove-Item
                 Mock -CommandName Set-WikiModuleVersion
-                Mock -CommandName Show-InvokeGitReturn
 
                 Mock -CommandName Invoke-Git -MockWith {
                     return @{
@@ -300,8 +293,6 @@ InModuleScope $script:moduleName {
                 }
 
                 { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Not -Throw
-
-                Assert-MockCalled -CommandName Show-InvokeGitReturn -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'clone' -and
