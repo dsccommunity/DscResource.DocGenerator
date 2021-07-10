@@ -58,7 +58,7 @@ function New-DscCompositeResourceWikiPage
     $compositeSearchPath = Join-Path -Path $SourcePath -ChildPath '\**\*.schema.psm1'
     $compositeSchemaFiles = @(Get-ChildItem -Path $compositeSearchPath -Recurse)
 
-    Write-Verbose -Message ($script:localizedData.FoundMofFilesMessage -f $compositeSchemaFiles.Count, $SourcePath)
+    Write-Verbose -Message ($script:localizedData.FoundCompositeFilesMessage -f $compositeSchemaFiles.Count, $SourcePath)
 
     # Loop through all the Schema files found in the modules folder
     foreach ($compositeSchemaFile in $compositeSchemaFiles)
@@ -81,7 +81,7 @@ function New-DscCompositeResourceWikiPage
             $null = $output.AppendLine('## Parameters')
             $null = $output.AppendLine('')
 
-            $propertyContent = Get-DscResourceSchemaPropertyContent -Property $compositeSchemaObject.Parameters -UseMarkdown
+            $propertyContent = Get-CompositeResourceSchemaPropertyContent -Property $compositeSchemaObject.Parameters -UseMarkdown
 
             foreach ($line in $propertyContent)
             {
