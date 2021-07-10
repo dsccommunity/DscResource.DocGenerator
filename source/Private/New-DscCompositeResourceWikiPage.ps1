@@ -24,14 +24,14 @@
         Overwrites any existing file when outputting the generated content.
 
     .EXAMPLE
-        New-DscMofResourceWikiPage `
+        New-DscCompositeResourceWikiPage `
             -SourcePath C:\repos\MyResource\source `
             -BuiltModulePath C:\repos\MyResource\output\MyResource\1.0.0 `
             -OutputPath C:\repos\MyResource\output\WikiContent
 
         This example shows how to generate wiki documentation for a specific module.
 #>
-function New-DscMofResourceWikiPage
+function New-DscCompositeResourceWikiPage
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
