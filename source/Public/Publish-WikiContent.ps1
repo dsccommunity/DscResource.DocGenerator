@@ -203,7 +203,12 @@ function Publish-WikiContent
 
             if ($invokeGitResult.ExitCode -ne 0)
             {
-                $i = 20
+                $throwMessage = "$($script:localizedData.InvokeGitStandardOutputMessage -f $invokeGitResult.StandardOutput)`n" +`
+                                "$($script:localizedData.InvokeGitStandardErrorMessage -f $invokeGitResult.StandardError)`n" +`
+                                "$($script:localizedData.InvokeGitExitCodeMessage -f $invokeGitResult.ExitCode)`n" +`
+                                "$($script:localizedData.PublishWikiContentStepDebug -f $i)"
+
+                throw $throwMessage
             }
         }
     }

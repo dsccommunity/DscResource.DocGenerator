@@ -19,7 +19,7 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 #endregion HEADER
 
 InModuleScope $script:moduleName {
-    Describe 'Invoke-Git' {
+    Describe 'Invoke-Git' -Tag 'NewTest' {
         BeforeAll {
             $mockProcess = New-MockObject -Type System.Diagnostics.Process
             $mockProcess | Add-Member -MemberType ScriptMethod -Name 'Start' -Value { $true } -Force
@@ -133,13 +133,18 @@ InModuleScope $script:moduleName {
 
                 $mockProcess | Add-Member -MemberType ScriptProperty -Name 'StandardOutput' -Value {
                     New-Object -TypeName 'Object' | `
-                        Add-Member -MemberType ScriptMethod -Name 'ReadToEnd' -Value { 'Standard Output Message https://name:5ea239f132736de237492ff3@github.com/repository.wiki.git' } -PassThru -Force
+                        Add-Member -MemberType ScriptMethod -Name 'ReadToEnd' -Value { 'Standard Output Message asdf-sometoken-lkjh' } -PassThru -Force
                 } -Force
 
                 $mockProcess | Add-Member -MemberType ScriptProperty -Name 'StandardError' -Value {
                     New-Object -TypeName 'Object' | `
-                        Add-Member -MemberType ScriptMethod -Name 'ReadToEnd' -Value { 'Standard Error Message https://name:5ea239f132736de237492ff3@github.com/repository.wiki.git' } -PassThru -Force
+                        Add-Member -MemberType ScriptMethod -Name 'ReadToEnd' -Value { 'Standard Error Message asdf-sometoken-lkjh' } -PassThru -Force
                 } -Force
+
+                $GitHubToken = 'asdf-sometoken-lkjh'
+            }
+            AfterAll {
+                Remove-Variable -Name GitHubToken
             }
 
             It 'Should mask access token in Standard Output & Standard Error' {
@@ -147,9 +152,9 @@ InModuleScope $script:moduleName {
 
                 $result.ExitCode | Should -BeExactly 0
 
-                $result.StandardOutput | Should -BeExactly 'Standard Output Message https://name:RedactedToken@github.com/repository.wiki.git'
+                $result.StandardOutput | Should -BeExactly 'Standard Output Message *RedactedToken*'
 
-                $result.StandardError | Should -BeExactly 'Standard Error Message https://name:RedactedToken@github.com/repository.wiki.git'
+                $result.StandardError | Should -BeExactly 'Standard Error Message *RedactedToken*'
 
                 Assert-VerifiableMock
             }
