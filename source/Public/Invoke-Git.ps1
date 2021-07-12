@@ -86,14 +86,17 @@ function Invoke-Git
                 $gitResult.StandardOutput = $gitResult.StandardOutput -replace '[\r?\n]+$'
                 $gitResult.StandardError = $gitResult.StandardError -replace '[\r?\n]+$'
 
-                if ($gitResult.StandardOutput -match ':[\d|a-f].*@')
+                if ($null -ne $GitHubToken)
                 {
-                    $gitResult.StandardOutput = $gitResult.StandardOutput -replace ':[\d|a-f].*@', ':RedactedToken@'
-                }
+                    if ($gitResult.StandardOutput -contains $GitHubToken)
+                    {
+                        $gitResult.StandardOutput = $gitResult.StandardOutput.Replace($GitHubToken,'*RedactedToken*')
+                    }
 
-                if ($gitResult.StandardError -match ':[\d|a-f].*@')
-                {
-                    $gitResult.StandardError = $gitResult.StandardError -replace ':[\d|a-f].*@', ':RedactedToken@'
+                    if ($gitResult.StandardError -contains $GitHubToken)
+                    {
+                        $gitResult.StandardError = $gitResult.StandardError.Replace($GitHubToken,'*RedactedToken*')
+                    }
                 }
             }
         }

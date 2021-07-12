@@ -51,7 +51,7 @@ InModuleScope $script:moduleName {
                 }
             }
 
-            It 'Should not throw an exception and call the expected mocks' {
+            It 'Should throw an exception and call the expected mocks' {
                 $mockPublishWikiContentParameters = @{
                     Path               = $TestDrive
                     OwnerName          = 'owner'
@@ -64,7 +64,7 @@ InModuleScope $script:moduleName {
                     GlobalCoreAutoCrLf = 'true'
                 }
 
-                { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Not -Throw
+                { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Throw
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'clone' -and
@@ -279,7 +279,7 @@ InModuleScope $script:moduleName {
                     }
             }
 
-            It 'Should not throw an exception and call the expected mocks' {
+            It 'Should throw an exception and call the expected mocks' {
                 $mockPublishWikiContentParameters = @{
                     Path               = $TestDrive
                     OwnerName          = 'owner'
@@ -292,7 +292,7 @@ InModuleScope $script:moduleName {
                     GlobalCoreAutoCrLf = 'true'
                 }
 
-                { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Not -Throw
+                { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Throw
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'clone' -and
