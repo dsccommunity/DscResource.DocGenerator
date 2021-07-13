@@ -35,7 +35,7 @@ ConvertFrom-StringData @'
     InvokeGitStandardOutputMessage       = git standard output: '{0}'
     InvokeGitStandardErrorMessage        = git standard error: '{0}'
     InvokeGitExitCodeMessage             = git exit code: '{0}'
-    FoundCompositeFilesMessage           = Found {0} composite files in path '{1}'.
+    FoundCompositeFilesMessage           = Found {0} composite schema files in path '{1}'.
     CommentBasedHelpBlockNotFound        = A comment-based help block in source file '{0}' could not be found.
     CommentBasedHelpBlockNotAtTopMessage = A comment-based help block in source file '{0}' was found, but is not at the top of the file.
     CompositeResourceMultiConfigError    = {1} composite resources were found in the source file '{0}'. This is not currently supported. Please separate these into different scripts.

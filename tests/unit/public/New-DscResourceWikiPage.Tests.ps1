@@ -48,6 +48,10 @@ InModuleScope $script:moduleName {
                 -CommandName New-DscClassResourceWikiPage `
                 -ParameterFilter $script:newDscResourceWikiPage_parameterFilter
 
+            Mock `
+                -CommandName New-DscCompositeResourceWikiPage `
+                -ParameterFilter $script:newDscResourceWikiPage_parameterFilter
+
             It 'Should not throw an exception' {
                 { New-DscResourceWikiPage @script:newDscResourceWikiPage_parameters } | Should -Not -Throw
             }
@@ -60,6 +64,11 @@ InModuleScope $script:moduleName {
 
                 Assert-MockCalled `
                     -CommandName New-DscClassResourceWikiPage `
+                    -ParameterFilter $script:newDscResourceWikiPage_parameterFilter `
+                    -Exactly -Times 1
+
+                Assert-MockCalled `
+                    -CommandName New-DscCompositeResourceWikiPage `
                     -ParameterFilter $script:newDscResourceWikiPage_parameterFilter `
                     -Exactly -Times 1
             }
