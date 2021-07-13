@@ -5,6 +5,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added private functions:
+  - `Get-CompositeResourceSchemaPropertyContent` - Returns markdown for
+    composite resource properties returned by `Get-CompositeSchemaObject`.
+  - `New-DscCompositeResourceWikiPage` - Returns the markdown content for a
+    wiki page for a DSC composite resource.
+
+### Changed
+
+- `New-DscResourceWikiPage`
+  - Added support for creating wiki pages for composite resources.
+
 ## [0.9.0] - 2021-07-08
 
 ### Added
