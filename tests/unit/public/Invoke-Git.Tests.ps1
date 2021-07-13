@@ -147,14 +147,16 @@ InModuleScope $script:moduleName {
                 Remove-Variable -Name GitHubToken
             }
 
-            It 'Should mask access token in Standard Output & Standard Error' {
-                $result = Invoke-Git -WorkingDirectory $TestDrive -Arguments @( 'status' )
+            It 'Should mask token in: Standard Output, Standard Error, Command Output' {
+                $result = Invoke-Git -WorkingDirectory $TestDrive -Arguments @( 'clone', 'https://asdf-sometoken-lkjh:x-oauth-basic@github.com/User/repo.git' )
 
                 $result.ExitCode | Should -BeExactly 0
 
                 $result.StandardOutput | Should -BeExactly 'Standard Output Message *RedactedToken*'
 
                 $result.StandardError | Should -BeExactly 'Standard Error Message *RedactedToken*'
+
+                $result.Command | Should -BeExactly 'clone https://*RedactedToken*:x-oauth-basic@github.com/User/repo.git'
 
                 Assert-VerifiableMock
             }

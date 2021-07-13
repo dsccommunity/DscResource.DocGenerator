@@ -12,11 +12,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     composite resource properties returned by `Get-CompositeSchemaObject`.
   - `New-DscCompositeResourceWikiPage` - Returns the markdown content for a
     wiki page for a DSC composite resource.
+  - `Show-InvokeGitReturn` - Displays `Invoke-Git` returned hashtable
+    via Write-Verbose and Write-Debug. Providing better feedback.
+    Fixes [Issue 90](https://github.com/dsccommunity/DscResource.DocGenerator/issues/90)
 
 ### Changed
 
 - `New-DscResourceWikiPage`
   - Added support for creating wiki pages for composite resources.
+- `Publish-WikiContent`
+  - Restructured to throw an error if any `Invoke-Git` command doesn't return 0.
+- `Invoke-Git`
+  - Check output and command for access token and redact if found.
+  - Calls `Show-InvokeGitReturn` when using `-Debug` or `-Verbose`.
 
 ## [0.9.0] - 2021-07-08
 
@@ -86,9 +94,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed code style in tests.
   - Moved verbose statement so it is only outputted in the right context.
   - Fixed bug that prevented the repo to be cloned.
-  - `Show-InvokeGitReturn` - Displays `Invoke-Git` returned hashtable
-    via Write-Verbose and Write-Debug. Providing better feedback.
-    Fixes [Issue 90](https://github.com/dsccommunity/DscResource.DocGenerator/issues/90)
 
 ## [0.8.3] - 2021-04-10
 
