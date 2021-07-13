@@ -100,8 +100,13 @@ function Invoke-Git
                     {
                         if ($gitResult.StandardError.Contains($GitHubToken))
                         {
-                            [System.String] $gitResult.StandardError = $gitResult.StandardError.Replace($GitHubToken,'*RedactedToken*')
+                            $gitResult.StandardError = $gitResult.StandardError.Replace($GitHubToken,'*RedactedToken*')
                         }
+                    }
+
+                    if ($gitResult.Command.Contains($GitHubToken))
+                    {
+                        [System.String] $gitResult.Command = $gitResult.Command.Replace($GitHubToken,'*RedactedToken*')
                     }
                 }
             }
