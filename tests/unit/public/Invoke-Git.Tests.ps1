@@ -19,7 +19,7 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 #endregion HEADER
 
 InModuleScope $script:moduleName {
-    Describe 'Invoke-Git' -Tag 'NewTest' {
+    Describe 'Invoke-Git' {
         BeforeAll {
             $mockProcess = New-MockObject -Type System.Diagnostics.Process
             $mockProcess | Add-Member -MemberType ScriptMethod -Name 'Start' -Value { $true } -Force

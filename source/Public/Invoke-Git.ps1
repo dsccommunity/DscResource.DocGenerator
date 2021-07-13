@@ -83,19 +83,25 @@ function Invoke-Git
                 $gitResult.StandardError = $process.StandardError.ReadToEnd()
 
                 # Remove all new lines at end of string.
-                $gitResult.StandardOutput = $gitResult.StandardOutput -replace '[\r?\n]+$'
-                $gitResult.StandardError = $gitResult.StandardError -replace '[\r?\n]+$'
+                [System.String] $gitResult.StandardOutput = $gitResult.StandardOutput -replace '[\r?\n]+$'
+                [System.String] $gitResult.StandardError = $gitResult.StandardError -replace '[\r?\n]+$'
 
                 if ($null -ne $GitHubToken)
                 {
-                    if ($gitResult.StandardOutput -contains $GitHubToken)
+                    if ([System.String]::IsNullOrWhiteSpace($gitResult.StandardOutput) -eq $false)
                     {
-                        $gitResult.StandardOutput = $gitResult.StandardOutput.Replace($GitHubToken,'*RedactedToken*')
+                        if ($gitResult.StandardOutput.Contains($GitHubToken))
+                        {
+                            $gitResult.StandardOutput = $gitResult.StandardOutput.Replace($GitHubToken,'*RedactedToken*')
+                        }
                     }
 
-                    if ($gitResult.StandardError -contains $GitHubToken)
+                    if ([System.String]::IsNullOrWhiteSpace($gitResult.StandardError) -eq $false)
                     {
-                        $gitResult.StandardError = $gitResult.StandardError.Replace($GitHubToken,'*RedactedToken*')
+                        if ($gitResult.StandardError.Contains($GitHubToken))
+                        {
+                            [System.String] $gitResult.StandardError = $gitResult.StandardError.Replace($GitHubToken,'*RedactedToken*')
+                        }
                     }
                 }
             }
