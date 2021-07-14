@@ -72,9 +72,12 @@ InModuleScope $script:moduleName {
                 } -Force
 
                 Mock -CommandName Write-Debug
+                Mock -CommandName Show-InvokeGitReturn
             }
 
-            It 'Should complete with ExitCode=1 and mask access token in debug message' {
+            It 'Should complete with ExitCode=1, mask access token in debug message, & call Show-InvokeGitReturn' {
+
+                $debugArgs = 'remote set-url origin https://name:RedactedToken@github.com/repository.wiki.git'
 
                 $result = Invoke-Git -WorkingDirectory $TestDrive `
                             -Arguments @( 'remote', 'set-url', 'origin', 'https://name:5ea239f132736de237492ff3@github.com/repository.wiki.git' ) `
@@ -87,8 +90,10 @@ InModuleScope $script:moduleName {
                 $result.StandardError | Should -BeExactly 'Standard Error Message 1'
 
                 Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
-                    $Message -match 'https://name:RedactedToken@github.com/repository.wiki.git'
+                    $Message -eq "$($localizedData.InvokingGitMessage -f $debugArgs)"
                 } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Show-InvokeGitReturn -Exactly -Times 1 -Scope It
 
                 Assert-VerifiableMock
             }
@@ -117,6 +122,41 @@ InModuleScope $script:moduleName {
                 $result.StandardOutput | Should -BeExactly 'Standard Output Message 128'
 
                 $result.StandardError | Should -BeExactly 'Standard Error Message 128'
+
+                Assert-VerifiableMock
+            }
+        }
+
+        Context 'When output contains access token' {
+            BeforeAll {
+                $mockProcess | Add-Member -MemberType ScriptProperty -Name 'ExitCode' -Value { 0 } -Force
+
+                $mockProcess | Add-Member -MemberType ScriptProperty -Name 'StandardOutput' -Value {
+                    New-Object -TypeName 'Object' | `
+                        Add-Member -MemberType ScriptMethod -Name 'ReadToEnd' -Value { 'Standard Output Message asdf-sometoken-lkjh' } -PassThru -Force
+                } -Force
+
+                $mockProcess | Add-Member -MemberType ScriptProperty -Name 'StandardError' -Value {
+                    New-Object -TypeName 'Object' | `
+                        Add-Member -MemberType ScriptMethod -Name 'ReadToEnd' -Value { 'Standard Error Message asdf-sometoken-lkjh' } -PassThru -Force
+                } -Force
+
+                $GitHubToken = 'asdf-sometoken-lkjh'
+            }
+            AfterAll {
+                Remove-Variable -Name GitHubToken
+            }
+
+            It 'Should mask token in: Standard Output, Standard Error, Command Output' {
+                $result = Invoke-Git -WorkingDirectory $TestDrive -Arguments @( 'clone', 'https://asdf-sometoken-lkjh:x-oauth-basic@github.com/User/repo.git' )
+
+                $result.ExitCode | Should -BeExactly 0
+
+                $result.StandardOutput | Should -BeExactly 'Standard Output Message *RedactedToken*'
+
+                $result.StandardError | Should -BeExactly 'Standard Error Message *RedactedToken*'
+
+                $result.Command | Should -BeExactly 'clone https://*RedactedToken*:x-oauth-basic@github.com/User/repo.git'
 
                 Assert-VerifiableMock
             }

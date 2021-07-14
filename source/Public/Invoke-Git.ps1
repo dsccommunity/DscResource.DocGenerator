@@ -44,12 +44,6 @@ function Invoke-Git
         $Arguments
     )
 
-    $returnValue = @{
-        'ExitCode'       = -1
-        'StandardOutput' = ''
-        'StandardError'  = ''
-    }
-
     $argumentsJoined = $Arguments -join ' '
 
     # Trying to remove any access token from the debug output.
@@ -59,6 +53,14 @@ function Invoke-Git
     }
 
     Write-Debug -Message ($localizedData.InvokingGitMessage -f $argumentsJoined)
+
+    $gitResult = @{
+        'ExitCode'         = -1
+        'StandardOutput'   = ''
+        'StandardError'    = ''
+        'Command'          = $argumentsJoined
+        'WorkingDirectory' = $WorkingDirectory
+    }
 
     try
     {
@@ -76,13 +78,37 @@ function Invoke-Git
         {
             if ($process.WaitForExit($TimeOut) -eq $true)
             {
-                $returnValue.ExitCode = $process.ExitCode
-                $returnValue.StandardOutput = $process.StandardOutput.ReadToEnd()
-                $returnValue.StandardError = $process.StandardError.ReadToEnd()
+                $gitResult.ExitCode = $process.ExitCode
+                $gitResult.StandardOutput = $process.StandardOutput.ReadToEnd()
+                $gitResult.StandardError = $process.StandardError.ReadToEnd()
 
                 # Remove all new lines at end of string.
-                $returnValue.StandardOutput = $returnValue.StandardOutput -replace '[\r?\n]+$'
-                $returnValue.StandardError = $returnValue.StandardError -replace '[\r?\n]+$'
+                [System.String] $gitResult.StandardOutput = $gitResult.StandardOutput -replace '[\r?\n]+$'
+                [System.String] $gitResult.StandardError = $gitResult.StandardError -replace '[\r?\n]+$'
+
+                if ($null -ne $GitHubToken)
+                {
+                    if ([System.String]::IsNullOrWhiteSpace($gitResult.StandardOutput) -eq $false)
+                    {
+                        if ($gitResult.StandardOutput.Contains($GitHubToken))
+                        {
+                            $gitResult.StandardOutput = $gitResult.StandardOutput.Replace($GitHubToken,'*RedactedToken*')
+                        }
+                    }
+
+                    if ([System.String]::IsNullOrWhiteSpace($gitResult.StandardError) -eq $false)
+                    {
+                        if ($gitResult.StandardError.Contains($GitHubToken))
+                        {
+                            $gitResult.StandardError = $gitResult.StandardError.Replace($GitHubToken,'*RedactedToken*')
+                        }
+                    }
+
+                    if ($gitResult.Command.Contains($GitHubToken))
+                    {
+                        [System.String] $gitResult.Command = $gitResult.Command.Replace($GitHubToken,'*RedactedToken*')
+                    }
+                }
             }
         }
     }
@@ -96,11 +122,15 @@ function Invoke-Git
         {
             $process.Dispose()
         }
+
+        if ($VerbosePreference -ne 'SilentlyContinue' -or `
+            $DebugPreference -ne 'SilentlyContinue' -or `
+            $PSBoundParameters['Verbose'] -eq $true -or `
+            $PSBoundParameters['Debug'] -eq $true)
+        {
+            Show-InvokeGitReturn @gitResult
+        }
     }
 
-    Write-Debug -Message ('{0}: {1}' -f $MyInvocation.MyCommand.Name, ($localizedData.InvokeGitExitCodeMessage -f $returnValue.ExitCode))
-    Write-Debug -Message ('{0}: {1}' -f $MyInvocation.MyCommand.Name, ($localizedData.InvokeGitStandardOutputMessage -f $returnValue.StandardOutput))
-    Write-Debug -Message ('{0}: {1}' -f $MyInvocation.MyCommand.Name, ($localizedData.InvokeGitStandardErrorMessage -f $returnValue.StandardError))
-
-    return $returnValue
+    return $gitResult
 }

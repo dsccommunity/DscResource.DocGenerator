@@ -32,6 +32,8 @@ InModuleScope $script:moduleName {
                         'ExitCode' = 0
                         'StandardOutput' = 'Standard Output 0'
                         'StandardError' = 'Standard Error 0'
+                        'Command' = 'some command'
+                        'WorkingDirectory' = 'c:\some\directory'
                     }
                 }
 
@@ -40,6 +42,8 @@ InModuleScope $script:moduleName {
                         'ExitCode' = 128
                         'StandardOutput' = 'Standard Output 128'
                         'StandardError' = 'fatal: remote error: access denied or repository not exported: /335792891.wiki.git'
+                        'Command' = "clone https://github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
+                        'WorkingDirectory' = 'c:\some\directory'
                     }
                 } -ParameterFilter {
                     $Arguments[0] -eq 'clone' -and
@@ -47,7 +51,7 @@ InModuleScope $script:moduleName {
                 }
             }
 
-            It 'Should not throw an exception and call the expected mocks' {
+            It 'Should throw an exception and call the expected mocks' {
                 $mockPublishWikiContentParameters = @{
                     Path               = $TestDrive
                     OwnerName          = 'owner'
@@ -60,7 +64,7 @@ InModuleScope $script:moduleName {
                     GlobalCoreAutoCrLf = 'true'
                 }
 
-                { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Not -Throw
+                { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Throw
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'clone' -and
@@ -147,6 +151,8 @@ InModuleScope $script:moduleName {
                         'ExitCode' = 0
                         'StandardOutput' = 'Standard Output 0'
                         'StandardError' = 'Standard Error 0'
+                        'Command' = 'some command'
+                        'WorkingDirectory' = 'c:\some\directory'
                     }
                 }
             }
@@ -240,7 +246,7 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Context 'When there is no new content to publishing to Wiki' {
+        Context 'When there is no new content to publish to Wiki' {
             BeforeAll {
                 Mock -CommandName Copy-WikiFolder
                 Mock -CommandName New-WikiSidebar
@@ -253,6 +259,8 @@ InModuleScope $script:moduleName {
                         'ExitCode' = 0
                         'StandardOutput' = 'Standard Output 0'
                         'StandardError' = 'Standard Error 0'
+                        'Command' = 'some command'
+                        'WorkingDirectory' = 'c:\some\directory'
                     }
                 }
 
@@ -261,6 +269,8 @@ InModuleScope $script:moduleName {
                         'ExitCode' = 1
                         'StandardOutput' = 'Standard Output 1'
                         'StandardError' = 'Standard Error 1'
+                        'Command' = 'some command'
+                        'WorkingDirectory' = 'c:\some\directory'
                     }
                 } -ParameterFilter {
                         $Arguments[0] -eq 'commit' -and
@@ -269,7 +279,7 @@ InModuleScope $script:moduleName {
                     }
             }
 
-            It 'Should not throw an exception and call the expected mocks' {
+            It 'Should throw an exception and call the expected mocks' {
                 $mockPublishWikiContentParameters = @{
                     Path               = $TestDrive
                     OwnerName          = 'owner'
@@ -282,7 +292,7 @@ InModuleScope $script:moduleName {
                     GlobalCoreAutoCrLf = 'true'
                 }
 
-                { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Not -Throw
+                { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Throw
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'clone' -and
