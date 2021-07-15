@@ -19,7 +19,7 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 #endregion HEADER
 
 InModuleScope $script:moduleName {
-    Describe 'Show-InvokeGitReturn' {
+    Describe 'Out-GitResult' {
         BeforeAll {
             Mock -CommandName Write-Verbose
             Mock -CommandName Write-Debug
@@ -35,7 +35,7 @@ InModuleScope $script:moduleName {
                     'WorkingDirectory' = 'C:\some\path\'
                 }
 
-                { Show-InvokeGitReturn @mockHashTable } | Should -Not -Throw
+                { Out-GitResult @mockHashTable } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Write-Verbose -ParameterFilter {
                     $Message -eq "$($script:localizedData.InvokeGitStandardOutputMessage -f $mockHashTable.StandardOutput)"
@@ -70,7 +70,7 @@ InModuleScope $script:moduleName {
                     'WorkingDirectory' = 'C:\some\path\'
                 }
 
-                { Show-InvokeGitReturn @mockHashTable } | Should -Not -Throw
+                { Out-GitResult @mockHashTable } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Write-Verbose -ParameterFilter {
                     $Message -eq $script:localizedData.WikiGitCloneFailMessage
@@ -109,7 +109,7 @@ InModuleScope $script:moduleName {
                     'WorkingDirectory' = 'C:\some\path\'
                 }
 
-                { Show-InvokeGitReturn @mockHashTable } | Should -Not -Throw
+                { Out-GitResult @mockHashTable } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Write-Verbose -ParameterFilter { #custom
                     $Message -eq $script:localizedData.NothingToCommitToWiki

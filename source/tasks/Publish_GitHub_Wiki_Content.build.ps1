@@ -188,6 +188,7 @@ task Publish_GitHub_Wiki_Content {
         $invokeGitParameters = @{
             WorkingDirectory = $ProjectPath
             Arguments        = @('remote', 'get-url', 'origin')
+            PassThru         = $true
         }
 
         if ($debugTask)

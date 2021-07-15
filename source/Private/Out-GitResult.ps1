@@ -30,12 +30,12 @@
             'WorkingDirectory' = 'C:\some\path\'
         }
 
-        Show-InvokeGitReturn @splatParameters
+        Out-GitResult @splatParameters
 
         Shows the Invoke-Git result of a commit.
 #>
 
-function Show-InvokeGitReturn
+function Out-GitResult
 {
     [CmdletBinding()]
     [OutputType()]
