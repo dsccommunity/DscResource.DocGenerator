@@ -66,11 +66,17 @@ function Out-GitResult
     {
         "CLONE*"
                 {
-                    Write-Verbose -Message $script:localizedData.WikiGitCloneFailMessage
+                    if ($ExitCode -eq 128)
+                    {
+                        Write-Verbose -Message $script:localizedData.WikiGitCloneFailMessage
+                    }
                 }
         "COMMIT*"
                 {
-                    Write-Verbose -Message $localizedData.NothingToCommitToWiki
+                    if ($ExitCode -eq 1)
+                    {
+                        Write-Verbose -Message $localizedData.NothingToCommitToWiki
+                    }
                 }
     }
 
