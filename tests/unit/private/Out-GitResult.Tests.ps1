@@ -102,7 +102,7 @@ InModuleScope $script:moduleName {
             It 'Should write commit message and call expected mocks' {
 
                 $mockHashTable = @{
-                    'ExitCode' = 128
+                    'ExitCode' = 1
                     'StandardOutput' = 'StandardOutput-128'
                     'StandardError' = 'StandardError-128'
                     'Command' = 'commit --message "some message"'
