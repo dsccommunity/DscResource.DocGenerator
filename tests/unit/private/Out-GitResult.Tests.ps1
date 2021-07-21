@@ -29,9 +29,9 @@ InModuleScope $script:moduleName {
             It 'Should call expected mocks' {
                 $mockHashTable = @{
                     'ExitCode' = 128
-                    'StandardOutput' = 'StandardOutput-128'
-                    'StandardError' = 'StandardError-128'
-                    'Command' = 'status'
+                    'StandardOutput' = 'Standard Output Message'
+                    'StandardError' = 'Standard Error Message'
+                    'Command' = @( 'status' )
                     'WorkingDirectory' = 'C:\some\path\'
                 }
 
@@ -50,11 +50,11 @@ InModuleScope $script:moduleName {
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
-                    $Message -like "$($script:localizedData.InvokeGitCommandDebug -f $mockHashTable.Command)"
+                    $Message -eq "$($script:localizedData.InvokeGitCommandDebug -f $mockHashTable.Command)"
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
-                    $Message -like "$($script:localizedData.InvokeGitWorkingDirectoryDebug -f $mockHashTable.WorkingDirectory)"
+                    $Message -eq "$($script:localizedData.InvokeGitWorkingDirectoryDebug -f $mockHashTable.WorkingDirectory)"
                 } -Exactly -Times 1 -Scope It
             }
         }
@@ -64,9 +64,9 @@ InModuleScope $script:moduleName {
 
                 $mockHashTable = @{
                     'ExitCode' = 128
-                    'StandardOutput' = 'StandardOutput-128'
-                    'StandardError' = 'StandardError-128'
-                    'Command' = 'clone https://github.com/test/repo.git'
+                    'StandardOutput' = 'Standard Output Message'
+                    'StandardError' = 'Standard Error Message'
+                    'Command' = @( 'clone', 'https://github.com/test/repo.git' )
                     'WorkingDirectory' = 'C:\some\path\'
                 }
 
@@ -89,11 +89,11 @@ InModuleScope $script:moduleName {
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
-                    $Message -like "$($script:localizedData.InvokeGitCommandDebug -f $mockHashTable.Command)"
+                    $Message -eq "$($script:localizedData.InvokeGitCommandDebug -f 'clone htt...')"
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
-                    $Message -like "$($script:localizedData.InvokeGitWorkingDirectoryDebug -f $mockHashTable.WorkingDirectory)"
+                    $Message -eq "$($script:localizedData.InvokeGitWorkingDirectoryDebug -f $mockHashTable.WorkingDirectory)"
                 } -Exactly -Times 1 -Scope It
             }
         }
@@ -103,15 +103,15 @@ InModuleScope $script:moduleName {
 
                 $mockHashTable = @{
                     'ExitCode' = 1
-                    'StandardOutput' = 'StandardOutput-128'
-                    'StandardError' = 'StandardError-128'
-                    'Command' = 'commit --message "some message"'
+                    'StandardOutput' = 'Standard Output Message'
+                    'StandardError' = 'Standard Error Message'
+                    'Command' = @( 'commit',  '--message "some message"' )
                     'WorkingDirectory' = 'C:\some\path\'
                 }
 
                 { Out-GitResult @mockHashTable } | Should -Not -Throw
 
-                Assert-MockCalled -CommandName Write-Verbose -ParameterFilter { #custom
+                Assert-MockCalled -CommandName Write-Verbose -ParameterFilter {
                     $Message -eq $script:localizedData.NothingToCommitToWiki
                 } -Exactly -Times 1 -Scope It
 
@@ -128,11 +128,46 @@ InModuleScope $script:moduleName {
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
-                    $Message -like "$($script:localizedData.InvokeGitCommandDebug -f $mockHashTable.Command)"
+                    $Message -eq "$($script:localizedData.InvokeGitCommandDebug -f 'commit --m...')"
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
-                    $Message -like "$($script:localizedData.InvokeGitWorkingDirectoryDebug -f $mockHashTable.WorkingDirectory)"
+                    $Message -eq "$($script:localizedData.InvokeGitWorkingDirectoryDebug -f $mockHashTable.WorkingDirectory)"
+                } -Exactly -Times 1 -Scope It
+            }
+        }
+
+        Context 'Using $null property values' {
+            It 'Should call expected mocks' {
+
+                $mockHashTable = @{
+                    'ExitCode' = -1
+                    'StandardOutput' = $null
+                    'StandardError' = $null
+                    'Command' = @( 'status' )
+                    'WorkingDirectory' = $null #'C:\somedir\'
+                }
+
+                { Out-GitResult @mockHashTable -Verbose -Debug } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Write-Verbose -ParameterFilter {
+                    $Message -eq "$($script:localizedData.InvokeGitStandardOutputMessage -f $mockHashTable.StandardOutput)"
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Write-Verbose -ParameterFilter {
+                    $Message -eq "$($script:localizedData.InvokeGitStandardErrorMessage -f $mockHashTable.StandardError)"
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Write-Verbose -ParameterFilter { #ExitCode
+                    $Message -eq "$($script:localizedData.InvokeGitExitCodeMessage -f $mockHashTable.ExitCode)"
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
+                    $Message -eq "$($script:localizedData.InvokeGitCommandDebug -f $mockHashTable.Command)"
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
+                    $Message -eq "$($script:localizedData.InvokeGitWorkingDirectoryDebug -f $mockHashTable.WorkingDirectory)"
                 } -Exactly -Times 1 -Scope It
             }
         }

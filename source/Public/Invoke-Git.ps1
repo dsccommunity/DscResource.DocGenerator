@@ -40,13 +40,13 @@ function Invoke-Git
         [System.String]
         $WorkingDirectory,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [System.Int32]
         $TimeOut = 120000,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [System.Management.Automation.SwitchParameter]
-        $PassThru = $false,
+        $PassThru,
 
         [Parameter(ValueFromRemainingArguments = $true)]
         [System.String[]]
@@ -57,20 +57,6 @@ function Invoke-Git
         'ExitCode'         = -1
         'StandardOutput'   = ''
         'StandardError'    = ''
-        'Command'          = $Arguments[0]
-        'WorkingDirectory' = $WorkingDirectory
-    }
-
-    if ([System.String]::IsNullOrWhiteSpace($Arguments[1]) -eq $false)
-    {
-        if ($Arguments[1].Length -gt 3)
-        {
-            $gitResult.Command += " $($Arguments[1].Substring(0,3))..."
-        }
-        else
-        {
-            $gitResult.Command += " $($Arguments[1])..."
-        }
     }
 
     try
@@ -111,12 +97,15 @@ function Invoke-Git
             $PSBoundParameters['Verbose'] -eq $true -or `
             $PSBoundParameters['Debug'] -eq $true)
         {
+            $gitResult.Add('Command', $Arguments)
+            $gitResult.Add('WorkingDirectory', $WorkingDirectory)
+
             Out-GitResult @gitResult
         }
 
         if ($gitResult.ExitCode -ne 0 -and $PassThru -eq $false)
         {
-            $throwMessage = "$($script:localizedData.InvokeGitCommandDebug -f $gitResult.Command)`n" +`
+            $throwMessage = "$($script:localizedData.InvokeGitCommandDebug -f $(Hide-GitToken -Command $Arguments))`n" +`
                             "$($script:localizedData.InvokeGitExitCodeMessage -f $gitResult.ExitCode)`n" +`
                             "$($script:localizedData.InvokeGitStandardOutputMessage -f $gitResult.StandardOutput)`n" +`
                             "$($script:localizedData.InvokeGitStandardErrorMessage -f $gitResult.StandardError)`n"
@@ -127,9 +116,6 @@ function Invoke-Git
 
     if ($PSBoundParameters['PassThru'] -eq $true)
     {
-        $gitResult.Remove('Command')
-        $gitResult.Remove('WorkingDirectory')
-
         return $gitResult
     }
 }
