@@ -41,7 +41,7 @@ function Out-GitResult
     [OutputType()]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.Int32]
         $ExitCode,
 
@@ -53,11 +53,11 @@ function Out-GitResult
         [System.String]
         $StandardError,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $Command,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $WorkingDirectory
     )

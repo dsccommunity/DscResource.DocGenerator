@@ -145,7 +145,7 @@ InModuleScope $script:moduleName {
                     'StandardOutput' = $null
                     'StandardError' = $null
                     'Command' = @( 'status' )
-                    'WorkingDirectory' = $null #'C:\somedir\'
+                    'WorkingDirectory' = 'C:\somedir\'
                 }
 
                 { Out-GitResult @mockHashTable -Verbose -Debug } | Should -Not -Throw
@@ -158,7 +158,7 @@ InModuleScope $script:moduleName {
                     $Message -eq "$($script:localizedData.InvokeGitStandardErrorMessage -f $mockHashTable.StandardError)"
                 } -Exactly -Times 1 -Scope It
 
-                Assert-MockCalled -CommandName Write-Verbose -ParameterFilter { #ExitCode
+                Assert-MockCalled -CommandName Write-Verbose -ParameterFilter {
                     $Message -eq "$($script:localizedData.InvokeGitExitCodeMessage -f $mockHashTable.ExitCode)"
                 } -Exactly -Times 1 -Scope It
 
