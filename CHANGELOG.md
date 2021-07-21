@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Out-GitResult` - Displays `Invoke-Git` returned hashtable
     via Write-Verbose and Write-Debug localized messages.
     Fixes [Issue 90](https://github.com/dsccommunity/DscResource.DocGenerator/issues/90)
+  - `Hide-GitToken` - Formats `Invoke-Git` command to be used in Write-Debug &
+    Write-Verbose. Does not reveal token or other authentication methods.
 
 ### Changed
 

@@ -184,50 +184,28 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Context 'When throwing error' {
+        Context 'When throwing an error' {
             BeforeAll {
                 $mockProcess | Add-Member -MemberType ScriptProperty -Name 'ExitCode' -Value { 128 } -Force
             }
 
-            It 'Should throw exact message, one cmd' {
-                $throwMessage = "$($script:localizedData.InvokeGitCommandDebug -f 'status')`n" +`
+            $testCases = @(
+                @{ 'Command' = @('status');             'ErrorMessage' = 'status';        },
+                @{ 'Command' = @('status','-v');        'ErrorMessage' = 'status -v...';  },
+                @{ 'Command' = @('status','--verbose'); 'ErrorMessage' = 'status --v...'; }
+            )
+
+            It "Should throw exact using <Command>" -TestCases $testCases {
+                param( $Command, $ErrorMessage )
+
+                $throwMessage = "$($script:localizedData.InvokeGitCommandDebug -f $ErrorMessage)`n" +`
                                 "$($script:localizedData.InvokeGitExitCodeMessage -f 128)`n" +`
                                 "$($script:localizedData.InvokeGitStandardOutputMessage -f 'Standard Output Message')`n" +`
-                                "$($script:localizedData.InvokeGitStandardErrorMessage -f 'Standard Error Message')"
+                                "$($script:localizedData.InvokeGitStandardErrorMessage -f 'Standard Error Message')`n"
 
-                { Invoke-Git -WorkingDirectory $TestDrive -Arguments @( 'status' ) } | `
-                    Should -Throw $throwMessage
-
-                Assert-MockCalled -CommandName Out-GitResult -Exactly -Times 0 -Scope It
-
-                Assert-VerifiableMock
-            }
-
-            It 'Should throw exact message, one cmd with switch' {
-                $throwMessage = "$($script:localizedData.InvokeGitCommandDebug -f 'status -v...')`n" +`
-                                "$($script:localizedData.InvokeGitExitCodeMessage -f 128)`n" +`
-                                "$($script:localizedData.InvokeGitStandardOutputMessage -f 'Standard Output Message')`n" +`
-                                "$($script:localizedData.InvokeGitStandardErrorMessage -f 'Standard Error Message')"
-
-                { Invoke-Git -WorkingDirectory $TestDrive -Arguments @( 'status', '-v' ) } | `
-                    Should -Throw $throwMessage
+                { Invoke-Git -WorkingDirectory $TestDrive -Arguments $Command } | Should -Throw $throwMessage
 
                 Assert-MockCalled -CommandName Out-GitResult -Exactly -Times 0 -Scope It
-
-                Assert-VerifiableMock
-            }
-
-            It 'Should throw exact message, two cmds' {
-                $throwMessage = "$($script:localizedData.InvokeGitCommandDebug -f 'status --v...')`n" +`
-                                "$($script:localizedData.InvokeGitExitCodeMessage -f 128)`n" +`
-                                "$($script:localizedData.InvokeGitStandardOutputMessage -f 'Standard Output Message')`n" +`
-                                "$($script:localizedData.InvokeGitStandardErrorMessage -f 'Standard Error Message')"
-
-                { Invoke-Git -WorkingDirectory $TestDrive -Arguments @( 'status', '--verbose' ) } | `
-                    Should -Throw $throwMessage
-
-                Assert-MockCalled -CommandName Out-GitResult -Exactly -Times 0 -Scope It
-
                 Assert-VerifiableMock
             }
         }

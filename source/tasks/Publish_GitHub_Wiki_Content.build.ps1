@@ -201,10 +201,7 @@ task Publish_GitHub_Wiki_Content {
 
         if ($gitRemoteResult.ExitCode -eq 0)
         {
-            if ([System.String]::IsNullOrWhiteSpace($gitRemoteResult.StandardOutput) -eq $false)
-            {
-                $remoteURL = $gitRemoteResult.StandardOutput.Replace("`n",'').Replace("`r",'')
-            }
+            $remoteURL = $gitRemoteResult.StandardOutput -replace '\r?\n'
         }
 
         # Parse the URL for owner name and repository name.

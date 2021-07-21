@@ -54,7 +54,7 @@ function Out-GitResult
         $StandardError,
 
         [Parameter()]
-        [System.String]
+        [System.String[]]
         $Command,
 
         [Parameter()]
@@ -62,16 +62,16 @@ function Out-GitResult
         $WorkingDirectory
     )
 
-    switch -Wildcard ($Command.ToUpper())
+    switch ($Command[0].ToUpper())
     {
-        "CLONE*"
+        'CLONE'
                 {
                     if ($ExitCode -eq 128)
                     {
                         Write-Verbose -Message $script:localizedData.WikiGitCloneFailMessage
                     }
                 }
-        "COMMIT*"
+        'COMMIT'
                 {
                     if ($ExitCode -eq 1)
                     {
@@ -84,6 +84,6 @@ function Out-GitResult
     Write-Verbose -Message ($script:localizedData.InvokeGitStandardErrorMessage -f $StandardError)
     Write-Verbose -Message ($script:localizedData.InvokeGitExitCodeMessage -f $ExitCode)
 
-    Write-Debug -Message ($script:localizedData.InvokeGitCommandDebug -f $Command)
+    Write-Debug -Message ($script:localizedData.InvokeGitCommandDebug -f $(Hide-GitToken -Command $Command))
     Write-Debug -Message ($script:localizedData.InvokeGitWorkingDirectoryDebug -f $WorkingDirectory)
 }
