@@ -187,15 +187,24 @@ InModuleScope $script:moduleName {
         Context 'When throwing an error' {
             BeforeAll {
                 $mockProcess | Add-Member -MemberType ScriptProperty -Name 'ExitCode' -Value { 128 } -Force
+
+                $tokenPrefix = ('pousr').ToCharArray() | Get-Random
+                $newTokenLength = Get-Random -Minimum 1 -Maximum 251
+                $newToken = (1..$newTokenLength | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
             }
 
             $testCases = @(
-                @{ 'Command' = @('status');             'ErrorMessage' = 'status';        },
-                @{ 'Command' = @('status','-v');        'ErrorMessage' = 'status -v...';  },
-                @{ 'Command' = @('status','--verbose'); 'ErrorMessage' = 'status --v...'; }
+                @{
+                    'Command'      = @('status','--verbose');
+                    'ErrorMessage' = 'status --verbose';
+                },
+                @{
+                    'Command'      = @( 'remote','add','origin',"https://gh$($tokenPrefix)_$($newToken)@github.com/owner/repo.git" );
+                    'ErrorMessage' = 'remote add origin https://**REDACTED-TOKEN**@github.com/owner/repo.git';
+                }
             )
 
-            It "Should throw exact using <Command>" -TestCases $testCases {
+            It "Should throw exact with '<ErrorMessage>'" -TestCases $testCases {
                 param( $Command, $ErrorMessage )
 
                 $throwMessage = "$($script:localizedData.InvokeGitCommandDebug -f $ErrorMessage)`n" +`

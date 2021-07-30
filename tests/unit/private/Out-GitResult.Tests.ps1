@@ -57,6 +57,43 @@ InModuleScope $script:moduleName {
                     $Message -eq "$($script:localizedData.InvokeGitWorkingDirectoryDebug -f $mockHashTable.WorkingDirectory)"
                 } -Exactly -Times 1 -Scope It
             }
+
+            It 'Should redact token' {
+                $returnedValue = 'remote add origin https://**REDACTED-TOKEN**@github.com/owner/repo.git'
+                $tokenPrefix = ('pousr').ToCharArray() | Get-Random
+                $newTokenLength = Get-Random -Minimum 1 -Maximum 251
+                $newToken = (1..$newTokenLength | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
+
+                $mockHashTable = @{
+                    'ExitCode' = 128
+                    'StandardOutput' = 'Standard Output Message'
+                    'StandardError' = 'Standard Error Message'
+                    'Command' = @( 'remote','add','origin',"https://gh$($tokenPrefix)_$($newToken)@github.com/owner/repo.git" )
+                    'WorkingDirectory' = 'C:\some\path\'
+                }
+
+                { Out-GitResult @mockHashTable } | Should -Not -Throw
+
+                Assert-MockCalled -CommandName Write-Verbose -ParameterFilter {
+                    $Message -eq "$($script:localizedData.InvokeGitStandardOutputMessage -f $mockHashTable.StandardOutput)"
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Write-Verbose -ParameterFilter {
+                    $Message -eq "$($script:localizedData.InvokeGitStandardErrorMessage -f $mockHashTable.StandardError)"
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Write-Verbose -ParameterFilter {
+                    $Message -eq "$($script:localizedData.InvokeGitExitCodeMessage -f $mockHashTable.ExitCode)"
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
+                    $Message -eq "$($script:localizedData.InvokeGitCommandDebug -f $returnedValue)"
+                } -Exactly -Times 1 -Scope It
+
+                Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
+                    $Message -eq "$($script:localizedData.InvokeGitWorkingDirectoryDebug -f $mockHashTable.WorkingDirectory)"
+                } -Exactly -Times 1 -Scope It
+            }
         }
 
         Context 'Using custom clone message' {
@@ -89,7 +126,7 @@ InModuleScope $script:moduleName {
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
-                    $Message -eq "$($script:localizedData.InvokeGitCommandDebug -f 'clone htt...')"
+                    $Message -eq "$($script:localizedData.InvokeGitCommandDebug -f "$($mockHashTable.Command -join ' ')")"
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
@@ -128,7 +165,7 @@ InModuleScope $script:moduleName {
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Write-Debug -ParameterFilter {
-                    $Message -eq "$($script:localizedData.InvokeGitCommandDebug -f 'commit --m...')"
+                    $Message -eq "$($script:localizedData.InvokeGitCommandDebug -f "$($mockHashTable.Command -join ' ')")"
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Write-Debug -ParameterFilter {

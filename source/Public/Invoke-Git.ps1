@@ -97,10 +97,12 @@ function Invoke-Git
             $PSBoundParameters['Verbose'] -eq $true -or `
             $PSBoundParameters['Debug'] -eq $true)
         {
-            $gitResult.Add('Command', $Arguments)
-            $gitResult.Add('WorkingDirectory', $WorkingDirectory)
+            $outGitResultSplat = $gitResult
 
-            Out-GitResult @gitResult
+            $outGitResultSplat.Add('Command', $Arguments)
+            $outGitResultSplat.Add('WorkingDirectory', $WorkingDirectory)
+
+            Out-GitResult @outGitResultSplat
         }
 
         if ($gitResult.ExitCode -ne 0 -and $PassThru -eq $false)

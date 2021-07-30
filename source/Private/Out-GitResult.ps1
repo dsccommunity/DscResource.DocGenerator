@@ -11,7 +11,7 @@
     .PARAMETER StandardOutput
         Standard Output returned from running git command.
 
-    .PARAMETER  StandardError
+    .PARAMETER StandardError
         Standard Error returned from running git command.
 
     .PARAMETER Command
@@ -21,7 +21,6 @@
         Working Directory used when running git command.
 
     .EXAMPLE
-
         $splatParameters = @{
             'ExitCode'         = 128
             'StandardOutput'   = 'StandardOutput-128'
@@ -33,6 +32,10 @@
         Out-GitResult @splatParameters
 
         Shows the Invoke-Git result of a commit.
+
+    .NOTES
+        $NULL values are allowed since string formatter `-f` will convert it to an
+        empty string before Write-Verbose/Write-Debug process `-Message`.
 #>
 
 function Out-GitResult

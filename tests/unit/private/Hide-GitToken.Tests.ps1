@@ -21,19 +21,28 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 InModuleScope $script:moduleName {
     Describe 'Hide-GitToken' {
         Context 'When invoked' {
-
-            $testCommands = @(
-                @{ 'Command' = @('status');             'ReturnedMessage' = 'status'        },
-                @{ 'Command' = @('status','-v');        'ReturnedMessage' = 'status -v...'  },
-                @{ 'Command' = @('status','--verbose'); 'ReturnedMessage' = 'status --v...' }
+            BeforeAll {
+                $returnedValue = 'remote add origin https://**REDACTED-TOKEN**@github.com/owner/repo.git'
+                $legacyToken = (1..40 | %{ ('abcdef1234567890').ToCharArray() | Get-Random }) -join ''
+                $newTokenLength = Get-Random -Minimum 1 -Maximum 251
+                $newToken = (1..$newTokenLength | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
+            }
+            # gh(p|o|u|s|r)_([A-Za-z0-9]{1,255})
+            $testTokens = @(
+                @{ 'Token' = "$legacyToken"  },
+                @{ 'Token' = "ghp_$newToken" },
+                @{ 'Token' = "gho_$newToken" },
+                @{ 'Token' = "ghu_$newToken" },
+                @{ 'Token' = "ghs_$newToken" },
+                @{ 'Token' = "ghr_$newToken" }
             )
 
-            It "Should input: '<Command>'  output: '<ReturnedMessage>'" -TestCases $testCommands {
-                param( $Command, $ReturnedMessage )
+            It "Should redact: '<Token>'" -TestCases $testTokens {
+                param( $Token )
 
-                $result = Hide-GitToken -Command $Command
+                $result = Hide-GitToken -Command @( 'remote', 'add', 'origin', "https://$Token@github.com/owner/repo.git" )
 
-                $result -eq $ReturnedMessage | Should -Be $true
+                $result -eq $returnedValue | Should -Be $true
             }
         }
     }

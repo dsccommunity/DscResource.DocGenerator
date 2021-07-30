@@ -4,7 +4,7 @@
 
     .DESCRIPTION
         Formats Invoke-Git command to be used in Write-Debug & Write-Verbose.
-        Does not reveal token or other authentication methods.
+        Replaces token using regex replace.
 
     .PARAMETER Command
         Command passed to Invoke-Git
@@ -26,19 +26,11 @@ function Hide-GitToken
         $Command
     )
 
-    [System.String] $returnValue = $Command[0]
+    [System.String] $returnValue = $Command -join ' '
 
-    if ([System.String]::IsNullOrWhiteSpace($Command[1]) -eq $false)
-    {
-        if ($Command[1].Length -gt 3)
-        {
-            $returnValue += " $($Command[1].Substring(0,3))..."
-        }
-        else
-        {
-            $returnValue += " $($Command[1])..."
-        }
-    }
+    [System.String] $returnValue = $returnValue -replace "gh(p|o|u|s|r)_([A-Za-z0-9]{1,255})",'**REDACTED-TOKEN**'
+
+    [System.String] $returnValue = $returnValue -replace "[0-9a-f]{40}",'**REDACTED-TOKEN**'
 
     return $returnValue
 }
