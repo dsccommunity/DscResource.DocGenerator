@@ -27,7 +27,7 @@ InModuleScope $script:moduleName {
                 $newTokenLength = Get-Random -Minimum 1 -Maximum 251
                 $newToken = (1..$newTokenLength | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
             }
-            # gh(p|o|u|s|r)_([A-Za-z0-9]{1,255})
+
             $testTokens = @(
                 @{ 'Token' = "$legacyToken"  },
                 @{ 'Token' = "ghp_$newToken" },
