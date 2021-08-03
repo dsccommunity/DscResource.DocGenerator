@@ -33,7 +33,7 @@ InModuleScope $script:moduleName {
                 $result -eq $returnedValue | Should -Be $true
             }
         }
-        Context 'When command contains a GitHub 5 char token' {
+        Context 'When command contains a GitHub 5 character token' {
             $newToken = (1..1 | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
             $testTokens = @(
                 @{ 'Token' = "ghp_$newToken" },
@@ -51,7 +51,7 @@ InModuleScope $script:moduleName {
                 $result -eq $returnedValue | Should -Be $true
             }
         }
-        Context 'When command contains a GitHub 100 char token' {
+        Context 'When command contains a GitHub 100 character token' {
             $newToken = (1..96 | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
             $testTokens = @(
                 @{ 'Token' = "ghp_$newToken" },
@@ -69,7 +69,7 @@ InModuleScope $script:moduleName {
                 $result -eq $returnedValue | Should -Be $true
             }
         }
-        Context 'When command contains a GitHub 200 char token' {
+        Context 'When command contains a GitHub 200 character token' {
             $newToken = (1..196 | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
             $testTokens = @(
                 @{ 'Token' = "ghp_$newToken" },
@@ -87,7 +87,7 @@ InModuleScope $script:moduleName {
                 $result -eq $returnedValue | Should -Be $true
             }
         }
-        Context 'When command contains a GitHub 255 char token' {
+        Context 'When command contains a GitHub 255 character token' {
             $newToken = (1..251 | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
             $testTokens = @(
                 @{ 'Token' = "ghp_$newToken" },
