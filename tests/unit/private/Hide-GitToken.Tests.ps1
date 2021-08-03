@@ -20,16 +20,76 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 
 InModuleScope $script:moduleName {
     Describe 'Hide-GitToken' {
-        Context 'When invoked' {
+        BeforeAll {
+            $returnedValue = 'remote add origin https://**REDACTED-TOKEN**@github.com/owner/repo.git'
+        }
+        Context 'When command contains a legacy GitHub token' {
             BeforeAll {
-                $returnedValue = 'remote add origin https://**REDACTED-TOKEN**@github.com/owner/repo.git'
                 $legacyToken = (1..40 | %{ ('abcdef1234567890').ToCharArray() | Get-Random }) -join ''
-                $newTokenLength = Get-Random -Minimum 1 -Maximum 251
-                $newToken = (1..$newTokenLength | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
             }
+            It "Should redact: $legacyToken" {
+                $result = Hide-GitToken -Command @( 'remote', 'add', 'origin', "https://$legacyToken@github.com/owner/repo.git" )
 
+                $result -eq $returnedValue | Should -Be $true
+            }
+        }
+        Context 'When command contains a GitHub 5 char token' {
+            $newToken = (1..1 | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
             $testTokens = @(
-                @{ 'Token' = "$legacyToken"  },
+                @{ 'Token' = "ghp_$newToken" },
+                @{ 'Token' = "gho_$newToken" },
+                @{ 'Token' = "ghu_$newToken" },
+                @{ 'Token' = "ghs_$newToken" },
+                @{ 'Token' = "ghr_$newToken" }
+            )
+
+            It "Should redact: '<Token>'" -TestCases $testTokens {
+                param( $Token )
+
+                $result = Hide-GitToken -Command @( 'remote', 'add', 'origin', "https://$Token@github.com/owner/repo.git" )
+
+                $result -eq $returnedValue | Should -Be $true
+            }
+        }
+        Context 'When command contains a GitHub 100 char token' {
+            $newToken = (1..96 | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
+            $testTokens = @(
+                @{ 'Token' = "ghp_$newToken" },
+                @{ 'Token' = "gho_$newToken" },
+                @{ 'Token' = "ghu_$newToken" },
+                @{ 'Token' = "ghs_$newToken" },
+                @{ 'Token' = "ghr_$newToken" }
+            )
+
+            It "Should redact: '<Token>'" -TestCases $testTokens {
+                param( $Token )
+
+                $result = Hide-GitToken -Command @( 'remote', 'add', 'origin', "https://$Token@github.com/owner/repo.git" )
+
+                $result -eq $returnedValue | Should -Be $true
+            }
+        }
+        Context 'When command contains a GitHub 200 char token' {
+            $newToken = (1..196 | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
+            $testTokens = @(
+                @{ 'Token' = "ghp_$newToken" },
+                @{ 'Token' = "gho_$newToken" },
+                @{ 'Token' = "ghu_$newToken" },
+                @{ 'Token' = "ghs_$newToken" },
+                @{ 'Token' = "ghr_$newToken" }
+            )
+
+            It "Should redact: '<Token>'" -TestCases $testTokens {
+                param( $Token )
+
+                $result = Hide-GitToken -Command @( 'remote', 'add', 'origin', "https://$Token@github.com/owner/repo.git" )
+
+                $result -eq $returnedValue | Should -Be $true
+            }
+        }
+        Context 'When command contains a GitHub 255 char token' {
+            $newToken = (1..251 | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
+            $testTokens = @(
                 @{ 'Token' = "ghp_$newToken" },
                 @{ 'Token' = "gho_$newToken" },
                 @{ 'Token' = "ghu_$newToken" },
