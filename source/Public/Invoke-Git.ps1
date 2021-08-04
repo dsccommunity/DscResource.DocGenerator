@@ -97,7 +97,7 @@ function Invoke-Git
             $PSBoundParameters['Verbose'] -eq $true -or `
             $PSBoundParameters['Debug'] -eq $true)
         {
-            $outGitResultSplat = $gitResult.clone()
+            $outGitResultSplat = $gitResult.Clone()
 
             $outGitResultSplat.Add('Command', $Arguments)
             $outGitResultSplat.Add('WorkingDirectory', $WorkingDirectory)

@@ -98,7 +98,6 @@ InModuleScope $script:moduleName {
 
         Context 'Using custom clone message' {
             It 'Should write clone message and call expected mocks' {
-
                 $mockHashTable = @{
                     'ExitCode' = 128
                     'StandardOutput' = 'Standard Output Message'
@@ -137,7 +136,6 @@ InModuleScope $script:moduleName {
 
         Context 'Using custom commit message' {
             It 'Should write commit message and call expected mocks' {
-
                 $mockHashTable = @{
                     'ExitCode' = 1
                     'StandardOutput' = 'Standard Output Message'
@@ -176,7 +174,6 @@ InModuleScope $script:moduleName {
 
         Context 'Using $null property values' {
             It 'Should call expected mocks' {
-
                 $mockHashTable = @{
                     'ExitCode' = -1
                     'StandardOutput' = $null

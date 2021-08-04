@@ -23,16 +23,19 @@ InModuleScope $script:moduleName {
         BeforeAll {
             $returnedValue = 'remote add origin https://**REDACTED-TOKEN**@github.com/owner/repo.git'
         }
+
         Context 'When command contains a legacy GitHub token' {
             BeforeAll {
                 $legacyToken = (1..40 | %{ ('abcdef1234567890').ToCharArray() | Get-Random }) -join ''
             }
+
             It "Should redact: $legacyToken" {
                 $result = Hide-GitToken -Command @( 'remote', 'add', 'origin', "https://$legacyToken@github.com/owner/repo.git" )
 
-                $result -eq $returnedValue | Should -Be $true
+                $result -eq $returnedValue | Should -BeTrue
             }
         }
+
         Context 'When command contains a GitHub 5 character token' {
             $newToken = (1..1 | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
             $testTokens = @(
@@ -48,9 +51,29 @@ InModuleScope $script:moduleName {
 
                 $result = Hide-GitToken -Command @( 'remote', 'add', 'origin', "https://$Token@github.com/owner/repo.git" )
 
-                $result -eq $returnedValue | Should -Be $true
+                $result -eq $returnedValue | Should -BeTrue
             }
         }
+
+        Context 'When command contains a GitHub 40 character token' {
+            $newToken = (1..36 | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
+            $testTokens = @(
+                @{ 'Token' = "ghp_$newToken" },
+                @{ 'Token' = "gho_$newToken" },
+                @{ 'Token' = "ghu_$newToken" },
+                @{ 'Token' = "ghs_$newToken" },
+                @{ 'Token' = "ghr_$newToken" }
+            )
+
+            It "Should redact: '<Token>'" -TestCases $testTokens {
+                param( $Token )
+
+                $result = Hide-GitToken -Command @( 'remote', 'add', 'origin', "https://$Token@github.com/owner/repo.git" )
+
+                $result -eq $returnedValue | Should -BeTrue
+            }
+        }
+
         Context 'When command contains a GitHub 100 character token' {
             $newToken = (1..96 | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
             $testTokens = @(
@@ -66,9 +89,10 @@ InModuleScope $script:moduleName {
 
                 $result = Hide-GitToken -Command @( 'remote', 'add', 'origin', "https://$Token@github.com/owner/repo.git" )
 
-                $result -eq $returnedValue | Should -Be $true
+                $result -eq $returnedValue | Should -BeTrue
             }
         }
+
         Context 'When command contains a GitHub 200 character token' {
             $newToken = (1..196 | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
             $testTokens = @(
@@ -84,9 +108,10 @@ InModuleScope $script:moduleName {
 
                 $result = Hide-GitToken -Command @( 'remote', 'add', 'origin', "https://$Token@github.com/owner/repo.git" )
 
-                $result -eq $returnedValue | Should -Be $true
+                $result -eq $returnedValue | Should -BeTrue
             }
         }
+
         Context 'When command contains a GitHub 255 character token' {
             $newToken = (1..251 | %{ ('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890').ToCharArray() | Get-Random }) -join ''
             $testTokens = @(
@@ -102,7 +127,7 @@ InModuleScope $script:moduleName {
 
                 $result = Hide-GitToken -Command @( 'remote', 'add', 'origin', "https://$Token@github.com/owner/repo.git" )
 
-                $result -eq $returnedValue | Should -Be $true
+                $result -eq $returnedValue | Should -BeTrue
             }
         }
     }
