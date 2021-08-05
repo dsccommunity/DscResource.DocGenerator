@@ -5,6 +5,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added private functions:
+  - `Out-GitResult` - Displays `Invoke-Git` returned hashtable
+    via Write-Verbose and Write-Debug localized messages.
+    Fixes [Issue 90](https://github.com/dsccommunity/DscResource.DocGenerator/issues/90)
+  - `Hide-GitToken` - Used to redact the token from the specified 
+    git command so that the command can be safely outputted in logs.
+
+### Changed
+
+- `Publish-WikiContent`
+  - Restored to original structure.
+- `Invoke-Git`
+  - Added `-PassThru` switch to return result hashtable and not throw
+    regardless of ExitCode value when used.
+  - Throws when ExitCode -ne 0 and `-PassThru` switch not used.
+  - Calls `Out-GitResult` when using `-Debug` or `-Verbose`.
+
 ## [0.9.1] - 2021-07-14
 
 ### Added

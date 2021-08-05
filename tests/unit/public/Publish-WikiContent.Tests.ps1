@@ -27,27 +27,17 @@ InModuleScope $script:moduleName {
                 Mock -CommandName New-WikiFooter
                 Mock -CommandName Remove-Item
 
-                Mock -CommandName Invoke-Git -MockWith {
-                    return @{
-                        'ExitCode' = 0
-                        'StandardOutput' = 'Standard Output 0'
-                        'StandardError' = 'Standard Error 0'
-                    }
-                }
+                Mock -CommandName Invoke-Git
 
                 Mock -CommandName Invoke-Git -MockWith {
-                    return @{
-                        'ExitCode' = 128
-                        'StandardOutput' = 'Standard Output 128'
-                        'StandardError' = 'fatal: remote error: access denied or repository not exported: /335792891.wiki.git'
-                    }
+                    throw 'clone exception'
                 } -ParameterFilter {
                     $Arguments[0] -eq 'clone' -and
                     $Arguments[1] -eq "https://github.com/$($mockPublishWikiContentParameters.OwnerName)/$($mockPublishWikiContentParameters.RepositoryName).wiki.git"
                 }
             }
 
-            It 'Should not throw an exception and call the expected mocks' {
+            It 'Should throw an exception and call the expected mocks' {
                 $mockPublishWikiContentParameters = @{
                     Path               = $TestDrive
                     OwnerName          = 'owner'
@@ -60,7 +50,7 @@ InModuleScope $script:moduleName {
                     GlobalCoreAutoCrLf = 'true'
                 }
 
-                { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Not -Throw
+                { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Throw 'clone exception'
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'clone' -and
@@ -141,14 +131,7 @@ InModuleScope $script:moduleName {
                 Mock -CommandName New-WikiSidebar
                 Mock -CommandName New-WikiFooter
                 Mock -CommandName Remove-Item
-
-                Mock -CommandName Invoke-Git -MockWith {
-                    return @{
-                        'ExitCode' = 0
-                        'StandardOutput' = 'Standard Output 0'
-                        'StandardError' = 'Standard Error 0'
-                    }
-                }
+                Mock -CommandName Invoke-Git
             }
 
             It 'Should not throw an exception and call the expected mocks' {
@@ -240,36 +223,25 @@ InModuleScope $script:moduleName {
             }
         }
 
-        Context 'When there is no new content to publishing to Wiki' {
+        Context 'When there is no new content to publish to Wiki' {
             BeforeAll {
                 Mock -CommandName Copy-WikiFolder
                 Mock -CommandName New-WikiSidebar
                 Mock -CommandName New-WikiFooter
                 Mock -CommandName Remove-Item
                 Mock -CommandName Set-WikiModuleVersion
+                Mock -CommandName Invoke-Git
 
                 Mock -CommandName Invoke-Git -MockWith {
-                    return @{
-                        'ExitCode' = 0
-                        'StandardOutput' = 'Standard Output 0'
-                        'StandardError' = 'Standard Error 0'
-                    }
-                }
-
-                Mock -CommandName Invoke-Git -MockWith {
-                    return @{
-                        'ExitCode' = 1
-                        'StandardOutput' = 'Standard Output 1'
-                        'StandardError' = 'Standard Error 1'
-                    }
+                    throw 'commit error'
                 } -ParameterFilter {
                         $Arguments[0] -eq 'commit' -and
                         $Arguments[1] -eq '--message' -and
                         $Arguments[2] -eq "`"$($localizedData.UpdateWikiCommitMessage -f $ModuleVersion)`""
-                    }
+                }
             }
 
-            It 'Should not throw an exception and call the expected mocks' {
+            It 'Should throw an exception and call the expected mocks' {
                 $mockPublishWikiContentParameters = @{
                     Path               = $TestDrive
                     OwnerName          = 'owner'
@@ -282,7 +254,7 @@ InModuleScope $script:moduleName {
                     GlobalCoreAutoCrLf = 'true'
                 }
 
-                { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Not -Throw
+                { Publish-WikiContent @mockPublishWikiContentParameters } | Should -Throw 'commit error'
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'clone' -and

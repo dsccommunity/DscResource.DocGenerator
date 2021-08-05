@@ -188,6 +188,7 @@ task Publish_GitHub_Wiki_Content {
         $invokeGitParameters = @{
             WorkingDirectory = $ProjectPath
             Arguments        = @('remote', 'get-url', 'origin')
+            PassThru         = $true
         }
 
         if ($debugTask)
@@ -200,7 +201,7 @@ task Publish_GitHub_Wiki_Content {
 
         if ($gitRemoteResult.ExitCode -eq 0)
         {
-            $remoteURL = $gitRemoteResult.StandardOutput
+            $remoteURL = $gitRemoteResult.StandardOutput -replace '\r?\n'
         }
 
         # Parse the URL for owner name and repository name.
