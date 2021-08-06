@@ -55,7 +55,13 @@ function New-DscResourceWikiPage
         $Force
     )
 
-    New-DscMofResourceWikiPage @PSBoundParameters
+    $newDscMofResourceWikiPageParameters = @{
+        OutputPath = $OutputPath
+        SourcePath = $SourcePath
+        Force      = $Force
+    }
+
+    New-DscMofResourceWikiPage @newDscMofResourceWikiPageParameters
 
     New-DscClassResourceWikiPage @PSBoundParameters
 

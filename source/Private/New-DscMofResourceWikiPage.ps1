@@ -16,17 +16,12 @@
         The path to the root of the DSC resource module (where the PSD1 file is found,
         not the folder for and individual DSC resource).
 
-    .PARAMETER BuiltModulePath
-        The path to the root of the built DSC resource module, e.g.
-        'output/MyResource/1.0.0'.
-
     .PARAMETER Force
         Overwrites any existing file when outputting the generated content.
 
     .EXAMPLE
         New-DscMofResourceWikiPage `
             -SourcePath C:\repos\MyResource\source `
-            -BuiltModulePath C:\repos\MyResource\output\MyResource\1.0.0 `
             -OutputPath C:\repos\MyResource\output\WikiContent
 
         This example shows how to generate wiki documentation for a specific module.
@@ -45,10 +40,6 @@ function New-DscMofResourceWikiPage
         [Parameter(Mandatory = $true)]
         [System.String]
         $SourcePath,
-
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $BuiltModulePath,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]

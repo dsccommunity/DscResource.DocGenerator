@@ -260,7 +260,6 @@ Configuration Example
             $script:newDscResourceWikiPageOutput_parameters = @{
                 SourcePath      = $script:mockSourcePath
                 OutputPath      = $script:mockOutputPath
-                BuiltModulePath = '.' # Not used for MOF-based resources
                 Verbose         = $true
             }
 
