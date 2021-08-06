@@ -36,6 +36,17 @@ InModuleScope $script:moduleName {
 
             $script:newDscResourceWikiPage_parameterFilter = {
                 $OutputPath -eq $script:mockOutputPath -and `
+                $SourcePath -eq $script:mockSourcePath
+            }
+
+            $script:newDscClassResourceWikiPage_parameterFilter = {
+                $OutputPath -eq $script:mockOutputPath -and `
+                $SourcePath -eq $script:mockSourcePath -and `
+                $BuiltModulePath -eq $script:mockBuildModulePath
+            }
+
+            $script:newDscCompositeResourceWikiPage_parameterFilter = {
+                $OutputPath -eq $script:mockOutputPath -and `
                 $SourcePath -eq $script:mockSourcePath -and `
                 $BuiltModulePath -eq $script:mockBuildModulePath
             }
@@ -46,11 +57,11 @@ InModuleScope $script:moduleName {
 
             Mock `
                 -CommandName New-DscClassResourceWikiPage `
-                -ParameterFilter $script:newDscResourceWikiPage_parameterFilter
+                -ParameterFilter $script:newDscClassResourceWikiPage_parameterFilter
 
             Mock `
                 -CommandName New-DscCompositeResourceWikiPage `
-                -ParameterFilter $script:newDscResourceWikiPage_parameterFilter
+                -ParameterFilter $script:newDscCompositeResourceWikiPage_parameterFilter
 
             It 'Should not throw an exception' {
                 { New-DscResourceWikiPage @script:newDscResourceWikiPage_parameters } | Should -Not -Throw
@@ -64,12 +75,12 @@ InModuleScope $script:moduleName {
 
                 Assert-MockCalled `
                     -CommandName New-DscClassResourceWikiPage `
-                    -ParameterFilter $script:newDscResourceWikiPage_parameterFilter `
+                    -ParameterFilter $script:newDscClassResourceWikiPage_parameterFilter `
                     -Exactly -Times 1
 
                 Assert-MockCalled `
                     -CommandName New-DscCompositeResourceWikiPage `
-                    -ParameterFilter $script:newDscResourceWikiPage_parameterFilter `
+                    -ParameterFilter $script:newDscCompositeResourceWikiPage_parameterFilter `
                     -Exactly -Times 1
             }
         }

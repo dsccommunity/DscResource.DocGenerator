@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `New-DscMofResourceWikiPage`
+  - Removed unused mandatory parameter ([issue #85](https://github.com/dsccommunity/DscResource.DocGenerator/issues/85)).
+
 ## [0.10.0] - 2021-08-05
 
 ### Added
