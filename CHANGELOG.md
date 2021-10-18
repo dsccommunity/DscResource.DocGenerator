@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Uses latest version of DscResource.Common (fixes [SqlServerDsc issue #85](https://github.com/dsccommunity/SqlServerDsc/issues/1729)).
 - Switched to a new Linux build worker for the pipeline.
+- Switched to omi-1.6.8-1.ssl_110.ulinux.x64.deb for tests on new Linux
+  image.
 
 ### Fixed
 
