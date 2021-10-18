@@ -21,7 +21,7 @@ stages:
       - job: Package_Module
         displayName: 'Package Module'
         pool:
-          vmImage: 'ubuntu 16.04'
+          vmImage: 'ubuntu 18.04'
         steps:
           - task: GitVersion@5
             name: gitVersion
@@ -86,7 +86,7 @@ stages:
         displayName: 'Linux'
         timeoutInMinutes: 0
         pool:
-          vmImage: 'ubuntu 16.04'
+          vmImage: 'ubuntu 18.04'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Pipeline Artifact'
@@ -95,10 +95,10 @@ stages:
               artifactName: $(buildArtifactName)
               targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
           - script: |
-              wget https://github.com/microsoft/omi/releases/download/v1.6.8-0/omi-1.6.8-0.ssl_100.ulinux.x64.deb
+              wget https://github.com/microsoft/omi/releases/download/v1.6.8-1/omi-1.6.8-1.ssl_110.ulinux.x64.deb
               wget https://github.com/microsoft/PowerShell-DSC-for-Linux/releases/download/v1.2.1-0/dsc-1.2.1-0.ssl_100.x64.deb
 
-              sudo dpkg -i omi-1.6.8-0.ssl_100.ulinux.x64.deb dsc-1.2.1-0.ssl_100.x64.deb
+              sudo dpkg -i omi-1.6.8-1.ssl_110.ulinux.x64.deb dsc-1.2.1-0.ssl_100.x64.deb
 
               # This is a fix to the following DSC for Linux issue: https://github.com/microsoft/PowerShell-DSC-for-Linux/issues/674
               sudo mv /etc/opt/omi/conf/dsc/configuration/baseregistration /etc/opt/omi/conf/dsc/configuration/BaseRegistration
@@ -199,7 +199,7 @@ stages:
           - test_windows_core
           - test_windows_ps
         pool:
-          vmImage: 'ubuntu 16.04'
+          vmImage: 'ubuntu 18.04'
         timeoutInMinutes: 0
         steps:
           - pwsh: |
@@ -270,7 +270,7 @@ stages:
       - job: Deploy_Module
         displayName: 'Deploy Module'
         pool:
-          vmImage: 'ubuntu 16.04'
+          vmImage: 'ubuntu 18.04'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Pipeline Artifact'
