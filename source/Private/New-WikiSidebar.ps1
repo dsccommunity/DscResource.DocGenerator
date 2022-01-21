@@ -42,21 +42,24 @@ function New-WikiSidebar
 
     $wikiSideBarPath = Join-Path -Path $Path -ChildPath $BaseName
 
-    Write-Verbose -Message ($localizedData.GenerateWikiSidebarMessage -f $BaseName)
-
-    $WikiSidebarContent = @(
-        "# $ModuleName Module"
-        ' '
-    )
-
-    $wikiFiles = Get-ChildItem -Path (Join-Path -Path $Path -ChildPath '*.md') -Exclude '_*.md'
-
-    foreach ($file in $wikiFiles)
+    if (-not (Test-Path -Path $wikiSideBarPath))
     {
-        Write-Verbose -Message ("`t{0}" -f ($localizedData.AddFileToSideBar -f $file.Name))
+        Write-Verbose -Message ($localizedData.GenerateWikiSidebarMessage -f $BaseName)
 
-        $WikiSidebarContent += "- [$($file.BaseName)]($($file.BaseName))"
+        $WikiSidebarContent = @(
+            "# $ModuleName Module"
+            ' '
+        )
+
+        $wikiFiles = Get-ChildItem -Path (Join-Path -Path $Path -ChildPath '*.md') -Exclude '_*.md'
+
+        foreach ($file in $wikiFiles)
+        {
+            Write-Verbose -Message ("`t{0}" -f ($localizedData.AddFileToSideBar -f $file.Name))
+
+            $WikiSidebarContent += "- [$($file.BaseName)]($($file.BaseName))"
+        }
+
+        Out-File -InputObject $WikiSidebarContent -FilePath $wikiSideBarPath -Encoding 'ascii'
     }
-
-    Out-File -InputObject $WikiSidebarContent -FilePath $wikiSideBarPath -Encoding 'ascii'
 }
