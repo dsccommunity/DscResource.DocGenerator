@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   during publish ([issue #105](https://github.com/dsccommunity/DscResource.DocGenerator/issues/105)).
 - Fixed unit tests for the task `Publish_GitHub_Wiki_Content` due to failing
   tests.
+- Moved around and rephrased some texts in the README.md so it better match
+  where it happens. Previously some documentation was on tasks but in reality
+  it is the command that the task calls that did the action.  
 
 ## [0.10.1] - 2021-10-19
 
