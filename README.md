@@ -95,7 +95,7 @@ Wiki.
 
 It is possible to use markdown code in the schema MOF parameter descriptions.
 If markdown code is used and conceptual help is also to be generated, configure
-the task [`Generate_Conceptual_Help`](#generate_conceptual_help) to parse
+the task [`Generate_Conceptual_Help`](#generate_conceptual_help) to parse the
 markdown code. See the cmdlet `New-DscResourcePowerShellHelp` and the task
 [`Generate_Conceptual_Help`](#generate_conceptual_help) for more information.
 
@@ -336,7 +336,7 @@ documentation for DSC resources.
 The task will also copy the content of the wiki source folder if it exist
 (the parameter `WikiSourceFolderName` defaults to `WikiSource`). The wiki
 source folder should be located under the source folder, e.g. `source/WikiSource`.
-The wiki source folder it is meant to contain additional documentation that
+The wiki source folder is meant to contain additional documentation that
 will be added to folder `WikiOutput` during build, and then published to
 the wiki during the deploy stage (if either the command `Publish-WikiContent`
 or the task `Publish_GitHub_Wiki_Content` is used).
