@@ -87,6 +87,8 @@ Describe 'Publish_GitHub_Wiki_Content' {
                 $taskParameters = @{
                     ProjectName = 'MyModule'
                     SourcePath = $TestDrive
+                    GitHubConfigUserEmail = 'my@mail'
+                    GitHubConfigUserName = 'myname'
                 }
 
                 Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @taskParameters
@@ -139,20 +141,20 @@ Describe 'Publish_GitHub_Wiki_Content' {
     }
 
     Context 'When $GitHubToken is not specified' {
-        BeforeAll {
-            Mock -CommandName Write-Build
-        }
-
-        It 'Should Write-Build missing $GitHubToken & skipping task' {
+        It 'Should not call mocks when $GitHubToken is missing (because it skips the task)' {
+            $taskParameters = @{
+                ProjectName = 'MyModule'
+                SourcePath = $TestDrive
+                GitHubConfigUserEmail = 'my@mail'
+                GitHubConfigUserName = 'myname'
+            }
 
             {
                 Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @taskParameters
             } | Should -Not -Throw
 
-            Assert-MockCalled -CommandName Write-Build -ParameterFilter {
-                $Color -eq 'Yellow' -and
-                $Text -eq 'Skipping task. Variable $GitHubToken not set via parent scope, as an environment variable, or passed to the build task.'
-            } -Exactly -Times 1 -Scope It
+            Assert-MockCalled -CommandName Publish-WikiContent -Exactly -Times 0 -Scope It
+            Assert-MockCalled -CommandName Invoke-Git -Exactly -Times 0 -Scope It
         }
     }
 }

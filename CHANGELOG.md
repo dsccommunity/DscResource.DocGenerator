@@ -5,6 +5,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- When there is an existing `_Sidebar.md` in the folder 'WikiSource' that is
+  copied to the folder 'WikiContent', it will no longer be overwritten
+  during publish ([issue #105](https://github.com/dsccommunity/DscResource.DocGenerator/issues/105)).
+- Fixed failing unit tests for the task `Publish_GitHub_Wiki_Content`.
+- Rearranged and rephrased some text in the README.md to increase
+  clarity. Previously some documentation applied to a task, but should have
+  applied to the command that the task called.
+
 ## [0.10.1] - 2021-10-19
 
 ### Changed
