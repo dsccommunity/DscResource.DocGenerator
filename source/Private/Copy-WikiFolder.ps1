@@ -13,14 +13,11 @@
     .PARAMETER DestinationPath
         The destination path for the Wiki files.
 
-    .PARAMETER WikiSourcePath
-        The name of the folder that contains the source Wiki files.
-
     .PARAMETER Force
         If present, copies files forcefully, overwriting any existing files.
 
     .EXAMPLE
-        Copy-WikiFolder -Path '.\output\WikiContent' -DestinationPath 'c:\repoName.wiki.git' -WikiSourcePath '.\source\WikiSource'
+        Copy-WikiFolder -Path '.\output\WikiContent' -DestinationPath 'c:\repoName.wiki.git'
 
         Copies any Wiki files from the module into the Wiki.
 #>
@@ -44,12 +41,21 @@ function Copy-WikiFolder
 
     Write-Verbose -Message ($localizedData.CopyWikiFoldersMessage -f ($Path -join ''', '''))
 
-    $wikiFiles = Get-ChildItem -Path $Path
+    $wikiFiles = Get-ChildItem -Recurse -Path $Path
 
     foreach ($file in $wikiFiles)
     {
         Write-Verbose -Message ($localizedData.CopyFileMessage -f $file.Name)
 
-        Copy-Item -Path $file.FullName -Destination $DestinationPath -Force:$Force
+        if ($file.DirectoryName -eq $Path)
+        {
+            $destination = $DestinationPath
+        }
+        else
+        {
+            $destination = Join-Path -Path $DestinationPath -ChildPath ($file.DirectoryName -replace [regex]::Escape($Path), '')
+        }
+
+        Copy-Item -Path $file.FullName -Destination $destination -Force:$Force
     }
 }

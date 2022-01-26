@@ -57,8 +57,9 @@ InModuleScope $script:moduleName {
             }
 
             $mockSetWikiSideBarParameters = @{
-                ModuleName = 'TestResource'
-                Path       = $TestDrive
+                ModuleName     = 'TestResource'
+                OutputPath     = $TestDrive
+                WikiSourcePath = $TestDrive
             }
 
             $mockFileInfo = @(
@@ -70,7 +71,8 @@ InModuleScope $script:moduleName {
             )
 
             $wikiSideBarFileBaseName = '_Sidebar.md'
-            $wikiSideBarFileFullName = Join-Path -Path $mockSetWikiSideBarParameters.Path -ChildPath $wikiSideBarFileBaseName
+            $wikiSideBarOutputFileFullName = Join-Path -Path $mockSetWikiSideBarParameters.OutputPath -ChildPath $wikiSideBarFileBaseName
+            $wikiSideBarSourceFileFullName = Join-Path -Path $mockSetWikiSideBarParameters.WikiSourcePath -ChildPath $wikiSideBarFileBaseName
 
             Mock -CommandName Out-File
         }
@@ -95,7 +97,7 @@ InModuleScope $script:moduleName {
         Context 'When there is a pre-existing Sidebar file' {
             BeforeAll {
                 Mock -CommandName Test-Path -ParameterFilter {
-                    $Path -eq $wikiSideBarFileFullName
+                    $Path -eq $wikiSideBarSourceFileFullName
                 } -MockWith {
                     return $true
                 }

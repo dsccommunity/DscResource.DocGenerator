@@ -28,12 +28,14 @@ InModuleScope $script:moduleName {
 
             $mockFileInfo = @(
                 @{
-                    Name     = 'Home.md'
-                    FullName = "$($mockCopyWikiFileParameters.Path)\WikiSource\Home.md"
+                    Name          = 'Home.md'
+                    DirectoryName = "$($mockCopyWikiFileParameters.Path)\WikiSource"
+                    FullName      = "$($mockCopyWikiFileParameters.Path)\WikiSource\Home.md"
                 }
                 @{
-                    Name     = 'image.png'
-                    FullName = "$($mockCopyWikiFileParameters.Path)\WikiSource\image.png"
+                    Name          = 'image.png'
+                    DirectoryName = "$($mockCopyWikiFileParameters.Path)\WikiSource\Media"
+                    FullName      = "$($mockCopyWikiFileParameters.Path)\WikiSource\Media\image.png"
                 }
             )
 
@@ -66,9 +68,7 @@ InModuleScope $script:moduleName {
             }
 
             It 'Should copy the correct number of files' {
-                Assert-MockCalled -CommandName Copy-Item -ParameterFilter {
-                    $Destination -eq $TestDrive
-                } -Exactly -Times 2 -Scope Context
+                Assert-MockCalled -CommandName Copy-Item -Exactly -Times 2 -Scope Context
             }
         }
     }

@@ -177,12 +177,11 @@ Publish-WikiContent `
     -ModuleVersion '14.0.0' `
     -GitHubAccessToken 'token' `
     -GitUserEmail 'email@contoso.com' `
-    -GitUserName 'dsc' `
-    -WikiSourcePath '.\source\WikiSource' `
+    -GitUserName 'dsc'
 ```
 
-Adds the content pages in '.\output\WikiContent' plus the content from
-'.\source\WikiSource' to the Wiki for the specified GitHub repository.
+Adds the content pages in '.\output\WikiContent' to the Wiki for the
+specified GitHub repository.
 
 ```powershell
 cd c:\source\MyDscModule
