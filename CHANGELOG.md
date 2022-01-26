@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   did not copy these files. Updated the code to copy the files recursively
   (fixes [issue #109](https://github.com/dsccommunity/DscResource.DocGenerator/issues/109)).
 
+### Changed
+
+- Moved to the build images `windows-latest` (fixes [issue #112](https://github.com/dsccommunity/DscResource.DocGenerator/issues/112)).
+
 ## [0.10.2] - 2022-01-25
 
 ### Fixed
