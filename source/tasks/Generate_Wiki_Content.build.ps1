@@ -163,7 +163,7 @@ task Generate_Wiki_Content {
     {
         Write-Build -Color 'Magenta' -Text 'Copying Wiki content from the Wiki source folder.'
 
-        Copy-Item -Path (Join-Path $wikiSourcePath -ChildPath '*') -Destination $wikiOutputPath -Force
+        Copy-Item -Path (Join-Path $wikiSourcePath -ChildPath '*') -Destination $wikiOutputPath -Recurse -Force
 
         $homeMarkdownFilePath = Join-Path -Path $wikiOutputPath -ChildPath 'Home.md'
 

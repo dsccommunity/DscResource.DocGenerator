@@ -5,6 +5,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- When `_Sidebar.md` or `Footer.md` files already exist in the wiki repo,
+  the code did not override these files. Updated the code to generate these
+  files when they do not exist in the 'WikiSource' folder
+  (fixes [issue #108](https://github.com/dsccommunity/DscResource.DocGenerator/issues/108)).
+- When subfolders exist (only for images, not markdown) the Generate_Wiki_Content
+  did not copy these files. Updated the code to copy the files recursively
+  (fixes [issue #109](https://github.com/dsccommunity/DscResource.DocGenerator/issues/109)).
+
 ## [0.10.2] - 2022-01-25
 
 ### Fixed

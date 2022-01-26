@@ -57,10 +57,12 @@ InModuleScope $script:moduleName {
             }
 
             $mockSetWikiFooterParameters = @{
-                Path       = $TestDrive
+                OutputPath     = $TestDrive
+                WikiSourcePath = $TestDrive
             }
 
-            $mockWikiFooterPath = Join-Path -Path $mockSetWikiFooterParameters.Path -ChildPath '_Footer.md'
+            $mockWikiFooterOutputPath = Join-Path -Path $mockSetWikiFooterParameters.OutputPath -ChildPath '_Footer.md'
+            $mockWikiFooterWikiSourcePath = Join-Path -Path $mockSetWikiFooterParameters.WikiSourcePath -ChildPath '_Footer.md'
 
             Mock -CommandName Out-File
         }
@@ -68,7 +70,7 @@ InModuleScope $script:moduleName {
         Context 'When there is no pre-existing Wiki footer file' {
             BeforeAll {
                 Mock -CommandName Test-Path -ParameterFilter {
-                    $Path -eq $mockWikiFooterPath
+                    $Path -eq $mockWikiFooterWikiSourcePath
                 } -MockWith {
                     return $false
                 }
@@ -80,7 +82,7 @@ InModuleScope $script:moduleName {
 
             It 'Should create the footer file' {
                 Assert-MockCalled -CommandName Out-File -ParameterFilter {
-                    $FilePath -eq $mockWikiFooterPath
+                    $FilePath -eq $mockWikiFooterOutputPath
                 } -Exactly -Times 1 -Scope Context
             }
         }
@@ -88,7 +90,7 @@ InModuleScope $script:moduleName {
         Context 'When there is a pre-existing Wiki footer file' {
             BeforeAll {
                 Mock -CommandName Test-Path -ParameterFilter {
-                    $Path -eq $mockWikiFooterPath
+                    $Path -eq $mockWikiFooterWikiSourcePath
                 } -MockWith {
                     return $true
                 }
@@ -100,7 +102,7 @@ InModuleScope $script:moduleName {
 
             It 'Should not create the footer file' {
                 Assert-MockCalled -CommandName Out-File -ParameterFilter {
-                    $FilePath -eq $mockWikiFooterPath
+                    $FilePath -eq $mockWikiFooterOutputPath
                 } -Exactly -Times 0 -Scope Context
             }
         }

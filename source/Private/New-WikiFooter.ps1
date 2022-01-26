@@ -5,8 +5,11 @@
     .DESCRIPTION
         Creates the Wiki footer file if one does not already exist.
 
-    .PARAMETER Path
-        The path for the Wiki footer file.
+    .PARAMETER OutputPath
+        The path in which the Wiki footer file should be generated.
+
+    .PARAMETER WikiSourcePath
+        The path in which the code should check for an existing Wiki footer file.
 
     .PARAMETER BaseName
         The base name of the Wiki footer file. Defaults to '_Footer.md'.
@@ -24,21 +27,26 @@ function New-WikiFooter
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Path,
+        $OutputPath,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $WikiSourcePath,
 
         [Parameter()]
         [System.String]
         $BaseName = '_Footer.md'
     )
 
-    $wikiFooterPath = Join-Path -Path $path -ChildPath $BaseName
+    $wikiFooterOutputPath = Join-Path -Path $OutputPath -ChildPath $BaseName
+    $wikiFooterWikiSourcePath = Join-Path -Path $WikiSourcePath -ChildPath $BaseName
 
-    if (-not (Test-Path -Path $wikiFooterPath))
+    if (-not (Test-Path -Path $wikiFooterWikiSourcePath))
     {
         Write-Verbose -Message ($localizedData.GenerateWikiFooterMessage -f $BaseName)
 
         $wikiFooter = @()
 
-        Out-File -InputObject $wikiFooter -FilePath $wikiFooterPath -Encoding 'ascii'
+        Out-File -InputObject $wikiFooter -FilePath $wikiFooterOutputPath -Encoding 'ascii'
     }
 }
