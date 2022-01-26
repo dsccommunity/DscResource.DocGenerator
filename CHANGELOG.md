@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.3] - 2022-01-26
+
 ### Fixed
 
 - When `_Sidebar.md` or `Footer.md` files already exist in the wiki repo,
