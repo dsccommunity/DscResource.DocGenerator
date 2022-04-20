@@ -108,7 +108,7 @@ task Generate_Conceptual_Help {
         "`tMarkdownCodeRegularExpression = RegEx: {0}" -f ($MarkdownCodeRegularExpression -join ' | RegEx: ')
     }
 
-    Write-Build Magenta "Generating conceptual help for all DSC resources based on source."
+    Write-Build Magenta 'Generating conceptual help for all DSC resources based on source.'
 
     $newDscResourcePowerShellHelpParameters = @{
         ModulePath                    = $SourcePath

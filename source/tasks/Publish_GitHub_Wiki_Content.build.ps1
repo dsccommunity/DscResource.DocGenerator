@@ -100,6 +100,9 @@ param
 
 # Synopsis: This task publishes documentation to a GitHub Wiki repository.
 task Publish_GitHub_Wiki_Content {
+    # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
+    . Set-SamplerTaskVariable
+
     if ([System.String]::IsNullOrEmpty($GitHubToken))
     {
         Write-Build Yellow 'Skipping task. Variable $GitHubToken not set via parent scope, as an environment variable, or passed to the build task.'
@@ -111,7 +114,7 @@ task Publish_GitHub_Wiki_Content {
         # Only show debug information if Debug was set to 'true' in build configuration.
         if ($debugTask)
         {
-            "Running task with debug information."
+            'Running task with debug information.'
 
             $local:VerbosePreference = 'Continue'
             $local:DebugPreference = 'Continue'
@@ -183,7 +186,7 @@ task Publish_GitHub_Wiki_Content {
             $publishWikiContentParameters.Debug = $true
         }
 
-        Write-Build Magenta "Publishing Wiki content."
+        Write-Build Magenta 'Publishing Wiki content.'
 
         Publish-WikiContent @publishWikiContentParameters
     }
