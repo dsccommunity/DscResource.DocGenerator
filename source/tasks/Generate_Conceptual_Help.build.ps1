@@ -82,10 +82,8 @@ param
 
 # Synopsis: This task generates conceptual help for DSC resources.
 task Generate_Conceptual_Help {
-
-    $OutputDirectory = Get-SamplerAbsolutePath -Path $OutputDirectory -RelativeTo $BuildRoot
-    "`tOutputDirectory       = '$OutputDirectory'"
-    $BuiltModuleSubdirectory = Get-SamplerAbsolutePath -Path $BuiltModuleSubdirectory -RelativeTo $OutputDirectory
+    # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
+    . Set-SamplerTaskVariable
 
     if ($VersionedOutputDirectory)
     {
@@ -157,7 +155,7 @@ task Generate_Conceptual_Help {
         "`tMarkdownCodeRegularExpression = RegEx: {0}" -f ($MarkdownCodeRegularExpression -join ' | RegEx: ')
     }
 
-    Write-Build Magenta "Generating conceptual help for all DSC resources based on source."
+    Write-Build Magenta 'Generating conceptual help for all DSC resources based on source.'
 
     $newDscResourcePowerShellHelpParameters = @{
         ModulePath                    = $SourcePath

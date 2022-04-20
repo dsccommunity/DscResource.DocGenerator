@@ -86,9 +86,8 @@ param
 # Synopsis: This task generates wiki documentation for the DSC resources.
 task Generate_Wiki_Content {
 
-    $OutputDirectory = Get-SamplerAbsolutePath -Path $OutputDirectory -RelativeTo $BuildRoot
-    "`tOutputDirectory       = '$OutputDirectory'"
-    $BuiltModuleSubdirectory = Get-SamplerAbsolutePath -Path $BuiltModuleSubdirectory -RelativeTo $OutputDirectory
+    # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
+    . Set-SamplerTaskVariable
 
     if ($VersionedOutputDirectory)
     {
