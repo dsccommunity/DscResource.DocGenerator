@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Common task variables have not been set, fixed that.
+- `Get-CompositeSchemaObject` threw an error when a composite did not have comment based help, how returns `$null`.
+- Update Gitversion to latest pattern.
+
+### Changed
+
+
 
 ## [0.10.3] - 2022-01-26
 
