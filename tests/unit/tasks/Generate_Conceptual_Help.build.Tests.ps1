@@ -59,7 +59,7 @@ Describe 'Generate_Conceptual_Help' {
             }
 
             Mock -CommandName Get-Item -MockWith {
-                $Path = ($Path -replace '\*', '99.1.1')
+                $Path = [string]($Path -replace '\*', '99.1.1')
                 [PSCustomObject]@{
                     FullName = $Path
                 }
@@ -103,7 +103,7 @@ Describe 'Generate_Conceptual_Help' {
             }
 
             Mock -CommandName Get-Item -MockWith {
-                $Path = ($Path -replace '\*', '99.1.1')
+                $Path = [string]($Path -replace '\*', '99.1.1')
                 [PSCustomObject]@{
                     FullName = $Path
                 }
