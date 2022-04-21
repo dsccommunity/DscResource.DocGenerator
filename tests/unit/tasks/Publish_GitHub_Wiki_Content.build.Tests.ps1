@@ -52,6 +52,10 @@ Describe 'Publish_GitHub_Wiki_Content' {
                 FullName = $Path
             }
         }
+
+        Mock -CommandName Get-SamplerModuleRootPath -MockWith {
+            [System.IO.Path]::ChangeExtension($ModuleManifestPath, 'psm1')
+        }
     }
 
     Context 'When $GitHubToken is specified' {

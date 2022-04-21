@@ -59,15 +59,19 @@ Describe 'Generate_Conceptual_Help' {
             }
 
             Mock -CommandName Get-Item -MockWith {
-                $Path =  ($Path -replace '\*','99.1.1')
+                $Path = ($Path -replace '\*', '99.1.1')
                 [PSCustomObject]@{
                     FullName = $Path
                 }
             }
 
+            Mock -CommandName Get-SamplerModuleRootPath -MockWith {
+                [System.IO.Path]::ChangeExtension($ModuleManifestPath, 'psm1')
+            }
+
             $mockTaskParameters = @{
                 ProjectName = 'MyModule'
-                SourcePath = $TestDrive
+                SourcePath  = $TestDrive
             }
 
             $mockExpectedDestinationModulePath = Join-Path -Path $script:projectPath -ChildPath 'output' |
@@ -99,15 +103,19 @@ Describe 'Generate_Conceptual_Help' {
             }
 
             Mock -CommandName Get-Item -MockWith {
-                $Path =  ($Path -replace '\*','99.1.1')
+                $Path = ($Path -replace '\*', '99.1.1')
                 [PSCustomObject]@{
                     FullName = $Path
                 }
-             }
+            }
+
+            Mock -CommandName Get-SamplerModuleRootPath -MockWith {
+                [System.IO.Path]::ChangeExtension($ModuleManifestPath, 'psm1')
+            }
 
             $mockTaskParameters = @{
-                ProjectName = 'MyModule'
-                SourcePath = $TestDrive
+                ProjectName                   = 'MyModule'
+                SourcePath                    = $TestDrive
                 MarkdownCodeRegularExpression = @(
                     '\`(.+?)\`'
                 )

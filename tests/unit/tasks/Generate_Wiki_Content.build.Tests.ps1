@@ -42,6 +42,10 @@ Describe 'Generate_Wiki_Content' {
         Mock -CommandName Test-Path -MockWith {
             return $true
         }
+
+        Mock -CommandName Get-SamplerModuleRootPath -MockWith {
+            [System.IO.Path]::ChangeExtension($ModuleManifestPath, 'psm1')
+        }
     }
 
     It 'Should export the build script alias' {
