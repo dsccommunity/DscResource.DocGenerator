@@ -72,7 +72,7 @@ Describe 'Generate_Conceptual_Help' {
 
             $mockTaskParameters = @{
                 ProjectName = 'MyModule'
-                SourcePath = $TestDrive
+                SourcePath  = $TestDrive
             }
         }
 
@@ -109,8 +109,8 @@ Describe 'Generate_Conceptual_Help' {
             }
 
             $mockTaskParameters = @{
-                ProjectName = 'MyModule'
-                SourcePath = $TestDrive
+                ProjectName                   = 'MyModule'
+                SourcePath                    = $TestDrive
                 MarkdownCodeRegularExpression = @(
                     '\`(.+?)\`'
                 )
