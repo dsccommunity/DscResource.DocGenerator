@@ -33,10 +33,16 @@ Describe 'Generate_Wiki_Content' {
         }
 
         Mock -CommandName Get-Item -MockWith {
-            $Path =  ($Path -replace '\*','1.0.0')
+            $Path = $Path -replace '\*', '1.0.0'
             [PSCustomObject]@{
-                FullName = $Path
+                FullName = [System.String] $Path
             }
+        }
+
+
+        Mock -CommandName Get-SamplerModuleRootPath -MockWith {
+            # Return the path that was passed to the command.
+            return $BuiltModuleManifest
         }
 
         Mock -CommandName Test-Path -MockWith {
