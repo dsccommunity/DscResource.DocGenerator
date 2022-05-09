@@ -72,7 +72,7 @@ Pester:
     - tests/unit
   ExcludeTag:
   Tag:
-  CodeCoverageThreshold: 80
+  CodeCoverageThreshold: 85
   CodeCoverageOutputFile: JaCoCo_Merge.xml
   CodeCoverageOutputFileEncoding: ascii
 
