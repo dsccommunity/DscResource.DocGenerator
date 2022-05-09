@@ -169,7 +169,7 @@ stages:
               # This is a fix to the following DSC for Linux issue: https://github.com/microsoft/PowerShell-DSC-for-Linux/issues/674
               sudo mv /etc/opt/omi/conf/dsc/configuration/baseregistration /etc/opt/omi/conf/dsc/configuration/BaseRegistration
               sudo mv /etc/opt/omi/conf/dsc/configuration/BaseRegistration/baseresource.schema.mof /etc/opt/omi/conf/dsc/configuration/BaseRegistration/BaseResource.schema.mof
-            displayName: 'Install DSC for Linux'
+          displayName: 'Install DSC for Linux'
         - task: PowerShell@2
           name: test
           displayName: 'Run Unit Test'
