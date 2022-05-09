@@ -82,7 +82,7 @@ param
 
 # Synopsis: This task generates conceptual help for DSC resources.
 task Generate_Conceptual_Help {
-    # Get the values for task variables
+    # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
     . Set-SamplerTaskVariable
 
     $configParameterName = 'MarkdownCodeRegularExpression'

@@ -100,9 +100,6 @@ param
 
 # Synopsis: This task publishes documentation to a GitHub Wiki repository.
 task Publish_GitHub_Wiki_Content {
-    # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
-    . Set-SamplerTaskVariable
-
     if ([System.String]::IsNullOrEmpty($GitHubToken))
     {
         Write-Build Yellow 'Skipping task. Variable $GitHubToken not set via parent scope, as an environment variable, or passed to the build task.'
@@ -120,7 +117,7 @@ task Publish_GitHub_Wiki_Content {
             $local:DebugPreference = 'Continue'
         }
 
-        # Get the values for task variables
+        # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
         . Set-SamplerTaskVariable
 
         # If variables are not set then update variables from the property values in the build.yaml.

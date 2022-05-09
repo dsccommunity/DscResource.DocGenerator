@@ -85,7 +85,7 @@ param
 
 # Synopsis: This task generates wiki documentation for the DSC resources.
 task Generate_Wiki_Content {
-    # Get the values for task variables
+    # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
     . Set-SamplerTaskVariable
 
     $wikiOutputPath = Join-Path -Path $OutputDirectory -ChildPath 'WikiContent'
