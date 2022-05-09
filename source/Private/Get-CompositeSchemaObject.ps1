@@ -53,17 +53,21 @@ function Get-CompositeSchemaObject
 
     $commentBasedHelp = Get-CommentBasedHelp -Path $FileName
 
-    if ($null -eq $commentBasedHelp)
-    {
-        return $null
-    }
-
     $parameters = foreach ($parameter in $compositeResource.Body.ScriptBlock.ParamBlock.Parameters)
     {
         $parameterName = $parameter.Name.VariablePath.ToString()
 
         # The parameter name in comment-based help is returned as upper so need to match correctly.
         $parameterDescription = $commentBasedHelp.Parameters[$parameterName.ToUpper()] -replace '\r?\n+$'
+
+        if ($commentBasedHelp)
+        {
+            $parameterDescription = $commentBasedHelp.Parameters[$parameterName.ToUpper()] -replace '\r?\n+$'
+        }
+        else
+        {
+            $parameterDescription = ''
+        }
 
         @{
             Name        = $parameterName
