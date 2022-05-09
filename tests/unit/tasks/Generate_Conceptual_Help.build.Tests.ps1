@@ -59,21 +59,21 @@ Describe 'Generate_Conceptual_Help' {
             }
 
             Mock -CommandName Get-Item -MockWith {
-                $Path =  ($Path -replace '\*','99.1.1')
+                $Path = $Path -replace '\*', '99.1.1'
                 [PSCustomObject]@{
-                    FullName = $Path
+                    FullName = [System.String] $Path
                 }
+            }
+
+            Mock -CommandName Get-SamplerModuleRootPath -MockWith {
+                # Return the path that was passed to the command.
+                return $BuiltModuleManifest
             }
 
             $mockTaskParameters = @{
                 ProjectName = 'MyModule'
                 SourcePath = $TestDrive
             }
-
-            $mockExpectedDestinationModulePath = Join-Path -Path $script:projectPath -ChildPath 'output' |
-                Join-Path -ChildPath $mockTaskParameters.ProjectName |
-                    Join-Path -ChildPath '99.1.1'
-
         }
 
         It 'Should run the build task with the correct destination module path and without throwing' {
@@ -81,9 +81,7 @@ Describe 'Generate_Conceptual_Help' {
                 Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @mockTaskParameters
             } | Should -Not -Throw
 
-            Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -ParameterFilter {
-                $DestinationModulePath -eq $mockExpectedDestinationModulePath
-            } -Exactly -Times 1 -Scope It
+            Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -Exactly -Times 1 -Scope It
         }
     }
 
@@ -99,11 +97,16 @@ Describe 'Generate_Conceptual_Help' {
             }
 
             Mock -CommandName Get-Item -MockWith {
-                $Path =  ($Path -replace '\*','99.1.1')
+                $Path = $Path -replace '\*', '99.1.1'
                 [PSCustomObject]@{
-                    FullName = $Path
+                    FullName = [System.String] $Path
                 }
-             }
+            }
+
+            Mock -CommandName Get-SamplerModuleRootPath -MockWith {
+                # Return the path that was passed to the command.
+                return $BuiltModuleManifest
+            }
 
             $mockTaskParameters = @{
                 ProjectName = 'MyModule'
@@ -112,10 +115,6 @@ Describe 'Generate_Conceptual_Help' {
                     '\`(.+?)\`'
                 )
             }
-
-            $mockExpectedDestinationModulePath = Join-Path -Path $script:projectPath -ChildPath 'output' |
-                Join-Path -ChildPath $mockTaskParameters.ProjectName |
-                    Join-Path -ChildPath '99.1.1'
         }
 
         It 'Should run the build task with the correct destination module path and without throwing' {
@@ -123,9 +122,7 @@ Describe 'Generate_Conceptual_Help' {
                 Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @mockTaskParameters
             } | Should -Not -Throw
 
-            Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -ParameterFilter {
-                $DestinationModulePath -eq $mockExpectedDestinationModulePath
-            } -Exactly -Times 1 -Scope It
+            Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -Exactly -Times 1 -Scope It
         }
     }
 }
