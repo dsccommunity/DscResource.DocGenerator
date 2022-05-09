@@ -13,13 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix statement so function passed HQRM tests.
 - Tasks now uses `Set-SamplerTaskVariable` from the module Sampler to set
   the common build task variables.
+- Updated task parameters `ProjectName` and `SourcePath` to reflect Sampler
 
 ### Fixed
 
 - Common task variables have not been set, fixed that.
 - `Get-CompositeSchemaObject` threw an error when a composite did not have
   comment based help, now returns `$null`.
-- Update Gitversion to latest pattern.
 
 ## [0.10.3] - 2022-01-26
 

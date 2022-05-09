@@ -22,13 +22,10 @@
         For instance, if VersionedOutputDirectory is $true, the built module's ModuleBase would be: `output/MyModuleName/2.0.1/`
 
     .PARAMETER ProjectName
-        The project name. Defaults to the BaseName of the module manifest it finds
-        in either the folder 'source', 'src, or a folder with the same name as
-        the module.
+        The project name. Defaults to the empty string.
 
     .PARAMETER SourcePath
-        The path to the source folder name. Defaults to the same path where the
-        module manifest is found.
+        The path to the source folder name. Defaults to the empty string.
 
     .PARAMETER WikiContentFolderName
         The name of the folder that contain the content to publish to the wiki.
@@ -71,11 +68,11 @@ param
 
     [Parameter()]
     [System.String]
-    $ProjectName = (property ProjectName $(Get-SamplerProjectName -BuildRoot $BuildRoot)),
+    $ProjectName = (property ProjectName ''),
 
     [Parameter()]
     [System.String]
-    $SourcePath = (property SourcePath $(Get-SamplerSourcePath -BuildRoot $BuildRoot)),
+    $SourcePath = (property SourcePath ''),
 
     [Parameter()]
     [System.String]
