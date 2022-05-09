@@ -38,7 +38,7 @@ function New-TempFolder
 
         if ($retries -gt $MaximumRetries)
         {
-            throw ($localizedData.NewTempFolderCreationError -f $tempPath)
+            throw ($script:localizedData.NewTempFolderCreationError -f $tempPath)
         }
 
         $name = [System.IO.Path]::GetRandomFileName()

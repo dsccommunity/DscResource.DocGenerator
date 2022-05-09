@@ -140,16 +140,16 @@ function Publish-WikiContent
         Invoke-Git -WorkingDirectory $tempPath `
             -Arguments @( 'remote', 'set-url', 'origin', "https://$($GitUserName):$($GitHubAccessToken)@github.com/$OwnerName/$RepositoryName.wiki.git" )
 
-        Write-Verbose -Message $localizedData.AddWikiContentToGitRepoMessage
+        Write-Verbose -Message $script:localizedData.AddWikiContentToGitRepoMessage
 
         Invoke-Git -WorkingDirectory $tempPath -Arguments @( 'add', '*' )
 
-        Write-Verbose -Message ($localizedData.CommitAndTagRepoChangesMessage -f $ModuleVersion)
+        Write-Verbose -Message ($script:localizedData.CommitAndTagRepoChangesMessage -f $ModuleVersion)
 
         Invoke-Git -WorkingDirectory $tempPath `
-            -Arguments @( 'commit', '--message', "`"$($localizedData.UpdateWikiCommitMessage -f $ModuleVersion)`"" )
+            -Arguments @( 'commit', '--message', "`"$($script:localizedData.UpdateWikiCommitMessage -f $ModuleVersion)`"" )
 
-        Write-Verbose -Message $localizedData.PushUpdatedRepoMessage
+        Write-Verbose -Message $script:localizedData.PushUpdatedRepoMessage
 
         Invoke-Git -WorkingDirectory $tempPath `
             -Arguments @( 'tag', '--annotate', $ModuleVersion, '--message', $ModuleVersion )
@@ -158,7 +158,7 @@ function Publish-WikiContent
 
         Invoke-Git -WorkingDirectory $tempPath -Arguments @( 'push', 'origin', $ModuleVersion )
 
-        Write-Verbose -Message $localizedData.PublishWikiContentCompleteMessage
+        Write-Verbose -Message $script:localizedData.PublishWikiContentCompleteMessage
     }
     finally
     {

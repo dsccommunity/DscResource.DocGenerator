@@ -45,7 +45,7 @@ function Get-TemporaryPath
             $temporaryPath = '/tmp'
         }
 
-        Default
+        default
         {
             throw 'Cannot set the temporary path. Unknown operating system.'
         }

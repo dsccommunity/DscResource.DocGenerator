@@ -52,7 +52,7 @@ function New-WikiSidebar
 
     if (-not (Test-Path -Path $wikiSideBarWikiSourcePath))
     {
-        Write-Verbose -Message ($localizedData.GenerateWikiSidebarMessage -f $BaseName)
+        Write-Verbose -Message ($script:localizedData.GenerateWikiSidebarMessage -f $BaseName)
 
         $WikiSidebarContent = @(
             "# $ModuleName Module"
@@ -63,7 +63,7 @@ function New-WikiSidebar
 
         foreach ($file in $wikiFiles)
         {
-            Write-Verbose -Message ("`t{0}" -f ($localizedData.AddFileToSideBar -f $file.Name))
+            Write-Verbose -Message ("`t{0}" -f ($script:localizedData.AddFileToSideBar -f $file.Name))
 
             $WikiSidebarContent += "- [$($file.BaseName)]($($file.BaseName))"
         }

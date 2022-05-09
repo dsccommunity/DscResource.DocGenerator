@@ -43,7 +43,7 @@ function New-WikiFooter
 
     if (-not (Test-Path -Path $wikiFooterWikiSourcePath))
     {
-        Write-Verbose -Message ($localizedData.GenerateWikiFooterMessage -f $BaseName)
+        Write-Verbose -Message ($script:localizedData.GenerateWikiFooterMessage -f $BaseName)
 
         $wikiFooter = @()
 
