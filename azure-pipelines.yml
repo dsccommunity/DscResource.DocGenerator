@@ -83,7 +83,7 @@ stages:
             testRunTitle: 'HQRM'
 
     - job: test_windows_wps
-      displayName: 'Test Windows (WPS)'
+      displayName: 'Unit Windows (WPS)'
       pool:
         vmImage: 'windows-latest'
       timeoutInMinutes: 0
@@ -116,7 +116,7 @@ stages:
             parallel: true
 
     - job: test_windows_ps
-      displayName: 'Test Windows (PS)'
+      displayName: 'Unit Windows (PS)'
       pool:
         vmImage: 'windows-latest'
       timeoutInMinutes: 0
@@ -149,7 +149,7 @@ stages:
             parallel: true
 
     - job: test_linux
-      displayName: 'Test Linux'
+      displayName: 'Unit Linux'
       pool:
         vmImage: 'ubuntu-latest'
       timeoutInMinutes: 0
@@ -192,7 +192,7 @@ stages:
             parallel: true
 
     - job: test_macos
-      displayName: 'Test macOS'
+      displayName: 'Unit macOS'
       pool:
         vmImage: 'macos-latest'
       timeoutInMinutes: 0
