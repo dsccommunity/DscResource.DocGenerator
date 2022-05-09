@@ -57,11 +57,9 @@ function Get-CompositeSchemaObject
     {
         $parameterName = $parameter.Name.VariablePath.ToString()
 
-        # The parameter name in comment-based help is returned as upper so need to match correctly.
-        $parameterDescription = $commentBasedHelp.Parameters[$parameterName.ToUpper()] -replace '\r?\n+$'
-
         if ($commentBasedHelp)
         {
+            # The parameter name in comment-based help is returned as upper so need to match correctly.
             $parameterDescription = $commentBasedHelp.Parameters[$parameterName.ToUpper()] -replace '\r?\n+$'
         }
         else
