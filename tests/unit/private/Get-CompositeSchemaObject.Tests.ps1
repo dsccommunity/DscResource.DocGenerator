@@ -41,14 +41,15 @@ InModuleScope $script:moduleName {
         }
         else
         {
-            BeforeAll {
-                $script:name = 'CompositeHelperTest'
-                $script:moduleVersion = '1.0.0'
-                $script:description = 'Composite resource.'
-                $script:schemaFileName = '{0}.schema.psm1' -f $script:name
-                $script:schemaFilePath = Join-Path -Path $TestDrive -ChildPath $script:schemaFileName
+            Context 'When the composite has comment based help' {
+                BeforeAll {
+                    $script:name = 'CompositeHelperTest'
+                    $script:moduleVersion = '1.0.0'
+                    $script:description = 'Composite resource.'
+                    $script:schemaFileName = '{0}.schema.psm1' -f $script:name
+                    $script:schemaFilePath = Join-Path -Path $TestDrive -ChildPath $script:schemaFileName
 
-                $script:schemaFileContent = @'
+                    $script:schemaFileContent = @'
 <#
     .SYNOPSIS
         A composite DSC resource.
@@ -86,12 +87,12 @@ configuration CompositeHelperTest
     # Composite resource code would be here.
 }
 '@
-                Set-Content -Path $script:schemaFilePath -Value $script:schemaFileContent
+                    Set-Content -Path $script:schemaFilePath -Value $script:schemaFileContent
 
-                $script:manifestFileName = '{0}.psd1' -f $script:name
-                $script:manifestFilePath = Join-Path -Path $TestDrive -ChildPath $script:manifestFileName
+                    $script:manifestFileName = '{0}.psd1' -f $script:name
+                    $script:manifestFilePath = Join-Path -Path $TestDrive -ChildPath $script:manifestFileName
 
-                $script:manifestFileContent = @"
+                    $script:manifestFileContent = @"
 @{
     RootModule        = '$script:name.schema.psm1'
     ModuleVersion     = '$script:moduleVersion'
@@ -104,82 +105,213 @@ configuration CompositeHelperTest
 }
 "@
 
-                Set-Content -Path $script:manifestFilePath -Value $script:manifestFileContent
-            }
+                    Set-Content -Path $script:manifestFilePath -Value $script:manifestFileContent
+                }
 
-            It 'Should process the composite resource from the schema file without throwing' {
-                {
-                    $script:schema = Get-CompositeSchemaObject -FileName $script:schemaFilePath -Verbose
-                } | Should -Not -Throw
-            }
+                It 'Should process the composite resource from the schema file without throwing' {
+                    {
+                        $script:schema = Get-CompositeSchemaObject -FileName $script:schemaFilePath -Verbose
+                    } | Should -Not -Throw
+                }
 
-            It "Should return the composite resource schema with name '$script:name'" {
-                $script:schema.Name | Should -Be $script:name
-            }
+                It "Should return the composite resource schema with name '$script:name'" {
+                    $script:schema.Name | Should -Be $script:name
+                }
 
-            It "Should return the composite resource schema with module version '$script:moduleVersion'" {
-                $script:schema.ModuleVersion | Should -Be $script:moduleVersion
-            }
+                It "Should return the composite resource schema with module version '$script:moduleVersion'" {
+                    $script:schema.ModuleVersion | Should -Be $script:moduleVersion
+                }
 
-            It "Should return the composite resource schema with description '$script:description'" {
-                $script:schema.Description | Should -Be $script:description
-            }
+                It "Should return the composite resource schema with description '$script:description'" {
+                    $script:schema.Description | Should -Be $script:description
+                }
 
-            It 'Should get property <PropertyName> with all correct properties' {
-                [CmdletBinding()]
-                param (
-                    [Parameter()]
-                    [System.String]
-                    $Name,
+                It 'Should get property <PropertyName> with all correct properties' {
+                    [CmdletBinding()]
+                    param (
+                        [Parameter()]
+                        [System.String]
+                        $Name,
 
-                    [Parameter()]
-                    [System.String]
-                    $State,
+                        [Parameter()]
+                        [System.String]
+                        $State,
 
-                    [Parameter()]
-                    [System.String]
-                    $Type,
+                        [Parameter()]
+                        [System.String]
+                        $Type,
 
-                    [Parameter()]
-                    [System.String]
-                    $Description
+                        [Parameter()]
+                        [System.String]
+                        $Description
+                    )
+
+                    $parameter = $script:schema.Parameters.Where({
+                        $_.Name -eq $Name
+                    })
+
+                    $parameter.State | Should -Be $State
+                    $parameter.Type | Should -Be $Type
+                    $parameter.Description | Should -Be $Description
+                } -TestCases @(
+                    @{
+                        Name = 'Name'
+                        State = 'Required'
+                        Type = 'System.String[]'
+                        Description = 'An array of the names.'
+                    }
+                    @{
+                        Name = 'Ensure'
+                        State = 'Write'
+                        Type = 'System.String'
+                        Description = 'Specifies whether or not the the thing should exist.'
+                    }
+                    @{
+                        Name = 'Credential'
+                        State = 'Write'
+                        Type = 'System.Management.Automation.PSCredential'
+                        Description = 'The credential to use to set the thing.'
+                    }
                 )
 
-                $parameter = $script:schema.Parameters.Where({
-                    $_.Name -eq $Name
-                })
+                It 'Should return the proper ValidateSet' {
+                    $parameter = $script:schema.Parameters.Where({
+                        $_.Name -eq 'Ensure'
+                    })
+                    $parameter.ValidateSet | Should -HaveCount 2
+                    $parameter.ValidateSet | Should -Contain 'Absent'
+                    $parameter.ValidateSet | Should -Contain 'Present'
+                }
+            }
 
-                $parameter.State | Should -Be $State
-                $parameter.Type | Should -Be $Type
-                $parameter.Description | Should -Be $Description
-            } -TestCases @(
-                @{
-                    Name = 'Name'
-                    State = 'Required'
-                    Type = 'System.String[]'
-                    Description = 'An array of the names.'
-                }
-                @{
-                    Name = 'Ensure'
-                    State = 'Write'
-                    Type = 'System.String'
-                    Description = 'Specifies whether or not the the thing should exist.'
-                }
-                @{
-                    Name = 'Credential'
-                    State = 'Write'
-                    Type = 'System.Management.Automation.PSCredential'
-                    Description = 'The credential to use to set the thing.'
-                }
-            )
+            Context 'When the composite is missing comment based help' {
+                BeforeAll {
+                    $script:name = 'CompositeHelperTest'
+                    $script:moduleVersion = '1.0.0'
+                    $script:description = 'Composite resource.'
+                    $script:schemaFileName = '{0}.schema.psm1' -f $script:name
+                    $script:schemaFilePath = Join-Path -Path $TestDrive -ChildPath $script:schemaFileName
 
-            It 'Should return the proper ValidateSet' {
-                $parameter = $script:schema.Parameters.Where({
-                    $_.Name -eq 'Ensure'
-                })
-                $parameter.ValidateSet | Should -HaveCount 2
-                $parameter.ValidateSet | Should -Contain 'Absent'
-                $parameter.ValidateSet | Should -Contain 'Present'
+                    $script:schemaFileContent = @'
+configuration CompositeHelperTest
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [System.String[]]
+        $Name,
+
+        [Parameter()]
+        [ValidateSet('Present', 'Absent')]
+        [System.String]
+        $Ensure,
+
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential
+    )
+
+    # Composite resource code would be here.
+}
+'@
+                    Set-Content -Path $script:schemaFilePath -Value $script:schemaFileContent
+
+                    $script:manifestFileName = '{0}.psd1' -f $script:name
+                    $script:manifestFilePath = Join-Path -Path $TestDrive -ChildPath $script:manifestFileName
+
+                    $script:manifestFileContent = @"
+@{
+    RootModule        = '$script:name.schema.psm1'
+    ModuleVersion     = '$script:moduleVersion'
+    GUID              = 'c5e227b5-52dc-4653-b08f-6d94e06bb90b'
+    Author            = 'DSC Community'
+    CompanyName       = 'DSC Community'
+    Copyright         = 'Copyright the DSC Community contributors. All rights reserved.'
+    Description       = '$script:description'
+    PowerShellVersion = '4.0'
+}
+"@
+
+                    Set-Content -Path $script:manifestFilePath -Value $script:manifestFileContent
+                }
+
+                It 'Should process the composite resource from the schema file without throwing' {
+                    {
+                        $script:schema = Get-CompositeSchemaObject -FileName $script:schemaFilePath -Verbose
+                    } | Should -Not -Throw
+                }
+
+                It "Should return the composite resource schema with name '$script:name'" {
+                    $script:schema.Name | Should -Be $script:name
+                }
+
+                It "Should return the composite resource schema with module version '$script:moduleVersion'" {
+                    $script:schema.ModuleVersion | Should -Be $script:moduleVersion
+                }
+
+                It "Should return the composite resource schema with description '$script:description'" {
+                    $script:schema.Description | Should -Be $script:description
+                }
+
+                It 'Should get property <PropertyName> with all correct properties' {
+                    [CmdletBinding()]
+                    param (
+                        [Parameter()]
+                        [System.String]
+                        $Name,
+
+                        [Parameter()]
+                        [System.String]
+                        $State,
+
+                        [Parameter()]
+                        [System.String]
+                        $Type,
+
+                        [Parameter()]
+                        [System.String]
+                        $Description
+                    )
+
+                    $parameter = $script:schema.Parameters.Where({
+                        $_.Name -eq $Name
+                    })
+
+                    $parameter.State | Should -Be $State
+                    $parameter.Type | Should -Be $Type
+                    $parameter.Description | Should -Be $Description
+                } -TestCases @(
+                    @{
+                        Name = 'Name'
+                        State = 'Required'
+                        Type = 'System.String[]'
+                        Description = ''
+                    }
+                    @{
+                        Name = 'Ensure'
+                        State = 'Write'
+                        Type = 'System.String'
+                        Description = ''
+                    }
+                    @{
+                        Name = 'Credential'
+                        State = 'Write'
+                        Type = 'System.Management.Automation.PSCredential'
+                        Description = ''
+                    }
+                )
+
+                It 'Should return the proper ValidateSet' {
+                    $parameter = $script:schema.Parameters.Where({
+                        $_.Name -eq 'Ensure'
+                    })
+                    $parameter.ValidateSet | Should -HaveCount 2
+                    $parameter.ValidateSet | Should -Contain 'Absent'
+                    $parameter.ValidateSet | Should -Contain 'Present'
+                }
             }
         }
     }
