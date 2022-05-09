@@ -105,7 +105,6 @@ Describe 'Generate_Conceptual_Help' {
                 }
             }
 
-
             Mock -CommandName Get-SamplerModuleRootPath -MockWith {
                 # Return the path that was passed to the command.
                 return $BuiltModuleManifest

@@ -53,7 +53,6 @@ Describe 'Publish_GitHub_Wiki_Content' {
             }
         }
 
-
         Mock -CommandName Get-SamplerModuleRootPath -MockWith {
             # Return the path that was passed to the command.
             return $BuiltModuleManifest
