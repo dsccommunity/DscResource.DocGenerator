@@ -33,9 +33,10 @@ Describe 'Generate_Wiki_Content' {
         }
 
         Mock -CommandName Get-Item -MockWith {
-            $Path = $Path -replace '\*', '1.0.0'
+            $Path =  [System.String] ($Path -replace '\*','1.0.0')
+
             [PSCustomObject]@{
-                FullName = [System.String] $Path
+                FullName = $Path
             }
         }
 

@@ -37,8 +37,8 @@ function Get-CompositeSchemaObject
         throw $script:localizedData.MacOSNotSupportedError
     }
 
-    $manifestFileName = $FileName -replace '.schema.psm1','.psd1'
-    $compositeName = [System.IO.Path]::GetFileName($FileName) -replace '.schema.psm1',''
+    $manifestFileName = $FileName -replace '.schema.psm1', '.psd1'
+    $compositeName = [System.IO.Path]::GetFileName($FileName) -replace '.schema.psm1', ''
     $manifestData = Import-LocalizedData `
         -BaseDirectory ([System.IO.Path]::GetDirectoryName($manifestFileName)) `
         -FileName ([System.IO.Path]::GetFileName($manifestFileName))
@@ -57,15 +57,22 @@ function Get-CompositeSchemaObject
     {
         $parameterName = $parameter.Name.VariablePath.ToString()
 
-        # The parameter name in comment-based help is returned as upper so need to match correctly.
-        $parameterDescription = $commentBasedHelp.Parameters[$parameterName.ToUpper()] -replace '\r?\n+$'
+        if ($commentBasedHelp)
+        {
+            # The parameter name in comment-based help is returned as upper so need to match correctly.
+            $parameterDescription = $commentBasedHelp.Parameters[$parameterName.ToUpper()] -replace '\r?\n+$'
+        }
+        else
+        {
+            $parameterDescription = ''
+        }
 
         @{
-            Name             = $parameterName
-            State            = (Get-CompositeResourceParameterState -Ast $parameter)
-            Type             = $parameter.StaticType.FullName
-            ValidateSet      = (Get-CompositeResourceParameterValidateSet -Ast $parameter)
-            Description      = $parameterDescription
+            Name        = $parameterName
+            State       = (Get-CompositeResourceParameterState -Ast $parameter)
+            Type        = $parameter.StaticType.FullName
+            ValidateSet = (Get-CompositeResourceParameterValidateSet -Ast $parameter)
+            Description = $parameterDescription
         }
     }
 
