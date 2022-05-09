@@ -2,6 +2,7 @@
 ####################################################
 #          ModuleBuilder Configuration             #
 ####################################################
+
 CopyPaths:
   - en-US
   - tasks
@@ -10,18 +11,18 @@ VersionedOutputDirectory: true
 Prefix: ./prefix.ps1
 
 ####################################################
-#   ModuleBuilder Dependent Modules Configuration  #
+#      ModuleBuilder Submodules Configuration      #
 ####################################################
 
 NestedModule:
-  DscResource.Common:
-    CopyOnly: true
-    Path: ./output/RequiredModules/DscResource.Common
-    AddToManifest: false
-    Exclude: PSGetModuleInfo.xml
+    DscResource.Common:
+      CopyOnly: true
+      Path: ./output/RequiredModules/DscResource.Common
+      AddToManifest: false
+      Exclude: PSGetModuleInfo.xml
 
 ####################################################
-#  DscResource.DocGenerator Pipeline Configuration #
+#       Sampler Pipeline Configuration             #
 ####################################################
 BuildWorkflow:
   '.':
@@ -33,6 +34,7 @@ BuildWorkflow:
     - Build_Module_ModuleBuilder
     - Build_NestedModules_ModuleBuilder
     - Create_changelog_release_output
+    - Generate_Conceptual_Help
     - Generate_Wiki_Content
 
   pack:
@@ -51,9 +53,10 @@ BuildWorkflow:
     - Merge_CodeCoverage_Files
 
   publish:
-    - Publish_release_to_GitHub
     - publish_module_to_gallery
+    - Publish_Release_To_GitHub
     - Publish_GitHub_Wiki_Content
+
 
 
 ####################################################
@@ -70,6 +73,7 @@ Pester:
   ExcludeTag:
   Tag:
   CodeCoverageThreshold: 80
+  CodeCoverageOutputFile: JaCoCo_Merge.xml
   CodeCoverageOutputFileEncoding: ascii
 
 CodeCoverage:
@@ -84,11 +88,6 @@ DscTest:
   ExcludeModuleFile:
     - Modules/DscResource.Common
   MainGitBranch: main
-
-Resolve-Dependency:
-  Gallery: ''
-  AllowPrerelease: false
-  Verbose: false
 
 ModuleBuildTasks:
   Sampler:
@@ -114,6 +113,9 @@ GitHubConfig:
   GitHubConfigUserEmail: dsccommunity@outlook.com
   UpdateChangelogOnPrerelease: false
 
+####################################################
+#      DscResource.DocGenerator Configuration      #
+####################################################
 DscResource.DocGenerator:
   Publish_GitHub_Wiki_Content:
     Debug: true

@@ -3,7 +3,7 @@
         AddToPath  = $true
         Target     = 'output\RequiredModules'
         Parameters = @{
-            Repository = ''
+            Repository = 'PSGallery'
         }
     }
 
@@ -12,6 +12,7 @@
     Pester                      = '4.10.1'
     Plaster                     = 'latest'
     ModuleBuilder               = 'latest'
+    ChangelogManagement         = 'latest'
 
     Sampler                     = @{
         version = 'latest'
@@ -22,10 +23,10 @@
 
     'Sampler.GitHubTasks'       = 'latest'
     MarkdownLinkCheck           = 'latest'
-    ChangelogManagement         = 'latest'
     'DscResource.Test'          = 'latest'
     'DscResource.AnalyzerRules' = 'latest'
     xDscResourceDesigner        = 'latest'
+
     # Build dependent modules
     'DscResource.Common'        = 'latest'
 }
