@@ -1,4 +1,6 @@
 # Needed for publishing of examples, build worker defaults to core.autocrlf=input.
+# The Sampler pipeline template suggest using '* text eol=autocrlf' but that will
+# make some tests fail with CR/LF differences.
 * text eol=crlf
 
 *.mof   text eol=crlf
