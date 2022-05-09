@@ -59,6 +59,8 @@ function Invoke-Git
         'StandardError'    = ''
     }
 
+    Write-Verbose -Message ($script:localizedData.InvokingGitMessage -f ($Arguments -join ' '))
+
     try
     {
         $process = New-Object -TypeName System.Diagnostics.Process

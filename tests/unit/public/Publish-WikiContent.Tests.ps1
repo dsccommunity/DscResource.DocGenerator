@@ -99,7 +99,7 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'commit' -and
                     $Arguments[1] -eq '--message' -and
-                    $Arguments[2] -eq "`"$($localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion)`""
+                    $Arguments[2] -eq "`"$($script:localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion)`""
                 } -Exactly -Times 0 -Scope It
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
@@ -196,7 +196,7 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'commit' -and
                     $Arguments[1] -eq '--message' -and
-                    $Arguments[2] -eq "`"$($localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion)`""
+                    $Arguments[2] -eq "`"$($script:localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion)`""
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
@@ -237,7 +237,7 @@ InModuleScope $script:moduleName {
                 } -ParameterFilter {
                         $Arguments[0] -eq 'commit' -and
                         $Arguments[1] -eq '--message' -and
-                        $Arguments[2] -eq "`"$($localizedData.UpdateWikiCommitMessage -f $ModuleVersion)`""
+                        $Arguments[2] -eq "`"$($script:localizedData.UpdateWikiCommitMessage -f $ModuleVersion)`""
                 }
             }
 
@@ -303,7 +303,7 @@ InModuleScope $script:moduleName {
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {
                     $Arguments[0] -eq 'commit' -and
                     $Arguments[1] -eq '--message' -and
-                    $Arguments[2] -eq "`"$($localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion)`""
+                    $Arguments[2] -eq "`"$($script:localizedData.UpdateWikiCommitMessage -f $mockPublishWikiContentParameters.ModuleVersion)`""
                 } -Exactly -Times 1 -Scope It
 
                 Assert-MockCalled -CommandName Invoke-Git -ParameterFilter {

@@ -18,7 +18,7 @@ ConvertFrom-StringData @'
     PublishWikiContentCompleteMessage    = Publish Wiki Content complete.
     UpdateWikiCommitMessage              = Updating Wiki with the content for module version '{0}'.
     NewTempFolderCreationError           = Unable to create a temporary working folder in '{0}'.
-    InvokingGitMessage                   = Invoking Git '{0}'.
+    InvokingGitMessage                   = Invoking Git using arguments '{0}'.
     GenerateWikiSidebarMessage           = Generating Wiki Sidebar '{0}'.
     GenerateWikiFooterMessage            = Generating Wiki Footer '{0}'.
     CopyWikiFoldersMessage               = Copying Wiki files from '{0}'.

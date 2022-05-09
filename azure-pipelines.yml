@@ -3,17 +3,20 @@ trigger:
     include:
     - main
   paths:
-    exclude:
-    - CHANGELOG.md
+    include:
+    - source/*
   tags:
     include:
     - "v*"
     exclude:
     - "*-*"
+
 variables:
   buildFolderName: output
   buildArtifactName: output
   testResultFolderName: testResults
+  sourceFolderName: source
+  defaultBranch: main
 
 stages:
   - stage: Build
@@ -21,14 +24,17 @@ stages:
       - job: Package_Module
         displayName: 'Package Module'
         pool:
-          vmImage: 'ubuntu 18.04'
+          vmImage: 'ubuntu-latest'
         steps:
-          - task: GitVersion@5
-            name: gitVersion
-            displayName: 'Evaluate Next Version'
-            inputs:
-              runtime: 'core'
-              configFilePath: 'GitVersion.yml'
+          - pwsh: |
+              dotnet tool install --global GitVersion.Tool
+              $gitVersionObject = dotnet-gitversion | ConvertFrom-Json
+              $gitVersionObject.PSObject.Properties.ForEach{
+                  Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
+                  Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
+              }
+              Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
+            displayName: Calculate ModuleVersion (GitVersion)
           - task: PowerShell@2
             name: package
             displayName: 'Build & Package Module'
@@ -37,64 +43,124 @@ stages:
               arguments: '-ResolveDependency -tasks pack'
               pwsh: true
             env:
-              ModuleVersion: $(gitVersion.InformationalVersion)
+              ModuleVersion: $(NuGetVersionV2)
           - task: PublishPipelineArtifact@1
-            displayName: 'Publish Pipeline Artifact'
+            displayName: 'Publish Build Artifact'
             inputs:
-              targetPath: 'output/'
-              artifact: 'output'
+              targetPath: '$(buildFolderName)/'
+              artifact: $(buildArtifactName)
               publishLocation: 'pipeline'
               parallel: true
 
   - stage: Test
     dependsOn: Build
     jobs:
-      - job: test_windows_core
-        displayName: 'Windows (PowerShell Core)'
-        timeoutInMinutes: 0
-        pool:
-          vmImage: 'windows-latest'
-        steps:
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download Pipeline Artifact'
-            inputs:
-              buildType: 'current'
-              artifactName: $(buildArtifactName)
-              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
-          - task: PowerShell@2
-            name: test
-            displayName: 'Run Tests'
-            inputs:
-              filePath: './build.ps1'
-              arguments: '-tasks test'
-              pwsh: true
-          - task: PublishTestResults@2
-            displayName: 'Publish Test Results'
-            condition: succeededOrFailed()
-            inputs:
-              testResultsFormat: 'NUnit'
-              testResultsFiles: 'output/testResults/NUnit*.xml'
-              testRunTitle: 'Windows Server Core (PowerShell Core)'
-          - task: PublishPipelineArtifact@1
-            displayName: 'Publish Test Artifact'
-            inputs:
-              targetPath: '$(buildFolderName)/$(testResultFolderName)/'
-              artifactName: 'CodeCoverageWinPS7'
-              parallel: true
+    - job: Test_HQRM
+      displayName: 'HQRM'
+      pool:
+        vmImage: 'windows-latest'
+      timeoutInMinutes: 0
+      steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Build Artifact'
+          inputs:
+            buildType: 'current'
+            artifactName: $(buildArtifactName)
+            targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+        - task: PowerShell@2
+          name: test
+          displayName: 'Run HQRM Test'
+          inputs:
+            filePath: './build.ps1'
+            arguments: '-Tasks hqrmtest'
+            pwsh: false
+        - task: PublishTestResults@2
+          displayName: 'Publish Test Results'
+          condition: succeededOrFailed()
+          inputs:
+            testResultsFormat: 'NUnit'
+            testResultsFiles: 'output/testResults/NUnit*.xml'
+            testRunTitle: 'HQRM'
 
-      - job: test_linux
-        displayName: 'Linux'
-        timeoutInMinutes: 0
-        pool:
-          vmImage: 'ubuntu 18.04'
-        steps:
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download Pipeline Artifact'
-            inputs:
-              buildType: 'current'
-              artifactName: $(buildArtifactName)
-              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
-          - script: |
+    - job: test_windows_wps
+      displayName: 'Unit Windows (WPS)'
+      pool:
+        vmImage: 'windows-latest'
+      timeoutInMinutes: 0
+      steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Build Artifact'
+          inputs:
+            buildType: 'current'
+            artifactName: $(buildArtifactName)
+            targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+        - task: PowerShell@2
+          name: test
+          displayName: 'Run Unit Test'
+          inputs:
+            filePath: './build.ps1'
+            arguments: "-Tasks test"
+            pwsh: false
+        - task: PublishTestResults@2
+          displayName: 'Publish Test Results'
+          condition: succeededOrFailed()
+          inputs:
+            testResultsFormat: 'NUnit'
+            testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+            testRunTitle: 'Test Windows (WPS)'
+        - task: PublishPipelineArtifact@1
+          displayName: 'Publish Test Artifact'
+          inputs:
+            targetPath: '$(buildFolderName)/$(testResultFolderName)/'
+            artifactName: 'CodeCoverageWindowsWPS'
+            parallel: true
+
+    - job: test_windows_ps
+      displayName: 'Unit Windows (PS)'
+      pool:
+        vmImage: 'windows-latest'
+      timeoutInMinutes: 0
+      steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Build Artifact'
+          inputs:
+            buildType: 'current'
+            artifactName: $(buildArtifactName)
+            targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+        - task: PowerShell@2
+          name: test
+          displayName: 'Run Unit Test'
+          inputs:
+            filePath: './build.ps1'
+            arguments: "-Tasks test"
+            pwsh: true
+        - task: PublishTestResults@2
+          displayName: 'Publish Test Results'
+          condition: succeededOrFailed()
+          inputs:
+            testResultsFormat: 'NUnit'
+            testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+            testRunTitle: 'Test Windows (PS)'
+        - task: PublishPipelineArtifact@1
+          displayName: 'Publish Test Artifact'
+          inputs:
+            targetPath: '$(buildFolderName)/$(testResultFolderName)/'
+            artifactName: 'CodeCoverageWindowsPS'
+            parallel: true
+
+    - job: test_linux
+      displayName: 'Unit Linux'
+      pool:
+        vmImage: 'ubuntu-latest'
+      timeoutInMinutes: 0
+      steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Build Artifact'
+          inputs:
+            buildType: 'current'
+            artifactName: $(buildArtifactName)
+            targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+        - script: |
               wget https://github.com/microsoft/omi/releases/download/v1.6.8-1/omi-1.6.8-1.ssl_110.ulinux.x64.deb
               wget https://github.com/microsoft/PowerShell-DSC-for-Linux/releases/download/v1.2.1-0/dsc-1.2.1-0.ssl_100.x64.deb
 
@@ -103,157 +169,152 @@ stages:
               # This is a fix to the following DSC for Linux issue: https://github.com/microsoft/PowerShell-DSC-for-Linux/issues/674
               sudo mv /etc/opt/omi/conf/dsc/configuration/baseregistration /etc/opt/omi/conf/dsc/configuration/BaseRegistration
               sudo mv /etc/opt/omi/conf/dsc/configuration/BaseRegistration/baseresource.schema.mof /etc/opt/omi/conf/dsc/configuration/BaseRegistration/BaseResource.schema.mof
-            displayName: 'Install DSC for Linux'
+          displayName: 'Install DSC for Linux'
+        - task: PowerShell@2
+          name: test
+          displayName: 'Run Unit Test'
+          inputs:
+            filePath: './build.ps1'
+            arguments: "-Tasks test"
+            pwsh: true
+        - task: PublishTestResults@2
+          displayName: 'Publish Test Results'
+          condition: succeededOrFailed()
+          inputs:
+            testResultsFormat: 'NUnit'
+            testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+            testRunTitle: 'Test Linux'
+        - task: PublishPipelineArtifact@1
+          displayName: 'Publish Test Artifact'
+          inputs:
+            targetPath: '$(buildFolderName)/$(testResultFolderName)/'
+            artifactName: 'CodeCoverageLinux'
+            parallel: true
 
-          - task: PowerShell@2
-            name: test
-            displayName: 'Run Tests'
-            inputs:
-              filePath: './build.ps1'
-              arguments: '-tasks test'
-          - task: PublishTestResults@2
-            displayName: 'Publish Test Results'
-            condition: succeededOrFailed()
-            inputs:
-              testResultsFormat: 'NUnit'
-              testResultsFiles: 'output/testResults/NUnit*.xml'
-              testRunTitle: 'Linux'
-          - task: PublishPipelineArtifact@1
-            displayName: 'Publish Test Artifact'
-            inputs:
-              targetPath: '$(buildFolderName)/$(testResultFolderName)/'
-              artifactName: 'CodeCoverageLinux'
-              parallel: true
+    - job: test_macos
+      displayName: 'Unit macOS'
+      pool:
+        vmImage: 'macos-latest'
+      timeoutInMinutes: 0
+      steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Build Artifact'
+          inputs:
+            buildType: 'current'
+            artifactName: $(buildArtifactName)
+            targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+        - task: PowerShell@2
+          name: test
+          displayName: 'Run Unit Test'
+          inputs:
+            filePath: './build.ps1'
+            arguments: "-Tasks test"
+            pwsh: true
+        - task: PublishTestResults@2
+          displayName: 'Publish Test Results'
+          condition: succeededOrFailed()
+          inputs:
+            testResultsFormat: 'NUnit'
+            testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+            testRunTitle: 'Test macOS'
+        - task: PublishPipelineArtifact@1
+          displayName: 'Publish Test Artifact'
+          inputs:
+            targetPath: '$(buildFolderName)/$(testResultFolderName)/'
+            artifactName: 'CodeCoverageMacOS'
+            parallel: true
 
-      - job: test_windows_ps
-        displayName: 'Windows (Windows PowerShell)'
-        timeoutInMinutes: 0
-        pool:
-          vmImage: 'windows-latest'
-        steps:
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download Pipeline Artifact'
-            inputs:
-              buildType: 'current'
-              artifactName: $(buildArtifactName)
-              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
-          - task: PowerShell@2
-            name: test
-            displayName: 'Run Tests'
-            inputs:
-              filePath: './build.ps1'
-              arguments: '-tasks test'
-              pwsh: false
-          - task: PublishTestResults@2
-            displayName: 'Publish Test Results'
-            condition: succeededOrFailed()
-            inputs:
-              testResultsFormat: 'NUnit'
-              testResultsFiles: 'output/testResults/NUnit*.xml'
-              testRunTitle: 'Windows Server Core (Windows PowerShell)'
-          - task: PublishPipelineArtifact@1
-            displayName: 'Publish Test Artifact'
-            inputs:
-              targetPath: '$(buildFolderName)/$(testResultFolderName)/'
-              artifactName: 'CodeCoverageWinPS51'
-              parallel: true
+    - job: Test_Integration
+      displayName: 'Integration'
+      pool:
+        vmImage: 'windows-latest'
+      timeoutInMinutes: 0
+      steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Build Artifact'
+          inputs:
+            buildType: 'current'
+            artifactName: $(buildArtifactName)
+            targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+        - task: PowerShell@2
+          name: configureWinRM
+          displayName: 'Configure WinRM'
+          inputs:
+            targetType: 'inline'
+            script: 'winrm quickconfig -quiet'
+            pwsh: false
+        - task: PowerShell@2
+          name: test
+          displayName: 'Run Integration Test'
+          inputs:
+            filePath: './build.ps1'
+            arguments: "-Tasks test -CodeCoverageThreshold 0 -PesterScript 'tests/Integration'"
+            pwsh: false
+        - task: PublishTestResults@2
+          displayName: 'Publish Test Results'
+          condition: succeededOrFailed()
+          inputs:
+            testResultsFormat: 'NUnit'
+            testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+            testRunTitle: 'Integration'
 
-      - job: test_macos
-        displayName: 'macOS'
-        timeoutInMinutes: 0
-        pool:
-          vmImage: 'macos-latest'
-        steps:
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download Pipeline Artifact'
-            inputs:
-              buildType: 'current'
-              artifactName: $(buildArtifactName)
-              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
-          - task: PowerShell@2
-            name: test
-            displayName: 'Run Tests'
-            inputs:
-              filePath: './build.ps1'
-              arguments: '-tasks test'
-              pwsh: true
-          - task: PublishTestResults@2
-            displayName: 'Publish Test Results'
-            condition: succeededOrFailed()
-            inputs:
-              testResultsFormat: 'NUnit'
-              testResultsFiles: 'output/testResults/NUnit*.xml'
-              testRunTitle: 'MacOS'
-          - task: PublishPipelineArtifact@1
-            displayName: 'Publish Test Artifact'
-            inputs:
-              targetPath: '$(buildFolderName)/$(testResultFolderName)/'
-              artifactName: 'CodeCoverageMacOS'
-              parallel: true
-
-      - job: Code_Coverage
-        displayName: 'Publish Code Coverage'
-        dependsOn:
-          - test_macos
-          - test_linux
-          - test_windows_core
-          - test_windows_ps
-        pool:
-          vmImage: 'ubuntu 18.04'
-        timeoutInMinutes: 0
-        steps:
-          - pwsh: |
-              $repositoryOwner,$repositoryName = $env:BUILD_REPOSITORY_NAME -split '/'
-              echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
-              echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
-            name: dscBuildVariable
-            displayName: 'Set Environment Variables'
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download Pipeline Artifact'
-            inputs:
-              buildType: 'current'
-              artifactName: $(buildArtifactName)
-              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download Test Artifact macOS'
-            inputs:
-              buildType: 'current'
-              artifactName: 'CodeCoverageMacOS'
-              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download Test Artifact Linux'
-            inputs:
-              buildType: 'current'
-              artifactName: 'CodeCoverageLinux'
-              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download Test Artifact Windows (PS 5.1)'
-            inputs:
-              buildType: 'current'
-              artifactName: 'CodeCoverageWinPS51'
-              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download Test Artifact Windows (PS7)'
-            inputs:
-              buildType: 'current'
-              artifactName: 'CodeCoverageWinPS7'
-              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
-          - task: PowerShell@2
-            name: merge
-            displayName: 'Merge Code Coverage files'
-            inputs:
-              filePath: './build.ps1'
-              arguments: '-tasks merge'
-              pwsh: true
-          - task: PublishCodeCoverageResults@1
-            displayName: 'Publish Azure Code Coverage'
-            inputs:
-              codeCoverageTool: 'JaCoCo'
-              summaryFileLocation: '$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml'
-              pathToSources: '$(Build.SourcesDirectory)/source/'
-          - script: |
-              bash <(curl -s https://codecov.io/bash) -f "./$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml"
-            displayName: 'Upload to Codecov.io'
+    - job: Code_Coverage
+      displayName: 'Publish Code Coverage'
+      dependsOn:
+      - test_windows_wps
+      - test_windows_ps
+      - test_linux
+      - test_macos
+      pool:
+        vmImage: 'ubuntu-latest'
+      timeoutInMinutes: 0
+      steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Build Artifact'
+          inputs:
+            buildType: 'current'
+            artifactName: $(buildArtifactName)
+            targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Test Artifact Linux'
+          inputs:
+            buildType: 'current'
+            artifactName: 'CodeCoverageLinux'
+            targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)/CodeCoverageLinux'
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Test Artifact Windows (WPS)'
+          inputs:
+            buildType: 'current'
+            artifactName: 'CodeCoverageWindowsWPS'
+            targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)/CodeCoverageWindowsWPS'
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Test Artifact Windows (PS)'
+          inputs:
+            buildType: 'current'
+            artifactName: 'CodeCoverageWindowsPS'
+            targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)/CodeCoverageWindowsPS'
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download Test Artifact macOS'
+          inputs:
+            buildType: 'current'
+            artifactName: 'CodeCoverageMacOS'
+            targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)/CodeCoverageMacOS'
+        - task: PowerShell@2 # Merges the code coverage files.
+          name: merge
+          displayName: 'Merge Code Coverage files'
+          inputs:
+            filePath: './build.ps1'
+            arguments: '-tasks merge'
+            pwsh: true
+        - task: PublishCodeCoverageResults@1
+          displayName: 'Publish Code Coverage to Azure DevOps'
+          inputs:
+            codeCoverageTool: 'JaCoCo'
+            summaryFileLocation: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml'
+            pathToSources: '$(Build.SourcesDirectory)/$(sourceFolderName)/'
+        - script: |
+            bash <(curl -s https://codecov.io/bash) -f "./$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml"
+          displayName: 'Publish Code Coverage to Codecov.io'
 
   - stage: Deploy
     dependsOn: Test
@@ -270,7 +331,7 @@ stages:
       - job: Deploy_Module
         displayName: 'Deploy Module'
         pool:
-          vmImage: 'ubuntu 18.04'
+          vmImage: 'ubuntu-latest'
         steps:
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Pipeline Artifact'
@@ -288,8 +349,8 @@ stages:
             env:
               GitHubToken: $(GitHubToken)
               GalleryApiToken: $(GalleryApiToken)
-              ReleaseBranch: main
-              MainGitBranch: main
+              ReleaseBranch: $(defaultBranch)
+              MainGitBranch: $(defaultBranch)
           - task: PowerShell@2
             name: sendChangelogPR
             displayName: 'Send Changelog PR'
@@ -299,5 +360,5 @@ stages:
               pwsh: true
             env:
               GitHubToken: $(GitHubToken)
-              ReleaseBranch: main
-              MainGitBranch: main
+              ReleaseBranch: $(defaultBranch)
+              MainGitBranch: $(defaultBranch)

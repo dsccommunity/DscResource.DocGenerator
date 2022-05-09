@@ -39,13 +39,13 @@ function Copy-WikiFolder
         $Force
     )
 
-    Write-Verbose -Message ($localizedData.CopyWikiFoldersMessage -f ($Path -join ''', '''))
+    Write-Verbose -Message ($script:localizedData.CopyWikiFoldersMessage -f ($Path -join ''', '''))
 
     $wikiFiles = Get-ChildItem -Recurse -Path $Path
 
     foreach ($file in $wikiFiles)
     {
-        Write-Verbose -Message ($localizedData.CopyFileMessage -f $file.Name)
+        Write-Verbose -Message ($script:localizedData.CopyFileMessage -f $file.Name)
 
         if ($file.DirectoryName -eq $Path)
         {

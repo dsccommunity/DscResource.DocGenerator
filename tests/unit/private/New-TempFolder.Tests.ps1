@@ -58,7 +58,7 @@ InModuleScope $script:moduleName {
             It 'Should throw the correct error' {
                 $tempPath = [System.IO.Path]::GetTempPath()
 
-                { New-TempFolder } | Should -Throw ($localizedData.NewTempFolderCreationError -f $tempPath)
+                { New-TempFolder } | Should -Throw ($script:localizedData.NewTempFolderCreationError -f $tempPath)
             }
 
             It 'Should call the expected mocks' {

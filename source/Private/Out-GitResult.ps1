@@ -78,7 +78,7 @@ function Out-GitResult
                 {
                     if ($ExitCode -eq 1)
                     {
-                        Write-Verbose -Message $localizedData.NothingToCommitToWiki
+                        Write-Verbose -Message $script:localizedData.NothingToCommitToWiki
                     }
                 }
     }
