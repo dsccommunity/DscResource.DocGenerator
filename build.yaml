@@ -78,7 +78,7 @@ Pester:
 
 CodeCoverage:
   CodeCoverageMergedOutputFile: JaCoCo_coverage.xml
-  CodeCoverageFilePattern: Codecov*.xml
+  CodeCoverageFilePattern: JaCoCo_Merge.xml
 
 DscTest:
   ExcludeTag:
