@@ -62,7 +62,7 @@ Describe 'Generate_Conceptual_Help' {
                 $Path = [System.String] ($Path -replace '\*', '99.1.1')
 
                 [PSCustomObject]@{
-                    FullName = [System.String] $Path
+                    FullName = $Path
                 }
             }
 
