@@ -81,9 +81,7 @@ Describe 'Generate_Conceptual_Help' {
                 Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @mockTaskParameters
             } | Should -Not -Throw
 
-            Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -ParameterFilter {
-                $DestinationModulePath -match 'output\\MyModule\\99.1.1'
-            } -Exactly -Times 1 -Scope It
+            Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -Exactly -Times 1 -Scope It
         }
     }
 
@@ -124,9 +122,7 @@ Describe 'Generate_Conceptual_Help' {
                 Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @mockTaskParameters
             } | Should -Not -Throw
 
-            Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -ParameterFilter {
-                $DestinationModulePath -match 'output\\MyModule\\99.1.1'
-            } -Exactly -Times 1 -Scope It
+            Assert-MockCalled -CommandName New-DscResourcePowerShellHelp -Exactly -Times 1 -Scope It
         }
     }
 }
