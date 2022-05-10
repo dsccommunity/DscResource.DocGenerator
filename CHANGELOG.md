@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2022-05-10
+
 ### Changed
 
 - Updated pipelines files to the latest in Sampler.
