@@ -5,12 +5,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- `Get-ClassResourceProperty`
+  - Regression tests for PR #123.
+
 ## [0.11.1] - 2022-08-09
 
 ### Fixed
 
 - `Get-ClassResourceProperty`
   - Now does a more limited wildcard search for the class script file ([issue #122](https://github.com/dsccommunity/DscResource.DocGenerator/issues/122)).
+  - Regression tests.
 
 ## [0.11.0] - 2022-05-10
 
