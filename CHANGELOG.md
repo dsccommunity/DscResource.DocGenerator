@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `Get-ClassResourceProperty`
+  - Now does a more limited wildcard search for the class script file ([issue #122](https://github.com/dsccommunity/DscResource.DocGenerator/issues/122)).
+
 ## [0.11.0] - 2022-05-10
 
 ### Changed

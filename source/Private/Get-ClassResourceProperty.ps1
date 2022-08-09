@@ -44,7 +44,7 @@ function Get-ClassResourceProperty
     {
         $dscResourceAst = Get-ClassAst -ClassName $currentClassName -ScriptFile $BuiltModuleScriptFilePath
 
-        $sourceFilePath = Join-Path -Path $SourcePath -ChildPath ('Classes/*{0}.ps1' -f $currentClassName)
+        $sourceFilePath = Join-Path -Path $SourcePath -ChildPath ('Classes/???.{0}.ps1' -f $currentClassName)
 
         $dscResourceCommentBasedHelp = Get-CommentBasedHelp -Path $sourceFilePath
 
