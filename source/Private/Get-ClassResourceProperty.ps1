@@ -46,6 +46,15 @@ function Get-ClassResourceProperty
 
         $sourceFilePath = Join-Path -Path $SourcePath -ChildPath ('Classes/???.{0}.ps1' -f $currentClassName)
 
+        <#
+            Skip if the class's source file does not exist. Thi can happen if the
+            class uses a parent class from a different module.
+        #>
+        if (-not (Test-Path -Path $sourceFilePath))
+        {
+            continue
+        }
+
         $dscResourceCommentBasedHelp = Get-CommentBasedHelp -Path $sourceFilePath
 
         $astFilter = {
