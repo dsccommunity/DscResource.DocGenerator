@@ -151,7 +151,7 @@ stages:
     - job: test_linux
       displayName: 'Unit Linux'
       pool:
-        vmImage: 'ubuntu-latest'
+        vmImage: 'ubuntu-20.04'
       timeoutInMinutes: 0
       steps:
         - task: DownloadPipelineArtifact@2

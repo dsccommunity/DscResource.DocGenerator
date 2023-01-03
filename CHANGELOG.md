@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Get-ClassResourceProperty`
   - Regression tests for PR #123.
+  - Now longer throws an exception if a parent class that isn't part of the
+    module is being used. If a class's source file is not found the class
+    is skipped (fixes [issue #127](https://github.com/dsccommunity/DscResource.DocGenerator/issues/127)).
 
 ## [0.11.1] - 2022-08-09
 
