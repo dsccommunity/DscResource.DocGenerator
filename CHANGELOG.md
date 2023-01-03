@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.2] - 2023-01-03
+
 - `Get-ClassResourceProperty`
   - Regression tests for PR #123.
   - Now longer throws an exception if a parent class that isn't part of the
