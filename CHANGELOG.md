@@ -5,6 +5,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Removed the public command `Split-ModuleVersion` since it is now available
+  from the module Sampler.
+
 ### Added
 
 - Task `Generate_Markdown_For_Public_Commands` - This task will generate

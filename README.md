@@ -232,36 +232,6 @@ Set-WikiModuleVersion -Path '.\output\WikiContent\Home.md' -ModuleVersion '14.0.
 
 Replaces '#.#.#' with the module version '14.0.0' in the markdown file 'Home.md'.
 
-### `Split-ModuleVersion`
-
-This function parses a module version string as returns a hashtable
-which each of the module version's parts.
-
-#### Syntax
-
-<!-- markdownlint-disable MD013 - Line length -->
-```plaintext
-Split-ModuleVersion [[-ModuleVersion] <string>] [<CommonParameters>]
-```
-<!-- markdownlint-enable MD013 - Line length -->
-
-#### Outputs
-
-System.Management.Automation.PSCustomObject
-
-#### Example
-
-```powershell
-Split-ModuleVersion -ModuleVersion '1.15.0-pr0224-0022+Sha.47ae45eb'
-```
-
-Splits the module version an returns a PSCustomObject with the parts
-of the module version.
-
-```plaintext
-Version PreReleaseString ModuleVersion
-------- ---------------- -------------
-1.15.0  pr0224           1.15.0-pr0224
 ```
 
 ## Tasks
