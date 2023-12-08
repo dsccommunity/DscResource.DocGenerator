@@ -5,6 +5,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Task `Generate_Markdown_For_Public_Commands` - This task will generate
+  markdown documentation for the public commands in the built module.
+
+### Changed
+
+- DscResource.DocGenerator
+  - Updated pipeline files to support resolving dependencies using ModuleFast
+    or PSResourceGet.
+
 ## [0.11.2] - 2023-01-03
 
 - `Get-ClassResourceProperty`

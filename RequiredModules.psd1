@@ -26,6 +26,7 @@
     'DscResource.Test'          = 'latest'
     'DscResource.AnalyzerRules' = 'latest'
     xDscResourceDesigner        = 'latest'
+    PlatyPS                     = 'latest'
 
     # Build dependent modules
     'DscResource.Common'        = 'latest'
