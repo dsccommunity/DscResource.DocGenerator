@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Task `Generate_Markdown_For_Public_Commands` - This task will generate
   markdown documentation for the public commands in the built module.
+- Task `Generate_External_Help_File_For_Public_Commands` - This task will
+  generate the modules help files to support `Get-Help` for public commands.
+  This task is dependent on the task `Generate_Markdown_For_Public_Commands`
+  to have been run prior.
 
 ### Changed
 

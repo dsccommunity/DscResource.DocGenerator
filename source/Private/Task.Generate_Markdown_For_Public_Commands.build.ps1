@@ -1,9 +1,9 @@
 <#
     .SYNOPSIS
-        This is the alias to the build task Publish_GitHub_Wiki_Content's script file.
+        This is the alias to the build task Generate_Markdown_For_Public_Commands's script file.
 
     .DESCRIPTION
-        This makes available the alias 'Task.Publish_GitHub_Wiki_Content' that is
+        This makes available the alias 'Task.Generate_Markdown_For_Public_Commands' that is
         exported in the module manifest so that the build task can be correctly
         imported using for example Invoke-Build.
 

@@ -69,8 +69,8 @@ param
     $BuildInfo = (property BuildInfo @{ })
 )
 
-# Synopsis: Generate markdown documentation for the public commands from the built module.
-Task Generate_Markdown_For_Public_Commands {
+# Synopsis: Generate help file for the public commands from the built module.
+Task Generate_External_Help_File_For_Public_Commands {
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules/Measure-ParameterBlockParameterAttribute', '', Justification='For boolean values when using (property $true $false) fails in conversion between string and boolean when environment variable is used if set as advanced parameter ([Parameter()])')]
     param
     (
@@ -80,19 +80,7 @@ Task Generate_Markdown_For_Public_Commands {
 
         [Parameter()]
         [System.Globalization.CultureInfo]
-        $HelpCultureInfo = 'en-US',
-
-        [Parameter()]
-        [System.String[]]
-        $DependentType = (property DependentType @()),
-
-        [Parameter()]
-        [System.String[]]
-        $DependentModule = (property DependentModule @()),
-
-        $WithModulePage = (property WithModulePage $false),
-        $AlphabeticParamOrder = (property AlphabeticParamOrder $true),
-        $ExcludeDontShow = (property ExcludeDontShow $true) # cSpell:ignore Dont
+        $HelpCultureInfo = 'en-US'
     )
 
     if (-not (Get-Module -Name 'PlatyPS' -ListAvailable))
@@ -105,55 +93,19 @@ Task Generate_Markdown_For_Public_Commands {
 
     $DocOutputFolder = Get-SamplerAbsolutePath -Path $DocOutputFolder -RelativeTo $OutputDirectory
 
-    $helpVersion = (Split-ModuleVersion -ModuleVersion $ModuleVersion).Version
+    $buildModuleLocalePath = $BuiltModuleBase | Join-Path -ChildPath $HelpCultureInfo
 
     "`tDocs output folder path             = '$DocOutputFolder'"
     "`tAlphabetic Parameter Order          = '$AlphabeticParamOrder'"
-    "`tExclude Parameters With [Dont Show] = '$ExcludeDontShow'"
     "`tWith Module Page                    = '$WithModulePage'"
     "`tDependent types                     = '{0}'" -f ($DependentType -join "', '")
     "`tDependent Modules                   = '{0}'" -f ($DependentModule -join "', '")
-    "`tLocale                              = '$HelpCultureInfo'"
-    "`tHelp Version                        = '$helpVersion'"
+    "`tBuilt Module Locale Path            = '$buildModuleLocalePath'"
 
     $generateMarkdownScript = @"
 `$env:PSModulePath = '$env:PSModulePath'
-"@
-
-    if ($DependentType)
-    {
-        $generateMarkdownScript += @"
-`n# Loading dependent types
-Add-Type -Path '$DependentType'
-"@
-    }
-
-    if ($DependentModule)
-    {
-        $generateMarkdownScript += @"
-`n# Import dependent modules
-Import-Module -name '$DependentModule'
-"@
-    }
-
-    $generateMarkdownScript += @"
-`n# Import the module to generate help for
-Import-Module -Name '$ProjectName' -ErrorAction Stop
-
-`$newMarkdownHelpParams = @{
-    Module                = '$ProjectName'
-    OutputFolder          = '$DocOutputFolder'
-    AlphabeticParamsOrder = `$$AlphabeticParamOrder
-    WithModulePage        = `$$WithModulePage
-    ExcludeDontShow       = `$$ExcludeDontShow
-    Locale                = '$HelpCultureInfo'
-    HelpVersion           = '$helpVersion'
-    Force                 = `$true
-    ErrorAction           = 'Stop'
-}
-
-# Generate the markdown help
-New-MarkdownHelp @newMarkdownHelpParams
+# Generate the help file
+New-ExternalHelp -Path '$DocOutputFolder' -OutputPath '$buildModuleLocalePath' -Force
 "@
 
     Write-Build -Color DarkGray -Text "$generateMarkdownScript"
