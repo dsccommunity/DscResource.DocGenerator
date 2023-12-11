@@ -57,7 +57,7 @@ function Get-CommentBasedHelp
     $firstCommentBlockEnd = [System.Text.RegularExpressions.Regex]::Match($scriptContent, '#>', $regexOptions)
 
     # Ensure the comment-based help block start at the top of the file.
-    if ($firstCommentBlockStart.Success)
+    if ($firstCommentBlockStart.Success -and $firstCommentBlockEnd.Success)
     {
         Write-Verbose -Message ($script:localizedData.ParsingOutCommentBasedHelpBlock -f $Path)
 
@@ -71,7 +71,7 @@ function Get-CommentBasedHelp
     }
     else
     {
-        Write-Warning -Message (
+        Write-Verbose -Message (
             $script:localizedData.CommentBasedHelpBlockNotFound -f $Path
         )
     }
