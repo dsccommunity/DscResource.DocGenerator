@@ -115,6 +115,9 @@ Task Generate_Markdown_For_Public_Commands {
     "`tDependent Modules                   = '{0}'" -f ($DependentModule -join "', '")
     "`tLocale                              = '$HelpCultureInfo'"
     "`tHelp Version                        = '$helpVersion'"
+    ""
+
+    Write-Build -Color 'Magenta' -Text 'Creating markdown templates for command documentation.'
 
     $generateMarkdownScript = @"
 `$env:PSModulePath = '$env:PSModulePath'
@@ -148,6 +151,9 @@ Import-Module -Name '$ProjectName' -ErrorAction Stop
     ExcludeDontShow       = `$$ExcludeDontShow
     Locale                = '$HelpCultureInfo'
     HelpVersion           = '$helpVersion'
+    MetaData              = @{
+        Type = 'Command'
+    }
     Force                 = `$true
     ErrorAction           = 'Stop'
 }
@@ -156,7 +162,7 @@ Import-Module -Name '$ProjectName' -ErrorAction Stop
 New-MarkdownHelp @newMarkdownHelpParams
 "@
 
-    Write-Build -Color DarkGray -Text "$generateMarkdownScript"
+    Write-Build -Color DarkGray -Text $generateMarkdownScript
 
     $generateMarkdownScriptBlock = [ScriptBlock]::Create($generateMarkdownScript)
 
@@ -166,5 +172,5 @@ New-MarkdownHelp @newMarkdownHelpParams
         The scriptblock is run in a separate process to avoid conflicts with
         other modules that are loaded in the current process.
     #>
-    & $pwshPath -Command $generateMarkdownScriptBlock -ExecutionPolicy 'ByPass'
+    & $pwshPath -Command $generateMarkdownScriptBlock -ExecutionPolicy 'ByPass' -NoProfile
 }

@@ -101,6 +101,7 @@ Task Generate_External_Help_File_For_Public_Commands {
     "`tDependent types                     = '{0}'" -f ($DependentType -join "', '")
     "`tDependent Modules                   = '{0}'" -f ($DependentModule -join "', '")
     "`tBuilt Module Locale Path            = '$buildModuleLocalePath'"
+    ""
 
     $generateMarkdownScript = @"
 `$env:PSModulePath = '$env:PSModulePath'
@@ -108,7 +109,7 @@ Task Generate_External_Help_File_For_Public_Commands {
 New-ExternalHelp -Path '$DocOutputFolder' -OutputPath '$buildModuleLocalePath' -Force
 "@
 
-    Write-Build -Color DarkGray -Text "$generateMarkdownScript"
+    Write-Build -Color DarkGray -Text $generateMarkdownScript
 
     $generateMarkdownScriptBlock = [ScriptBlock]::Create($generateMarkdownScript)
 
@@ -118,5 +119,5 @@ New-ExternalHelp -Path '$DocOutputFolder' -OutputPath '$buildModuleLocalePath' -
         The scriptblock is run in a separate process to avoid conflicts with
         other modules that are loaded in the current process.
     #>
-    & $pwshPath -Command $generateMarkdownScriptBlock -ExecutionPolicy 'ByPass'
+    & $pwshPath -Command $generateMarkdownScriptBlock -ExecutionPolicy 'ByPass' -NoProfile
 }
