@@ -38,6 +38,7 @@ BuildWorkflow:
     - Generate_Wiki_Content
     - Generate_Markdown_For_Public_Commands
     - Generate_External_Help_File_For_Public_Commands
+    - Clean_Markdown_Of_Public_Commands
     # https://learn.microsoft.com/en-us/powershell/utility-modules/platyps/create-help-using-platyps?view=ps-modules#creating-an-updateable-help-package
     # - Package_External_Help_Documentation
 

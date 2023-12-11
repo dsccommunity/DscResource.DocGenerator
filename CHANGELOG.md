@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   generate the modules help files to support `Get-Help` for public commands.
   This task is dependent on the task `Generate_Markdown_For_Public_Commands`
   to have been run prior.
+- Task `Clean_Markdown_Of_Public_Commands` which will remove metadata and
+  wrongly added parameters in the command markdown documentation.
 - Private function `Remove-MarkdownMetadata` that removes metadata from a
   Markdown file.
 - Private function `Remove-ParameterFromMarkdown` that removes a parameter
