@@ -120,4 +120,7 @@ New-ExternalHelp -Path '$DocOutputFolder' -OutputPath '$buildModuleLocalePath' -
         other modules that are loaded in the current process.
     #>
     & $pwshPath -Command $generateMarkdownScriptBlock -ExecutionPolicy 'ByPass' -NoProfile
+
+    # Add a newline to the end of the help file to pass HQRM tests.
+    Add-NewLine -FileInfo (Get-Item -Path "$buildModuleLocalePath/$ProjectName-help.xml") -AtEndOfFile
 }

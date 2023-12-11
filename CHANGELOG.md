@@ -24,8 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Markdown file.
 - Private function `Remove-ParameterFromMarkdown` that removes a parameter
   from a commands markdown documentation.
-- Public function `Edit-CommandDocumentation` that will modify the a generated
+- Public command `Edit-CommandDocumentation` that will modify the a generated
   command markdown documentation.
+- Public command `Add-NewLine` that can add line endings at the end of a file.
 
 ### Changed
 
