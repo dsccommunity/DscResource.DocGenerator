@@ -265,6 +265,7 @@ stages:
       - test_windows_ps
       - test_linux
       - test_macos
+      condition: succeededOrFailed()
       pool:
         vmImage: 'ubuntu-latest'
       timeoutInMinutes: 0
