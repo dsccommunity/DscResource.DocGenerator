@@ -61,7 +61,7 @@ Get-MarkdownMetadata -Path $($FilePath.FullName) -ErrorAction 'Stop'
             {
                 Write-Information -MessageData "Cleaning documentation of '$($FilePath.BaseName)'." -InformationAction 'Continue'
 
-                Remove-MarkdownMetadata -FilePath $FilePath
+                Remove-MarkdownMetadataBlock -FilePath $FilePath
 
                 <#
                     Remove ProgressAction parameter from the documentation. The

@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to have been run prior.
 - Task `Clean_Markdown_Of_Public_Commands` which will remove metadata and
   wrongly added parameters in the command markdown documentation.
-- Private function `Remove-MarkdownMetadata` that removes metadata from a
+- Private function `Remove-MarkdownMetadataBlock` that removes metadata from a
   Markdown file.
 - Private function `Remove-ParameterFromMarkdown` that removes a parameter
   from a commands markdown documentation.

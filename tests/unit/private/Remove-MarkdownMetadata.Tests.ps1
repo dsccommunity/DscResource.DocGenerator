@@ -19,7 +19,7 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 #endregion HEADER
 
 InModuleScope $script:moduleName {
-    Describe 'Remove-MarkdownMetadata' {
+    Describe 'Remove-MarkdownMetadataBlock' {
         It 'Should remove metadata from a markdown file' {
             $testFilePath = Join-Path -Path $TestDrive -ChildPath 'TestFile.md'
 
@@ -30,7 +30,7 @@ title: Test Title
 # Test Content
 "@
 
-            Remove-MarkdownMetadata -FilePath $testFilePath
+            Remove-MarkdownMetadataBlock -FilePath $testFilePath
 
             $content = Get-Content -Path $testFilePath -Raw
 
@@ -44,7 +44,7 @@ title: Test Title
 # Test Content
 "@
 
-            { Remove-MarkdownMetadata -FilePath $testFilePathNoMetadata } | Should -Not -Throw
+            { Remove-MarkdownMetadataBlock -FilePath $testFilePathNoMetadata } | Should -Not -Throw
 
             $content = Get-Content -Path $testFilePathNoMetadata -Raw
 
@@ -54,7 +54,7 @@ title: Test Title
         It 'Should throw when file does not exist' {
             $nonExistentFilePath = Join-Path $TestDrive -ChildPath 'NonExistentFile.md'
 
-            { Remove-MarkdownMetadata -FilePath $nonExistentFilePath } | Should -Throw
+            { Remove-MarkdownMetadataBlock -FilePath $nonExistentFilePath } | Should -Throw
         }
 
         It 'Should not modify the file if there is no metadata' {
@@ -65,7 +65,7 @@ title: Test Title
 "@
             $originalContent = Get-Content -Path $testFilePathNoMetadata -Raw
 
-            Remove-MarkdownMetadata -FilePath $testFilePathNoMetadata
+            Remove-MarkdownMetadataBlock -FilePath $testFilePathNoMetadata
 
             $newContent = Get-Content -Path $testFilePathNoMetadata -Raw
 
@@ -82,7 +82,7 @@ title: Test Title
 # Test Content
 "@
 
-            Remove-MarkdownMetadata -FilePath $testFilePath
+            Remove-MarkdownMetadataBlock -FilePath $testFilePath
 
             $content = Get-Content -Path $testFilePath -Raw
 
