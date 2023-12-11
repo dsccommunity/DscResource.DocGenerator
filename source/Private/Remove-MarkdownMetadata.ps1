@@ -11,7 +11,7 @@
         Specifies the path to the Markdown file from which the metadata should be removed.
 
     .EXAMPLE
-        Remove-MarkdownMetadata -FilePath "C:\Path\To\File.md"
+        Remove-MarkdownMetadata -FilePath 'C:\Path\To\File.md'
 
         Removes the metadata from the specified Markdown file.
 #>
@@ -31,14 +31,11 @@ function Remove-MarkdownMetadata
     {
         $content = Get-Content -Path $FilePath.FullName -Raw
 
-        $metadataMarker = '---'
+        $metadataPattern = '(?s)---.*?---[\r|\n]*'
 
-        $startIndex = $content.IndexOf($metadataMarker)
-        $endIndex = $content.IndexOf($metadataMarker, $startIndex + $metadataMarker.Length) + $metadataMarker.Length
-
-        if ($startIndex -ge 0 -and $endIndex -gt $startIndex)
+        if ($content -match $metadataPattern)
         {
-            $content = $content.Remove($startIndex, $endIndex - $startIndex)
+            $content = $content -replace $metadataPattern
 
             Set-Content -Path $FilePath.FullName -Value $content
         }
