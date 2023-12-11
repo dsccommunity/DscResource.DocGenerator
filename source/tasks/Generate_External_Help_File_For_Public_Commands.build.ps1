@@ -114,5 +114,9 @@ New-ExternalHelp -Path '$DocOutputFolder' -OutputPath '$buildModuleLocalePath' -
 
     $pwshPath = (Get-Process -Id $PID).Path
 
+    <#
+        The scriptblock is run in a separate process to avoid conflicts with
+        other modules that are loaded in the current process.
+    #>
     & $pwshPath -Command $generateMarkdownScriptBlock -ExecutionPolicy 'ByPass'
 }
