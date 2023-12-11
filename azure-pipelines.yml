@@ -110,6 +110,7 @@ stages:
             testRunTitle: 'Test Windows (WPS)'
         - task: PublishPipelineArtifact@1
           displayName: 'Publish Test Artifact'
+          condition: succeededOrFailed()
           inputs:
             targetPath: '$(buildFolderName)/$(testResultFolderName)/'
             artifactName: 'CodeCoverageWindowsWPS'
@@ -143,6 +144,7 @@ stages:
             testRunTitle: 'Test Windows (PS)'
         - task: PublishPipelineArtifact@1
           displayName: 'Publish Test Artifact'
+          condition: succeededOrFailed()
           inputs:
             targetPath: '$(buildFolderName)/$(testResultFolderName)/'
             artifactName: 'CodeCoverageWindowsPS'
@@ -186,6 +188,7 @@ stages:
             testRunTitle: 'Test Linux'
         - task: PublishPipelineArtifact@1
           displayName: 'Publish Test Artifact'
+          condition: succeededOrFailed()
           inputs:
             targetPath: '$(buildFolderName)/$(testResultFolderName)/'
             artifactName: 'CodeCoverageLinux'
@@ -219,6 +222,7 @@ stages:
             testRunTitle: 'Test macOS'
         - task: PublishPipelineArtifact@1
           displayName: 'Publish Test Artifact'
+          condition: succeededOrFailed()
           inputs:
             targetPath: '$(buildFolderName)/$(testResultFolderName)/'
             artifactName: 'CodeCoverageMacOS'
