@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to have been run prior.
 - Private function `Remove-MarkdownMetadata` that removes metadata from a
   Markdown file.
+- Private function `Remove-ParameterFromMarkdown` that removes a parameter
+  from a commands markdown documentation.
 
 ### Changed
 
