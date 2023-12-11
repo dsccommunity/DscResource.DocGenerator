@@ -1,3 +1,4 @@
+
 <#
     .SYNOPSIS
         Sets the module version in a markdown file.

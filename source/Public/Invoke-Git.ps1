@@ -1,3 +1,4 @@
+
 <#
     .SYNOPSIS
         Invokes a git command.
