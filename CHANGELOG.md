@@ -25,6 +25,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated pipeline files to support resolving dependencies using ModuleFast
     or PSResourceGet.
 
+### Fixed
+
+- `Get-CommentBasedHelp` was fixed so it correctly filters out the comment-based
+  help from a script file.
+
 ## [0.11.2] - 2023-01-03
 
 - `Get-ClassResourceProperty`
