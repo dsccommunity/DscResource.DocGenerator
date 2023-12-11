@@ -27,6 +27,7 @@
 #>
 function Remove-ParameterFromMarkdown
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'This function is a private helper function and is not exported publicly.')]
     [CmdletBinding()]
     param
     (
