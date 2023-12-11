@@ -29,7 +29,6 @@
 
         Invokes the Git executable to return the status while having a 10000 millisecond timeout.
 #>
-
 function Invoke-Git
 {
     [CmdletBinding()]
