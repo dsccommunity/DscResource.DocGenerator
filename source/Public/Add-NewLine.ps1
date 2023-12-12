@@ -12,7 +12,7 @@
         Specifies that the new line should be added to the end of the file.
 
     .EXAMPLE
-        Add-NewLineAtEndOfFile -FileInfo "C:\path\to\file.txt" -NoPrompt
+        Add-NewLineAtEndOfFile -FileInfo "C:\path\to\file.txt" -AtEndOfFile
 
         Adds a new line at the end of the file located at "C:\path\to\file.txt" without prompting for confirmation.
 
