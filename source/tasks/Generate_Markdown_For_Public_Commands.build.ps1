@@ -5,6 +5,10 @@
     .PARAMETER ProjectPath
         The root path to the project. Defaults to $BuildRoot.
 
+    .PARAMETER SourcePath
+        The path to the source folder name. Defaults to the empty string.
+        The task does not use this parameter, see the notes below.
+
     .PARAMETER OutputDirectory
         The base directory of all output. Defaults to folder 'output' relative to
         the $BuildRoot.
@@ -24,9 +28,6 @@
     .PARAMETER ProjectName
         The project name. Defaults to the empty string.
 
-    .PARAMETER SourcePath
-        The path to the source folder name. Defaults to the empty string.
-
     .PARAMETER BuildInfo
         The build info object from ModuleBuilder. Defaults to an empty hashtable.
 
@@ -37,7 +38,12 @@
         There are also parameters that are intentionally added to the task, that is so
         that other tasks that are run prior can change the values for the parameters
         through for example environment variables.
+
+        Parameter SourcePath is intentionally added to the task even if it is not used,
+        otherwise the tests fails. Most likely because the script Set-SamplerTaskVariable
+        expects the variable to always be available.
 #>
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules/Measure-ParameterBlockParameterAttribute', '', Justification='For boolean values when using (property $true $false) fails in conversion between string and boolean when environment variable is used if set as advanced parameter ([Parameter()])')]
 param
 (
     [Parameter()]
@@ -65,36 +71,32 @@ param
     $SourcePath = (property SourcePath ''),
 
     [Parameter()]
+    [System.String]
+    $DocOutputFolder = (property DocOutputFolder 'WikiContent'),
+
+    [Parameter()]
+    [System.Globalization.CultureInfo]
+    $HelpCultureInfo = 'en-US',
+
+    [Parameter()]
+    [System.String[]]
+    $DependentType = (property DependentType @()),
+
+    [Parameter()]
+    [System.String[]]
+    $DependentModule = (property DependentModule @()),
+
+    $WithModulePage = (property WithModulePage $false),
+    $AlphabeticParamOrder = (property AlphabeticParamOrder $true),
+    $ExcludeDontShow = (property ExcludeDontShow $true), # cSpell:ignore Dont
+
+    [Parameter()]
     [System.Collections.Hashtable]
     $BuildInfo = (property BuildInfo @{ })
 )
 
 # Synopsis: Generate markdown documentation for the public commands from the built module.
 Task Generate_Markdown_For_Public_Commands {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules/Measure-ParameterBlockParameterAttribute', '', Justification='For boolean values when using (property $true $false) fails in conversion between string and boolean when environment variable is used if set as advanced parameter ([Parameter()])')]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $DocOutputFolder = (property DocOutputFolder 'WikiContent'),
-
-        [Parameter()]
-        [System.Globalization.CultureInfo]
-        $HelpCultureInfo = 'en-US',
-
-        [Parameter()]
-        [System.String[]]
-        $DependentType = (property DependentType @()),
-
-        [Parameter()]
-        [System.String[]]
-        $DependentModule = (property DependentModule @()),
-
-        $WithModulePage = (property WithModulePage $false),
-        $AlphabeticParamOrder = (property AlphabeticParamOrder $true),
-        $ExcludeDontShow = (property ExcludeDontShow $true) # cSpell:ignore Dont
-    )
-
     if (-not (Get-Module -Name 'PlatyPS' -ListAvailable))
     {
         throw 'PlatyPS is not installed. Please make sure it is available in a path that is listed in $PSModulePath. It can be added to the configuration file RequiredModules.psd1 in the project.'

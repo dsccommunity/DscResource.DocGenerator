@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        This is the alias to the build task Clean_Markdown_Of_Public_Commands's script file.
+        This is the alias to the build task Clean_Markdown_Of_Public_Commands script file.
 
     .DESCRIPTION
         This makes available the alias 'Task.Clean_Markdown_Of_Public_Commands' that is
@@ -12,4 +12,4 @@
         https://github.com/nightroman/Invoke-Build/tree/master/Tasks/Import.
 #>
 
-Set-Alias -Name 'Task.Clean_Markdown_Of_Public_Commands.build' -Value "$PSScriptRoot/tasks/Clean_Markdown_Of_Public_Commands.build.ps1"
+Set-Alias -Name 'Task.Clean_Markdown_Of_Public_Commands' -Value "$PSScriptRoot/tasks/Clean_Markdown_Of_Public_Commands.build.ps1"

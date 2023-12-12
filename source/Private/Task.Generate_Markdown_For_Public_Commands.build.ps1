@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        This is the alias to the build task Generate_Markdown_For_Public_Commands's script file.
+        This is the alias to the build task Generate_Markdown_For_Public_Commands script file.
 
     .DESCRIPTION
         This makes available the alias 'Task.Generate_Markdown_For_Public_Commands' that is
@@ -12,4 +12,4 @@
         https://github.com/nightroman/Invoke-Build/tree/master/Tasks/Import.
 #>
 
-Set-Alias -Name 'Task.Generate_Markdown_For_Public_Commands.build' -Value "$PSScriptRoot/tasks/Generate_Markdown_For_Public_Commands.build.ps1"
+Set-Alias -Name 'Task.Generate_Markdown_For_Public_Commands' -Value "$PSScriptRoot/tasks/Generate_Markdown_For_Public_Commands.build.ps1"
