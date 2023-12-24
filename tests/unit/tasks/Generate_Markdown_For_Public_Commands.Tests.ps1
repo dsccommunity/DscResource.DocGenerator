@@ -28,23 +28,6 @@ Describe 'Generate_Markdown_For_Public_Commands' {
             }
         }
 
-        Mock -CommandName Get-Item -MockWith {
-            $Path =  [System.String] ($Path -replace '\*','1.0.0')
-
-            [PSCustomObject]@{
-                FullName = $Path
-            }
-        }
-
-        Mock -CommandName Get-SamplerModuleRootPath -MockWith {
-            # Return the path that was passed to the command.
-            return $BuiltModuleManifest
-        }
-
-        Mock -CommandName Test-Path -MockWith {
-            return $true
-        }
-
         Set-Content -Path "$TestDrive/MockType.cs" -Value @"
 public class BasicTest
 {
