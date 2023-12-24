@@ -1,3 +1,4 @@
+
 <#
     .SYNOPSIS
         Adds a new line at the end of a file.
