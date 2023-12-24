@@ -45,13 +45,16 @@ function Remove-ParameterFromMarkdown
     {
         $content = Get-Content -Path $FilePath.FullName -Raw
 
-        if (-not($ParameterName.StartsWith('-')))
+        if (-not ($ParameterName.StartsWith('-')))
         {
             $ParameterName = ('-{0}' -f $ParameterName)
         }
 
-        $pattern = "### $ParameterName\r?\n[\S\s\r\n]*?(?=#{2,3}?)"
-        $regex = [regex]::new($pattern, [System.Text.RegularExpressions.RegexOptions]::Multiline)
+        $patternParameterSection = "### $ParameterName\r?\n[\S\s\r\n]*?(?=#{2,3}?)"
+        $patternSyntaxSection = "\[?$ParameterName <\w+>\]? ?"
+
+        $regex = [regex]::new($patternParameterSection, [System.Text.RegularExpressions.RegexOptions]::Multiline)
+
         $parameters = $regex.Matches($content)
 
         if ($parameters.Count -gt 0)
@@ -59,8 +62,13 @@ function Remove-ParameterFromMarkdown
             # process the parameter
             Write-Verbose ('Removing parameter {0} from {1}' -f $ParameterName, $FilePath.BaseName)
 
-            $content = $content -replace $pattern
+            # Remove the parameter section from the content.
+            $content = $content -replace $patternParameterSection
 
+            # Remove the parameter from the syntax section.
+            $content = $content -replace $patternSyntaxSection
+
+            # Write the updated content back to the file.
             Set-Content -Path $FilePath.FullName -Value $content
         }
         else

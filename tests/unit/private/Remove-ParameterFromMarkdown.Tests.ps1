@@ -26,11 +26,35 @@ InModuleScope $script:moduleName {
             $parameterName = '-TestParameter'
 
             $contentWithParameter = @"
+## SYNTAX
+
+Get-Something [$parameterName] [-AnotherParameter] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+
+## PARAMETERS
+
 ### $parameterName
 This is a test parameter.
 
 ### -AnotherParameter
 This is another test parameter.
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### CommonParameters
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 "@
 
             Set-Content -Path $testFilePath -Value $contentWithParameter
@@ -40,7 +64,7 @@ This is another test parameter.
             Remove-ParameterFromMarkdown -FilePath $testFilePath -ParameterName $parameterName
 
             $content = Get-Content -Path $testFilePath -Raw
-            $content | Should -Not -Match $parameterName
+            $content | Should -Not -Match "### $parameterName"
         }
 
         It 'Should not remove other parameters from the markdown file' {
@@ -49,7 +73,7 @@ This is another test parameter.
             Remove-ParameterFromMarkdown -FilePath $testFilePath -ParameterName $parameterName
 
             $content = Get-Content -Path $testFilePath -Raw
-            $content | Should -Match $anotherParameterName
+            $content | Should -Match "### $anotherParameterName"
         }
 
         It 'Should not throw when the specified parameter does not exist in the markdown file' {
@@ -62,6 +86,23 @@ This is another test parameter.
             $nonExistentFilePath = Join-Path $TestDrive -ChildPath 'NonExistentFile.md'
 
             { Remove-ParameterFromMarkdown -FilePath $nonExistentFilePath -ParameterName $parameterName } | Should -Throw
+        }
+
+        It 'Should remove the parameter from the syntax section' {
+            Remove-ParameterFromMarkdown -FilePath $testFilePath -ParameterName 'ProgressAction'
+
+            $content = Get-Content -Path $testFilePath -Raw
+            $content | Should -Match "Get-Something \[$parameterName\] \[-AnotherParameter\] \[<CommonParameters>\]"
+        }
+
+        It 'Should add a dash to the parameter name if it does not start with one, and still remove the parameter' {
+            $parameterWithoutDash = 'TestParameter'
+
+            Remove-ParameterFromMarkdown -FilePath $testFilePath -ParameterName $parameterWithoutDash
+
+            $content = Get-Content -Path $testFilePath -Raw
+
+            $content | Should -Not -Match "### $parameterWithoutDash"
         }
     }
 }
