@@ -27,16 +27,16 @@
     .PARAMETER SourcePath
         The path to the source folder name. Defaults to the empty string.
 
+    .PARAMETER DocOutputFolder
+        The path to the where the documentation is written. Defaults to
+        the folder `./output/WikiContent`.
+
     .PARAMETER BuildInfo
         The build info object from ModuleBuilder. Defaults to an empty hashtable.
 
     .NOTES
         This is a build task that is primarily meant to be run by Invoke-Build but
         wrapped by the Sampler project's build.ps1 (https://github.com/gaelcolas/Sampler).
-
-        There are also parameters that are intentionally added to the task, that is so
-        that other tasks that are run prior can change the values for the parameters
-        through for example environment variables.
 #>
 param
 (
@@ -65,21 +65,17 @@ param
     $SourcePath = (property SourcePath ''),
 
     [Parameter()]
+    [System.String]
+    $DocOutputFolder = (property DocOutputFolder 'WikiContent'),
+
+    [Parameter()]
     [System.Collections.Hashtable]
     $BuildInfo = (property BuildInfo @{ })
 )
 
 # Synopsis: Clean the markdown documentation of the public commands.
 Task Clean_Markdown_Of_Public_Commands {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules/Measure-ParameterBlockParameterAttribute', '', Justification='For boolean values when using (property $true $false) fails in conversion between string and boolean when environment variable is used if set as advanced parameter ([Parameter()])')]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $DocOutputFolder = (property DocOutputFolder 'WikiContent')
-    )
-
-    # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
+    # Get the values for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
     . Set-SamplerTaskVariable
 
     "`tDocs output folder path = '$DocOutputFolder'"

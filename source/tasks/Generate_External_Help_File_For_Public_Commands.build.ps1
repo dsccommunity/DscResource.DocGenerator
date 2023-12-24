@@ -27,16 +27,19 @@
     .PARAMETER SourcePath
         The path to the source folder name. Defaults to the empty string.
 
+    .PARAMETER DocOutputFolder
+        The path to the where the markdown documentation is found. Defaults to the
+        folder `./output/WikiContent`.
+
+    .PARAMETER HelpCultureInfo
+        Specifies the culture that documentation is generated for. Defaults to 'en-US'.
+
     .PARAMETER BuildInfo
         The build info object from ModuleBuilder. Defaults to an empty hashtable.
 
     .NOTES
         This is a build task that is primarily meant to be run by Invoke-Build but
         wrapped by the Sampler project's build.ps1 (https://github.com/gaelcolas/Sampler).
-
-        There are also parameters that are intentionally added to the task, that is so
-        that other tasks that are run prior can change the values for the parameters
-        through for example environment variables.
 #>
 param
 (
@@ -65,48 +68,40 @@ param
     $SourcePath = (property SourcePath ''),
 
     [Parameter()]
+    [System.String]
+    $DocOutputFolder = (property DocOutputFolder 'WikiContent'),
+
+    [Parameter()]
+    [System.Globalization.CultureInfo]
+    $HelpCultureInfo = (property HelpCultureInfo 'en-US'),
+
+    [Parameter()]
     [System.Collections.Hashtable]
     $BuildInfo = (property BuildInfo @{ })
 )
 
 # Synopsis: Generate help file for the public commands from the built module.
 Task Generate_External_Help_File_For_Public_Commands {
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('DscResource.AnalyzerRules/Measure-ParameterBlockParameterAttribute', '', Justification='For boolean values when using (property $true $false) fails in conversion between string and boolean when environment variable is used if set as advanced parameter ([Parameter()])')]
-    param
-    (
-        [Parameter()]
-        [System.String]
-        $DocOutputFolder = (property DocOutputFolder 'WikiContent'),
-
-        [Parameter()]
-        [System.Globalization.CultureInfo]
-        $HelpCultureInfo = 'en-US'
-    )
-
     if (-not (Get-Module -Name 'PlatyPS' -ListAvailable))
     {
         throw 'PlatyPS is not installed. Please make sure it is available in a path that is listed in $PSModulePath. It can be added to the configuration file RequiredModules.psd1 in the project.'
     }
 
-    # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
+    # Get the values for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
     . Set-SamplerTaskVariable
 
     $DocOutputFolder = Get-SamplerAbsolutePath -Path $DocOutputFolder -RelativeTo $OutputDirectory
 
-    $buildModuleLocalePath = $BuiltModuleBase | Join-Path -ChildPath $HelpCultureInfo
+    $builtModuleLocalePath = $BuiltModuleBase | Join-Path -ChildPath $HelpCultureInfo.Name
 
     "`tDocs output folder path             = '$DocOutputFolder'"
-    "`tAlphabetic Parameter Order          = '$AlphabeticParamOrder'"
-    "`tWith Module Page                    = '$WithModulePage'"
-    "`tDependent types                     = '{0}'" -f ($DependentType -join "', '")
-    "`tDependent Modules                   = '{0}'" -f ($DependentModule -join "', '")
-    "`tBuilt Module Locale Path            = '$buildModuleLocalePath'"
+    "`tBuilt Module Locale Path            = '$builtModuleLocalePath'"
     ""
 
     $generateMarkdownScript = @"
 `$env:PSModulePath = '$env:PSModulePath'
 # Generate the help file
-New-ExternalHelp -Path '$DocOutputFolder' -OutputPath '$buildModuleLocalePath' -Force
+New-ExternalHelp -Path '$DocOutputFolder' -OutputPath '$builtModuleLocalePath' -Force
 "@
 
     Write-Build -Color DarkGray -Text $generateMarkdownScript
@@ -122,5 +117,5 @@ New-ExternalHelp -Path '$DocOutputFolder' -OutputPath '$buildModuleLocalePath' -
     & $pwshPath -Command $generateMarkdownScriptBlock -ExecutionPolicy 'ByPass' -NoProfile
 
     # Add a newline to the end of the help file to pass HQRM tests.
-    Add-NewLine -FileInfo (Get-Item -Path "$buildModuleLocalePath/$ProjectName-help.xml") -AtEndOfFile
+    Add-NewLine -FileInfo (Get-Item -Path "$builtModuleLocalePath/$ProjectName-help.xml") -AtEndOfFile
 }

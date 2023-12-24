@@ -5,10 +5,6 @@
     .PARAMETER ProjectPath
         The root path to the project. Defaults to $BuildRoot.
 
-    .PARAMETER SourcePath
-        The path to the source folder name. Defaults to the empty string.
-        The task does not use this parameter, see the notes below.
-
     .PARAMETER OutputDirectory
         The base directory of all output. Defaults to folder 'output' relative to
         the $BuildRoot.
@@ -28,16 +24,23 @@
     .PARAMETER ProjectName
         The project name. Defaults to the empty string.
 
+    .PARAMETER SourcePath
+        The path to the source folder name. Defaults to the empty string.
+        The task does not use this parameter, see the notes below.
+
+    .PARAMETER DocOutputFolder
+        The path to the where the markdown documentation is written. Defaults to the
+        folder `./output/WikiContent`.
+
+    .PARAMETER HelpCultureInfo
+        Specifies the culture that documentation is generated for. Defaults to 'en-US'.
+
     .PARAMETER BuildInfo
         The build info object from ModuleBuilder. Defaults to an empty hashtable.
 
     .NOTES
         This is a build task that is primarily meant to be run by Invoke-Build but
         wrapped by the Sampler project's build.ps1 (https://github.com/gaelcolas/Sampler).
-
-        There are also parameters that are intentionally added to the task, that is so
-        that other tasks that are run prior can change the values for the parameters
-        through for example environment variables.
 
         Parameter SourcePath is intentionally added to the task even if it is not used,
         otherwise the tests fails. Most likely because the script Set-SamplerTaskVariable
@@ -76,7 +79,7 @@ param
 
     [Parameter()]
     [System.Globalization.CultureInfo]
-    $HelpCultureInfo = 'en-US',
+    $HelpCultureInfo = (property HelpCultureInfo 'en-US'),
 
     [Parameter()]
     [System.String[]]
@@ -102,7 +105,7 @@ Task Generate_Markdown_For_Public_Commands {
         throw 'PlatyPS is not installed. Please make sure it is available in a path that is listed in $PSModulePath. It can be added to the configuration file RequiredModules.psd1 in the project.'
     }
 
-    # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
+    # Get the values for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
     . Set-SamplerTaskVariable
 
     $DocOutputFolder = Get-SamplerAbsolutePath -Path $DocOutputFolder -RelativeTo $OutputDirectory
