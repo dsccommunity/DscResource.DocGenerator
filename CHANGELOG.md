@@ -37,6 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     to work. ModuleBuilder has no option to add a prefix per source file,
     the only alternative would be to move the comment-based help inside the
     function-block which is currently against the style guideline.
+  - The built module is now removed from the session when initiating a new
+    build. The build pipeline is dogfooding functionality and leaving a
+    previous version imported in the session do not use new code.
 
 ### Fixed
 
@@ -128,7 +131,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Out-GitResult` - Displays `Invoke-Git` returned hashtable
     via Write-Verbose and Write-Debug localized messages.
     Fixes [Issue 90](https://github.com/dsccommunity/DscResource.DocGenerator/issues/90)
-  - `Hide-GitToken` - Used to redact the token from the specified 
+  - `Hide-GitToken` - Used to redact the token from the specified
     git command so that the command can be safely outputted in logs.
 
 ### Changed
@@ -231,7 +234,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - DscResource.DocGenerator
   - Adding uploading coverage to Codecov.io.
-  
+
 ### Fixed
 
 - DscResource.DocGenerator
@@ -356,7 +359,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   improve the Wiki documentation.
 
 ## [0.6.1] - 2020-07-01
-  
+
 ### Fixed
 
 - Update README.md with the correct build task name; 'Publish_GitHub_Wiki_Content'.
@@ -459,7 +462,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     DscResource.DocGenerator:
       - 'Task.*'
   ```
-  
+
 ### Fixed
 
 - Fixes the build task `Generate_Conceptual_Help` to use the correct
