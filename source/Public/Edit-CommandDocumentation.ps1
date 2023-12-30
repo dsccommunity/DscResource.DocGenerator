@@ -71,6 +71,8 @@ Get-MarkdownMetadata -Path $($FilePath.FullName) -ErrorAction 'Stop'
                     See issue https://github.com/PowerShell/platyPS/issues/595.
                 #>
                 Remove-ParameterFromMarkdown -FilePath $FilePath -ParameterName 'ProgressAction'
+
+                Remove-EscapedMarkdownCode -FilePath $FilePath
             }
 
             default

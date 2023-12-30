@@ -21,6 +21,7 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 Describe 'Edit-CommandDocumentation' {
     BeforeAll {
         Mock -CommandName Write-Information -ModuleName $script:moduleName
+        Mock -CommandName Remove-EscapedMarkdownCode -ModuleName $script:moduleName
 
         $testFilePath = Join-Path $TestDrive -ChildPath 'TestFile.md'
 
