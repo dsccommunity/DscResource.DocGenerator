@@ -1,3 +1,4 @@
+
 <#
     .SYNOPSIS
         New-DscResourceWikiPage generates wiki pages that can be uploaded to GitHub
@@ -9,6 +10,15 @@
         output the Markdown files to the specified directory. These help files include
         details on the property types for each resource, as well as a text description
         and examples where they exist.
+
+        Generate documentation that can be manually uploaded to the GitHub repository
+        Wiki.
+
+        It is possible to use markdown code in the schema MOF parameter descriptions.
+        If markdown code is used and conceptual help is also to be generated, configure
+        the task [`Generate_Conceptual_Help`](#generate_conceptual_help) to parse the
+        markdown code. See the cmdlet `New-DscResourcePowerShellHelp` and the task
+        [`Generate_Conceptual_Help`](#generate_conceptual_help) for more information.
 
     .PARAMETER OutputPath
         Where should the files be saved to.

@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        This is a build task that generates conceptual help.
+        This is a build task that generates an external help file for a module.
 
     .PARAMETER ProjectPath
         The root path to the project. Defaults to $BuildRoot.
@@ -27,13 +27,12 @@
     .PARAMETER SourcePath
         The path to the source folder name. Defaults to the empty string.
 
-    .PARAMETER MarkdownCodeRegularExpression
-        An array with regular expressions that will be used to remove markdown code
-        from the schema mof property descriptions. The regular expressions must be
-        written so that capture group 0 returns the full match and the capture group
-        1 returns the text that should be kept. For example the regular expression
-        \`(.+?)\` will find `$true` which will be replaced to $true since that is
-        what will be returned by capture group 1.
+    .PARAMETER DocOutputFolder
+        The path to the where the markdown documentation is found. Defaults to the
+        folder `./output/WikiContent`.
+
+    .PARAMETER HelpCultureInfo
+        Specifies the culture that documentation is generated for. Defaults to 'en-US'.
 
     .PARAMETER BuildInfo
         The build info object from ModuleBuilder. Defaults to an empty hashtable.
@@ -70,49 +69,53 @@ param
 
     [Parameter()]
     [System.String]
-    $MarkdownCodeRegularExpression = (property MarkdownCodeRegularExpression @()),
+    $DocOutputFolder = (property DocOutputFolder 'WikiContent'),
+
+    [Parameter()]
+    [System.Globalization.CultureInfo]
+    $HelpCultureInfo = (property HelpCultureInfo 'en-US'),
 
     [Parameter()]
     [System.Collections.Hashtable]
     $BuildInfo = (property BuildInfo @{ })
 )
 
-# Synopsis: This task generates conceptual help for DSC resources.
-task Generate_Conceptual_Help {
+# Synopsis: Generate help file for the public commands from the built module.
+Task Generate_External_Help_File_For_Public_Commands {
+    if (-not (Get-Module -Name 'PlatyPS' -ListAvailable))
+    {
+        throw 'PlatyPS is not installed. Please make sure it is available in a path that is listed in $PSModulePath. It can be added to the configuration file RequiredModules.psd1 in the project.'
+    }
+
     # Get the values for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
     . Set-SamplerTaskVariable
 
-    $configParameterName = 'MarkdownCodeRegularExpression'
+    $DocOutputFolder = Get-SamplerAbsolutePath -Path $DocOutputFolder -RelativeTo $OutputDirectory
 
-    if (-not (Get-Variable -Name $configParameterName -ValueOnly -ErrorAction 'SilentlyContinue'))
-    {
-        # Variable is not set in context, try to use value from $BuildInfo.
-        $configParameterValue = $BuildInfo.'DscResource.DocGenerator'.Generate_Conceptual_Help.$configParameterName
+    $builtModuleLocalePath = $BuiltModuleBase | Join-Path -ChildPath $HelpCultureInfo.Name
 
-        <#
-            Always set the value. It will be set to $null if the parameter does
-            not exist in the variable $BuildInfo.
+    "`tDocs output folder path             = '$DocOutputFolder'"
+    "`tBuilt Module Locale Path            = '$builtModuleLocalePath'"
+    ""
 
-            Always setting this variable is a workaround because the the parameter
-            MarkdownCodeRegularExpression's default value that uses 'property'
-            will wrongly return a collection of 1 where item 1 has a blank value.
-        #>
-        Set-Variable -Name $configParameterName -Value $configParameterValue
-    }
+    $generateMarkdownScript = @"
+`$env:PSModulePath = '$env:PSModulePath'
+# Generate the help file
+New-ExternalHelp -Path '$DocOutputFolder' -OutputPath '$builtModuleLocalePath' -Force
+"@
 
-    if ($MarkdownCodeRegularExpression)
-    {
-        "`tMarkdownCodeRegularExpression = RegEx: {0}" -f ($MarkdownCodeRegularExpression -join ' | RegEx: ')
-    }
+    Write-Build -Color DarkGray -Text $generateMarkdownScript
 
-    Write-Build Magenta 'Generating conceptual help for all DSC resources based on source.'
+    $generateMarkdownScriptBlock = [ScriptBlock]::Create($generateMarkdownScript)
 
-    $newDscResourcePowerShellHelpParameters = @{
-        ModulePath                    = $SourcePath
-        DestinationModulePath         = $builtModuleBase
-        MarkdownCodeRegularExpression = $MarkdownCodeRegularExpression
-        Force                         = $true
-    }
+    $pwshPath = (Get-Process -Id $PID).Path
 
-    New-DscResourcePowerShellHelp @newDscResourcePowerShellHelpParameters
+    <#
+        The scriptblock is run in a separate process to avoid conflicts with
+        other modules that are loaded in the current process.
+    #>
+    & $pwshPath -Command $generateMarkdownScriptBlock -ExecutionPolicy 'ByPass' -NoProfile
+
+    # Add a newline to the end of the help file to pass HQRM tests.
+    Add-NewLine -FileInfo (Get-Item -Path "$builtModuleLocalePath/$ProjectName-help.xml") -AtEndOfFile
 }

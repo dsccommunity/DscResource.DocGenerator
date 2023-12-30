@@ -28,9 +28,12 @@
         PowerShell classes do not support comment-based help. There is
         no GetHelpContent() on the TypeDefinitionAst.
 
-        We use the ScriptBlockAst to filter out our class-based resource
-        script block from the source file and use that to get the
-        comment-based help.
+        GetHelpContent() only works for script comment-based help, which requires the
+        comment-based help to be the first element in the file and have two blank lines
+        after the comment-based help block. To avoid this limitation the comment-based
+        help block is parsed out of the source file and made into a ScriptBlockAst that
+        is used to get the comment-based help using GetHelpContent().
+
 #>
 function Get-CommentBasedHelp
 {
@@ -49,18 +52,26 @@ function Get-CommentBasedHelp
 
     $scriptContent = Get-Content -Path $Path -Raw
 
-    # Ensure the comment-based help block is at the top of the file.
     $regexOptions = [System.Text.RegularExpressions.RegexOptions]::Multiline
-    $firstCommentBlockStart = [System.Text.RegularExpressions.Regex]::Match($scriptContent, "^<#(\n|\r|\r\n)$", $regexOptions)
+    $firstCommentBlockStart = [System.Text.RegularExpressions.Regex]::Match($scriptContent, '^<#', $regexOptions)
+    $firstCommentBlockEnd = [System.Text.RegularExpressions.Regex]::Match($scriptContent, '#>', $regexOptions)
 
-    if ($firstCommentBlockStart.Success)
+    # Ensure the comment-based help block start at the top of the file.
+    if ($firstCommentBlockStart.Success -and $firstCommentBlockEnd.Success)
     {
-        Write-Verbose -Message ($script:localizedData.CommentBasedHelpBlockNotAtTopMessage -f $Path)
-        $scriptContent = $scriptContent.Substring($firstCommentBlockStart.Index)
+        Write-Verbose -Message ($script:localizedData.ParsingOutCommentBasedHelpBlock -f $Path)
+
+        if ($firstCommentBlockStart.Index -ne 0)
+        {
+            Write-Debug -Message ($script:localizedData.CommentBasedHelpBlockNotAtTopMessage -f $Path)
+        }
+
+        # Parsing out only the comment-based help block.
+        $scriptContent = $scriptContent.Substring($firstCommentBlockStart.Index, $firstCommentBlockEnd.Index + $firstCommentBlockEnd.Length)
     }
     else
     {
-        Write-Warning -Message (
+        Write-Verbose -Message (
             $script:localizedData.CommentBasedHelpBlockNotFound -f $Path
         )
     }

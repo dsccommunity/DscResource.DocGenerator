@@ -18,15 +18,24 @@ Remove-Module -Name $script:moduleName -Force -ErrorAction 'SilentlyContinue'
 Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 #endregion HEADER
 
-Describe 'Split-ModuleVersion' {
-    Context 'When module version have prerelease string' {
-        It 'Should return the correct version' {
-            $result = Split-ModuleVersion -ModuleVersion '1.2.3-preview0001'
+Describe 'Add-NewLine' {
+    BeforeAll {
+        $testFilePath = Join-Path $TestDrive -ChildPath 'TestFile.xml'
 
-            $result | Should -BeOfType [PSCustomObject]
-            $result.Version | Should -Be '1.2.3'
-            $result.PreReleaseString | Should -Be 'preview0001'
-            $result.ModuleVersion | Should -Be '1.2.3-preview0001'
-        }
+        $content = '<xml version="1.0" encoding="utf-8"?>'
+
+        # Use WriteAllText() instead of Set-Content so that a line ending is not added.
+        [System.IO.File]::WriteAllText($testFilePath, $content)
+    }
+
+    It 'Should add a new line at the end of the file' {
+        $originalContent = Get-Content -Path $testFilePath -Raw
+
+        Add-NewLine -FileInfo $testFilePath -AtEndOfFile
+
+        $newContent = Get-Content -Path $testFilePath -Raw
+
+        $originalContent | Should -Not -MatchExactly '\r\n$'
+        $newContent | Should -MatchExactly '\r\n$'
     }
 }

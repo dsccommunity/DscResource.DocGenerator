@@ -114,7 +114,7 @@ task Publish_GitHub_Wiki_Content {
             $local:DebugPreference = 'Continue'
         }
 
-        # Get the vales for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
+        # Get the values for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
         . Set-SamplerTaskVariable
 
         # If variables are not set then update variables from the property values in the build.yaml.

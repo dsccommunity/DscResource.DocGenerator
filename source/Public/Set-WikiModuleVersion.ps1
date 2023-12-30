@@ -1,10 +1,12 @@
+
 <#
     .SYNOPSIS
-        Sets the module version in a markdown file.
+        Changes all placeholders (#.#.#) in a markdown file to the specified
+        module version.
 
     .DESCRIPTION
-        Sets the module version in a markdown file. Parses the markdown file for
-        #.#.# which is replaced by the specified module version.
+        Changes all placeholders (#.#.#) in a markdown file to the specified
+        module version.
 
     .PARAMETER Path
         The path to a markdown file to set the module version in.

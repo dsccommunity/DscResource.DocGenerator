@@ -24,16 +24,6 @@ InModuleScope $script:moduleName {
             BeforeAll {
                 # Mock script have not declared a Set-method.
                 $mockScriptFileContent = @'
-<#
-.SYNOPSIS
-    A synopsis.
-
-.DESCRIPTION
-    A description.
-
-.PARAMETER ProjectName
-    ProjectName description.
-#>
 [DscResource()]
 class AzDevOpsProject
 {

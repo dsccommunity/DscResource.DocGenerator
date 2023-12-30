@@ -5,6 +5,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Removed the public command `Split-ModuleVersion` since it is now available
+  from the module Sampler.
+
+### Added
+
+- Task `Generate_Markdown_For_Public_Commands` - This task will generate
+  markdown documentation for the public commands in the built module.
+- Task `Generate_External_Help_File_For_Public_Commands` - This task will
+  generate the modules help files to support `Get-Help` for public commands.
+  This task is dependent on the task `Generate_Markdown_For_Public_Commands`
+  to have been run prior.
+- Task `Clean_Markdown_Of_Public_Commands` which will remove metadata and
+  wrongly added parameters in the command markdown documentation.
+- Private function `Remove-MarkdownMetadataBlock` that removes metadata from a
+  Markdown file.
+- Private function `Remove-ParameterFromMarkdown` that removes a parameter
+  from a commands markdown documentation.
+- Private function `Remove-EscapedMarkdownCode` that removes a escape sequences
+  from the markdown documentation (that PlatyPS is making).
+- Public command `Edit-CommandDocumentation` that will modify the a generated
+  command markdown documentation.
+- Public command `Add-NewLine` that can add line endings at the end of a file.
+
+### Changed
+
+- DscResource.DocGenerator
+  - Updated pipeline files to support resolving dependencies using ModuleFast
+    or PSResourceGet.
+  - Add blank line at top of each public command source file for PlatyPS
+    to work. ModuleBuilder has no option to add a prefix per source file,
+    the only alternative would be to move the comment-based help inside the
+    function-block which is currently against the style guideline.
+  - The built module is now removed from the session when initiating a new
+    build. The build pipeline is dogfooding functionality and leaving a
+    previous version imported in the session do not use new code.
+
+### Fixed
+
+- `Get-CommentBasedHelp` was fixed so it correctly filters out the comment-based
+  help from a script file.
+
 ## [0.11.2] - 2023-01-03
 
 - `Get-ClassResourceProperty`
@@ -90,7 +133,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `Out-GitResult` - Displays `Invoke-Git` returned hashtable
     via Write-Verbose and Write-Debug localized messages.
     Fixes [Issue 90](https://github.com/dsccommunity/DscResource.DocGenerator/issues/90)
-  - `Hide-GitToken` - Used to redact the token from the specified 
+  - `Hide-GitToken` - Used to redact the token from the specified
     git command so that the command can be safely outputted in logs.
 
 ### Changed
@@ -193,7 +236,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - DscResource.DocGenerator
   - Adding uploading coverage to Codecov.io.
-  
+
 ### Fixed
 
 - DscResource.DocGenerator
@@ -318,7 +361,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   improve the Wiki documentation.
 
 ## [0.6.1] - 2020-07-01
-  
+
 ### Fixed
 
 - Update README.md with the correct build task name; 'Publish_GitHub_Wiki_Content'.
@@ -421,7 +464,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     DscResource.DocGenerator:
       - 'Task.*'
   ```
-  
+
 ### Fixed
 
 - Fixes the build task `Generate_Conceptual_Help` to use the correct
