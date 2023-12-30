@@ -11,7 +11,7 @@
         Specifies the path to the Markdown file.
 
     .EXAMPLE
-        Remove-ParameterFromMarkdown -FilePath 'C:\Path\To\File.md'
+        Remove-EscapedMarkdownCode -FilePath 'C:\Path\To\File.md'
 
         Removes found escaped sequences from the Markdown file located at "C:\Path\To\File.md".
 
