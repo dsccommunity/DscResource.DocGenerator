@@ -41,7 +41,7 @@
 
         To get examples added to the conceptual help the examples must be present
         in an individual resource example folder, e.g.
-        'Examples/Resources/<ResourceName>/1-Example.ps1'. Prefixing the value
+        'Examples/Resources/MyResourceName/1-Example.ps1'. Prefixing the value
         with a number will sort the examples in that order.
 
         Example directory structure:
