@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        This is a build task that generates conceptual help.
+        This is a build task that generates an external help file for a module.
 
     .PARAMETER ProjectPath
         The root path to the project. Defaults to $BuildRoot.

@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        This is a build task that generates conceptual help.
+        This is a build task that generates markdown for a modules public commands.
 
     .PARAMETER ProjectPath
         The root path to the project. Defaults to $BuildRoot.
@@ -34,6 +34,27 @@
 
     .PARAMETER HelpCultureInfo
         Specifies the culture that documentation is generated for. Defaults to 'en-US'.
+
+    .PARAMETER DependentTypePath
+        Specifies an array of paths to .cs files that will be loaded with `Add-Type`
+        prior to generating the markdown (to be able to load types that is used by
+        command parameters). Defaults to an empty array.
+
+    .PARAMETER DependentModule
+        Specifies an array of module names that will be imported (to be able to
+        load types that is used by command parameters). Defaults to an empty array.
+
+    .PARAMETER WithModulePage
+        Specifies if a module page is created in the output folder. Defaults to
+        `$false`.
+
+    .PARAMETER AlphabeticParamOrder
+        Specifies if parameters are ordered alphabetically. See the PlatyPS command
+        help for exceptions. Defaults to `$true`.
+
+    .PARAMETER ExcludeDontShow
+        Specifies that parameters with `[Parameter(DontShow)]` will be ignored.
+        Defaults to `$true`.
 
     .PARAMETER BuildInfo
         The build info object from ModuleBuilder. Defaults to an empty hashtable.
@@ -83,7 +104,7 @@ param
 
     [Parameter()]
     [System.String[]]
-    $DependentType = (property DependentType @()),
+    $DependentTypePath = (property DependentType @()),
 
     [Parameter()]
     [System.String[]]
@@ -128,11 +149,11 @@ Task Generate_Markdown_For_Public_Commands {
 `$env:PSModulePath = '$env:PSModulePath'
 "@
 
-    if ($DependentType)
+    if ($DependentTypePath)
     {
         $generateMarkdownScript += @"
 `n# Loading dependent types
-Add-Type -Path '$DependentType'
+Add-Type -Path '$DependentTypePath'
 "@
     }
 
