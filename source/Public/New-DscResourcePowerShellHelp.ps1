@@ -5,8 +5,25 @@
         for a DSC resource module.
 
     .DESCRIPTION
-        The New-DscResourcePowerShellHelp generates PowerShell compatible help files
-        for a DSC resource module.
+        Generates conceptual help based on the DSC resources and their examples in
+        a DSC module. This currently only creates English (culture en-US) conceptual
+        help. MOF, class-based and composite resources are supported. Class-based resources
+        must follow the template pattern of the [Sampler](https://github.com/gaelcolas/Sampler)
+        project. See the project [AzureDevOpDsc](https://github.com/dsccommunity/AzureDevOpsDsc)
+        for an example of the pattern.
+
+        After the conceptual help has been created, the user can import the module
+        and for example run `Get-Help about_UserAccountControl` to get help about
+        the DSC resource UserAccountControl.
+
+        It is possible to pass a array of regular expressions that should be used
+        to parse the parameter descriptions in the schema MOF. The regular expression
+        must be written so that the capture group 0 is the full match and the
+        capture group 1 is the text that should be kept.
+
+        >**NOTE:** This cmdlet does not work on macOS and will throw an error due
+        >to the problem discussed in issue https://github.com/PowerShell/PowerShell/issues/5970
+        >and issue https://github.com/PowerShell/MMI/issues/33.
 
         The command will review all of the MOF-based and class-based resources in a
         specified module directory and will inject PowerShell help files for each
