@@ -40,6 +40,7 @@ BuildWorkflow:
     - Generate_Markdown_For_Public_Commands
     - Generate_External_Help_File_For_Public_Commands
     - Clean_Markdown_Of_Public_Commands
+    - Clean_Markdown_Metadata
 
   pack:
     - build

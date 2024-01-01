@@ -18,11 +18,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   generate the modules help files to support `Get-Help` for public commands.
   This task is dependent on the task `Generate_Markdown_For_Public_Commands`
   to have been run prior.
-- Task `Clean_Markdown_Of_Public_Commands` which will remove metadata and
-  wrongly added parameters in the command markdown documentation.
-- Private function `Remove-MarkdownMetadataBlock` that removes metadata from a
+- Task `Clean_Markdown_Of_Public_Commands` which will edit the the command
+  markdown documentation. For example it will remove the `ProgressAction`
+  parameter that PlatyPS remove wrongly add (due to a bug).
+- Task `Clean_Markdown_Metadata` which will remove the markdown metadata
+  block from the markdown documentation. The metadata block was used for
+  other tasks to know what type of content the markdown file contained.
+- Public command `Remove-MarkdownMetadataBlock` that removes metadata from a
   Markdown file.
-- Public command `Remove-ParameterFromMarkdown` that removes a parameter
+- Private function `Remove-ParameterFromMarkdown` that removes a parameter
   from a commands markdown documentation.
 - Private function `Remove-EscapedMarkdownCode` that removes a escape sequences
   from the markdown documentation (that PlatyPS is making).
