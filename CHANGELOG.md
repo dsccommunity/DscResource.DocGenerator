@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   wrongly added parameters in the command markdown documentation.
 - Private function `Remove-MarkdownMetadataBlock` that removes metadata from a
   Markdown file.
-- Private function `Remove-ParameterFromMarkdown` that removes a parameter
+- Public command `Remove-ParameterFromMarkdown` that removes a parameter
   from a commands markdown documentation.
 - Private function `Remove-EscapedMarkdownCode` that removes a escape sequences
   from the markdown documentation (that PlatyPS is making).
