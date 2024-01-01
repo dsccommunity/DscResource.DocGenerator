@@ -79,7 +79,8 @@ Below is an example how the build task can be used when a repository is
 based on the [Sampler](https://github.com/gaelcolas/Sampler) project.
 
 >[!NOTE] This task is meant to be run after the tasks
->`Generate_Markdown_For_Public_Commands` and `Generate_Wiki_Content`.
+>`Generate_Markdown_For_Public_Commands` and `Generate_Wiki_Content`, but
+>before the task `Clean_Markdown_Metadata`.
 
 ```yaml
 BuildWorkflow:
@@ -94,6 +95,40 @@ BuildWorkflow:
     - Generate_Wiki_Content
     - Generate_Markdown_For_Public_Commands
     - Clean_Markdown_Of_Public_Commands
+
+  publish:
+    - Publish_release_to_GitHub
+    - publish_module_to_gallery
+    - Publish_GitHub_Wiki_Content
+```
+
+### `Clean_Markdown_Metadata`
+
+This build task runs the command `Remove-MarkdownMetadataBlock` on each markdown
+file that is present in the folder provided by the parameter `DocOutputFolder`
+(defaults to _./output/WikiContent_).
+
+See the command `Remove-MarkdownMetadataBlock` for more information.
+
+Below is an example how the build task can be used when a repository is
+based on the [Sampler](https://github.com/gaelcolas/Sampler) project.
+
+>[!NOTE] This task is meant to be run after all tasks that generate of modifies
+>markdown.
+
+```yaml
+BuildWorkflow:
+  '.':
+    - build
+
+  build:
+    - Clean
+    - Build_Module_ModuleBuilder
+    - Build_NestedModules_ModuleBuilder
+    - Create_changelog_release_output
+    - Generate_Wiki_Content
+    - Generate_Markdown_For_Public_Commands
+    - Clean_Markdown_Metadata
 
   publish:
     - Publish_release_to_GitHub
