@@ -80,7 +80,7 @@ param
     $BuildInfo = (property BuildInfo @{ })
 )
 
-# Synopsis: Generate help file for the public commands from the built module.
+# Synopsis: Generate external help file for the public commands from the built module.
 Task Generate_External_Help_File_For_Public_Commands {
     if (-not (Get-Module -Name 'PlatyPS' -ListAvailable))
     {

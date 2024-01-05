@@ -80,7 +80,7 @@ param
     $BuildInfo = (property BuildInfo @{ })
 )
 
-# Synopsis: This task generates wiki documentation for the DSC resources.
+# Synopsis: Generate wiki documentation for the DSC resources.
 task Generate_Wiki_Content {
     # Get the values for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
     . Set-SamplerTaskVariable
