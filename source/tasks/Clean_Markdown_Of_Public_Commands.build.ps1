@@ -79,12 +79,13 @@ Task Clean_Markdown_Of_Public_Commands {
     # Get the values for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
     . Set-SamplerTaskVariable
 
+    $DocOutputFolder = Get-SamplerAbsolutePath -Path $DocOutputFolder -RelativeTo $OutputDirectory
+
     "`tDocs output folder path = '$DocOutputFolder'"
     ""
 
-    $DocOutputFolder = Get-SamplerAbsolutePath -Path $DocOutputFolder -RelativeTo $OutputDirectory
-
-    $markdownFiles = Get-ChildItem -Path "$DocOutputFolder/*.md" -Exclude '[Hh]ome.md'
+    # cSpell: disable-next-line
+    $markdownFiles = Get-ChildItem -Path "$DocOutputFolder/*.md" -Exclude @('[Hh]ome.md', '_[Ss]idebar.md', '_[Ff]ooter.md')
 
     Write-Build -Color 'Magenta' -Text 'Cleaning the command documentation.'
 
