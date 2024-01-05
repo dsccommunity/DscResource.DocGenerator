@@ -20,6 +20,9 @@
         The path to the root of the built DSC resource module, e.g.
         'output/MyResource/1.0.0'.
 
+    .PARAMETER Metadata
+        Specifies metadata that is added to the markdown file.
+
     .PARAMETER Force
         Overwrites any existing file when outputting the generated content.
 
@@ -30,6 +33,18 @@
             -OutputPath C:\repos\MyResource\output\WikiContent
 
         This example shows how to generate wiki documentation for a specific module.
+
+    .EXAMPLE
+        New-DscClassResourceWikiPage `
+            -SourcePath C:\repos\MyResource\source `
+            -BuiltModulePath C:\repos\MyResource\output\MyResource\1.0.0 `
+            -OutputPath C:\repos\MyResource\output\WikiContent `
+            -Metadata @{
+                Type = 'ClassCategory'
+            }
+
+        This example shows how to generate wiki documentation for a specific module
+        and passing in metadata for the markdown files.
 #>
 function New-DscClassResourceWikiPage
 {
@@ -48,6 +63,10 @@ function New-DscClassResourceWikiPage
         [Parameter(Mandatory = $true)]
         [System.String]
         $BuiltModulePath,
+
+        [Parameter()]
+        [System.Collections.Hashtable]
+        $Metadata,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -83,6 +102,21 @@ function New-DscClassResourceWikiPage
 
                 $output = New-Object -TypeName 'System.Text.StringBuilder'
 
+                # Add metadata to the top of the file.
+                if ($Metadata)
+                {
+                    $null = $output.AppendLine('---')
+
+                    foreach ($key in $Metadata.Keys)
+                    {
+                        $null = $output.AppendLine("$($key): $($Metadata.$key)")
+                    }
+
+                    $null = $output.AppendLine('---')
+                    $null = $output.AppendLine()
+                }
+
+                # Add the documentation for the resource.
                 $null = $output.AppendLine("# $($dscResourceAst.Name)")
                 $null = $output.AppendLine()
                 $null = $output.AppendLine('## Parameters')

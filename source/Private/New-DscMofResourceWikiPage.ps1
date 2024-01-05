@@ -16,6 +16,9 @@
         The path to the root of the DSC resource module (where the PSD1 file is found,
         not the folder for and individual DSC resource).
 
+    .PARAMETER Metadata
+        Specifies metadata that is added to the markdown file.
+
     .PARAMETER Force
         Overwrites any existing file when outputting the generated content.
 
@@ -25,6 +28,17 @@
             -OutputPath C:\repos\MyResource\output\WikiContent
 
         This example shows how to generate wiki documentation for a specific module.
+
+    .EXAMPLE
+        New-DscMofResourceWikiPage `
+            -SourcePath C:\repos\MyResource\source `
+            -OutputPath C:\repos\MyResource\output\WikiContent `
+            -Metadata @{
+                Type = 'MofCategory'
+            }
+
+        This example shows how to generate wiki documentation for a specific module
+        and passing in metadata for the markdown files.
 #>
 function New-DscMofResourceWikiPage
 {
@@ -40,6 +54,10 @@ function New-DscMofResourceWikiPage
         [Parameter(Mandatory = $true)]
         [System.String]
         $SourcePath,
+
+        [Parameter()]
+        [System.Collections.Hashtable]
+        $Metadata,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -78,6 +96,21 @@ function New-DscMofResourceWikiPage
 
             $output = New-Object -TypeName System.Text.StringBuilder
 
+            # Add metadata to the top of the file.
+            if ($Metadata)
+            {
+                $null = $output.AppendLine('---')
+
+                foreach ($key in $Metadata.Keys)
+                {
+                    $null = $output.AppendLine("$($key): $($Metadata.$key)")
+                }
+
+                $null = $output.AppendLine('---')
+                $null = $output.AppendLine()
+            }
+
+            # Add the documentation for the resource.
             $null = $output.AppendLine("# $($resourceSchema.FriendlyName)")
             $null = $output.AppendLine('')
             $null = $output.AppendLine('## Parameters')
