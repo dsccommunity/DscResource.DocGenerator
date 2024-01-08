@@ -45,7 +45,7 @@ ConvertFrom-StringData @'
 
     ## Remove-MarkdownMetadataBlock
     RemoveMarkdownMetadataBlock_ShouldProcessVerboseDescription = Removing markdown metadata from markdown file '{0}'.
-    RemoveMarkdownMetadataBlock__ShouldProcessVerboseWarning = Are you sure you want to removing markdown metadata from markdown file '{0}'?
+    RemoveMarkdownMetadataBlock_ShouldProcessVerboseWarning = Are you sure you want to removing markdown metadata from markdown file '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
-    RemoveMarkdownMetadataBlock__ShouldProcessCaption = Remove markdown metadata from file
+    RemoveMarkdownMetadataBlock_ShouldProcessCaption = Remove markdown metadata from file
 '@

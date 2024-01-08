@@ -33,7 +33,7 @@ function Remove-MarkdownMetadataBlock
 
     process
     {
-        if ($Force.IsPresent)
+        if ($Force.IsPresent -and -not $Confirm)
         {
             $ConfirmPreference = 'None'
         }
@@ -45,7 +45,7 @@ function Remove-MarkdownMetadataBlock
         if ($content -match $metadataPattern)
         {
             $verboseDescriptionMessage = $script:localizedData.RemoveMarkdownMetadataBlock_ShouldProcessVerboseDescription -f $FilePath.FullName
-            $verboseWarningMessage = $script:localizedData.RemoveMarkdownMetadataBlock_ShouldProcessVerboseWarning -f $AuditObject.Name
+            $verboseWarningMessage = $script:localizedData.RemoveMarkdownMetadataBlock_ShouldProcessVerboseWarning -f $FilePath.FullName
             $captionMessage = $script:localizedData.RemoveMarkdownMetadataBlock_ShouldProcessCaption
 
             if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
