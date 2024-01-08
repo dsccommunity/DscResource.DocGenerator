@@ -178,7 +178,8 @@ Import-Module -Name '$ProjectName' -ErrorAction Stop
     Locale                = '$HelpCultureInfo'
     HelpVersion           = '$helpVersion'
     MetaData              = @{
-        Type = 'Command'
+        Type     = 'Command'
+        Category = 'Commands'
     }
     Force                 = `$true
     ErrorAction           = 'Stop'

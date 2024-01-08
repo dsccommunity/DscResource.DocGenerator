@@ -140,11 +140,14 @@ DscResource.DocGenerator:
     Debug: true
   Generate_Wiki_Content:
     MofResourceMetadata:
-      Type: Resource
+      Type: MofResource
+      Category: 'Resources'
     ClassResourceMetadata:
-      Type: Resource
+      Type: ClassResource
+      Category: 'Resources'
     CompositeResourceMetadata:
-      Type: Resource
+      Type: CompositeResource
+      Category: 'Resources'
   Generate_Wiki_Sidebar:
      Debug: false
      AlwaysOverwrite: true

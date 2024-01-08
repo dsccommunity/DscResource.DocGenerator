@@ -104,20 +104,21 @@ Get-MarkdownMetadata -Path $($file.FullName) -ErrorAction 'Stop'
         #>
         $markdownMetadata = & $pwshPath -Command $getMarkdownMetadataScriptBlock -ExecutionPolicy 'ByPass' -NoProfile
 
-        if (-not $markdownMetadata -or -not $markdownMetadata.ContainsKey('Type'))
+        # If the category doesn't exist in the metadata, add it to the default category General.
+        if (-not $markdownMetadata -or -not $markdownMetadata.ContainsKey('Category'))
         {
             $markdownMetadata = @{
-                Type = 'General'
+                Category = 'General'
             }
         }
 
-        Write-Information -MessageData "Found documentation '$($file.BaseName)' of type '$($markdownMetadata.Type)'." -InformationAction 'Continue'
+        Write-Information -MessageData "Found documentation '$($file.BaseName)' of type '$($markdownMetadata.Type)' in category '$($markdownMetadata.Category)'." -InformationAction 'Continue'
 
-        if (-not $sidebarCategories.ContainsKey($markdownMetadata.Type)) {
-            $sidebarCategories[$markdownMetadata.Type] = @()
+        if (-not $sidebarCategories.ContainsKey($markdownMetadata.Category)) {
+            $sidebarCategories[$markdownMetadata.Category] = @()
         }
 
-        $sidebarCategories[$markdownMetadata.Type] += $file.BaseName
+        $sidebarCategories[$markdownMetadata.Category] += $file.BaseName
     }
 
     $output = New-Object -TypeName 'System.Text.StringBuilder'
