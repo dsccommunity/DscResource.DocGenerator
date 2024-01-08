@@ -94,8 +94,8 @@ task Generate_Wiki_Sidebar {
 
     $newGitHubWikiSidebarParameters = @{
         DocumentationPath = $DocOutputFolder
-        Force             = $alwaysOverwrite
-        Verbose           = $true
+        ReplaceExisting   = $alwaysOverwrite
+        Force             = $true
     }
 
     if ($debugTask)

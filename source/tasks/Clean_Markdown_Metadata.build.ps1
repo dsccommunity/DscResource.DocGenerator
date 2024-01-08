@@ -91,6 +91,6 @@ Task Clean_Markdown_Metadata {
 
     foreach ($markdownFile in $markdownFiles)
     {
-        $markdownFile | Remove-MarkdownMetadataBlock
+        $markdownFile | Remove-MarkdownMetadataBlock -Force
     }
 }
