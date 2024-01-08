@@ -36,7 +36,7 @@
 #>
 function New-GitHubWikiSidebar
 {
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -55,8 +55,17 @@ function New-GitHubWikiSidebar
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
+        $ReplaceExisting,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
         $Force
     )
+
+    if ($Force.IsPresent -and -not $Confirm)
+    {
+        $ConfirmPreference = 'None'
+    }
 
     if (-not $OutputPath)
     {
@@ -72,10 +81,19 @@ function New-GitHubWikiSidebar
         Generate_Wiki_Content that copies the content of the WikiSource folder
         to WikiOutput.
     #>
-    if (-not $Force -and (Test-Path -Path $sidebarFilePath))
+    if (-not $ReplaceExisting -and (Test-Path -Path $sidebarFilePath))
     {
-        Write-Warning "Sidebar file '$sidebarFilePath' already exists. Leaving it unchanged. Use -Force to overwrite."
+        Write-Warning "Sidebar file '$sidebarFilePath' already exists. Leaving it unchanged. Use -ReplaceExisting to overwrite."
 
+        return
+    }
+
+    $verboseDescriptionMessage = $script:localizedData.NewGitHubWikiSidebar_ShouldProcessVerboseDescription -f $sidebarFilePath
+    $verboseWarningMessage = $script:localizedData.NewGitHubWikiSidebar_ShouldProcessVerboseWarning -f $sidebarFilePath, $DocumentationPath
+    $captionMessage = $script:localizedData.NewGitHubWikiSidebar_ShouldProcessCaption
+
+    if (-not $PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+    {
         return
     }
 
@@ -114,7 +132,8 @@ Get-MarkdownMetadata -Path $($file.FullName) -ErrorAction 'Stop'
 
         Write-Information -MessageData "Found documentation '$($file.BaseName)' of type '$($markdownMetadata.Type)' in category '$($markdownMetadata.Category)'." -InformationAction 'Continue'
 
-        if (-not $sidebarCategories.ContainsKey($markdownMetadata.Category)) {
+        if (-not $sidebarCategories.ContainsKey($markdownMetadata.Category))
+        {
             $sidebarCategories[$markdownMetadata.Category] = @()
         }
 
@@ -181,8 +200,8 @@ Get-MarkdownMetadata -Path $($file.FullName) -ErrorAction 'Stop'
     $outFileParameters = @{
         InputObject = $outputToWrite
         FilePath = $sidebarFilePath
-        Encoding = 'utf8'
-        Force = $Force
+        Encoding = [System.Text.Encoding]::UTF8
+        Force = $ReplaceExisting
     }
 
     $null = Out-File @outFileParameters

@@ -48,4 +48,10 @@ ConvertFrom-StringData @'
     RemoveMarkdownMetadataBlock_ShouldProcessVerboseWarning = Are you sure you want to removing markdown metadata from markdown file '{0}'?
     # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
     RemoveMarkdownMetadataBlock_ShouldProcessCaption = Remove markdown metadata from file
+
+    ## New-GitHubWikiSidebar
+    NewGitHubWikiSidebar_ShouldProcessVerboseDescription = Creating GitHub Wiki Sidebar '{0}'.
+    NewGitHubWikiSidebar_ShouldProcessVerboseWarning = Are you sure you want to create a GitHub Wiki Sidebar '{0}' based on the markdown files in '{1}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    NewGitHubWikiSidebar_ShouldProcessCaption = Create GitHub Wiki Sidebar
 '@
