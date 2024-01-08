@@ -52,13 +52,16 @@
             -OutputPath C:\repos\MyResource\output\WikiContent `
             -Metadata @{
                 MofResourceMetadata = @{
-                    Type = 'MofCategory'
+                    Type = 'MofResource'
+                    Category = 'MOF-based resources'
                 }
                 ClassResourceMetadata = @{
-                    Type = 'MofCategory'
+                    Type = 'ClassResource'
+                    Category = 'Class-based resources'
                 }
                 CompositeResourceMetadata = @{
-                    Type = 'MofCategory'
+                    Type = 'CompositeResource'
+                    Category = 'Composites resources'
                 }
             }
 

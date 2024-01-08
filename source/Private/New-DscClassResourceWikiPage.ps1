@@ -40,7 +40,8 @@
             -BuiltModulePath C:\repos\MyResource\output\MyResource\1.0.0 `
             -OutputPath C:\repos\MyResource\output\WikiContent `
             -Metadata @{
-                Type = 'ClassCategory'
+                Type = 'ClassResource'
+                Category = 'Class-based resources'
             }
 
         This example shows how to generate wiki documentation for a specific module

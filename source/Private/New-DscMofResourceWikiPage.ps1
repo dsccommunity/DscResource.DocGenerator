@@ -34,7 +34,8 @@
             -SourcePath C:\repos\MyResource\source `
             -OutputPath C:\repos\MyResource\output\WikiContent `
             -Metadata @{
-                Type = 'MofCategory'
+                Type = 'MofResource'
+                Category = 'MOF-based resources'
             }
 
         This example shows how to generate wiki documentation for a specific module
