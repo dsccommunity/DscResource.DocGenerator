@@ -101,7 +101,7 @@ function New-DscCompositeResourceWikiPage
             {
                 $null = $output.AppendLine('---')
 
-                foreach ($key in $Metadata.Keys)
+                foreach ($key in ($Metadata.Keys | Sort-Object))
                 {
                     $null = $output.AppendLine("$($key): $($Metadata.$key)")
                 }
