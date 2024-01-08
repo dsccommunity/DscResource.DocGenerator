@@ -921,8 +921,8 @@ class AzDevOpsProject
 
                     $mockExpectedFileOutput = @'
 ---
-Type: ClassResource
 Module: MyClassModule
+Type: ClassResource
 ---
 
 # AzDevOpsProject

@@ -962,8 +962,8 @@ Configuration Example
                     }
 
                     $mockWikiContentOutput = '---
-Type: CompositeResource
 Module: MyClassModule
+Type: CompositeResource
 ---
 
 # MyCompositeResource

@@ -986,8 +986,8 @@ Configuration Example
                     }
 
                     $mockWikiContentOutput = '---
-Type: MofResource
 Module: MyClassModule
+Type: MofResource
 ---
 
 # MyResource
