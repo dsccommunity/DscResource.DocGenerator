@@ -18,9 +18,12 @@
     .PARAMETER SidebarFileName
         Specifies the name of the sidebar file. The default value is '_Sidebar.md'.
 
-    .PARAMETER Force
+    .PARAMETER ReplaceExisting
         Specifies whether to force the creation of the sidebar even if it already exists.
         By default, if the sidebar file already exists, the function will not overwrite it.
+
+    .PARAMETER Force
+        Specifies that the sidebar should be created without any confirmation.
 
     .EXAMPLE
         New-GitHubWikiSidebar -OutputPath 'C:\Wiki' -SidebarFileName 'CustomSidebar.md'

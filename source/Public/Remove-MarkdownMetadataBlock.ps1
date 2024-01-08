@@ -10,6 +10,9 @@
     .PARAMETER FilePath
         Specifies the path to the Markdown file from which the metadata should be removed.
 
+    .PARAMETER Force
+        Specifies that the sidebar should be created without any confirmation.
+
     .EXAMPLE
         Remove-MarkdownMetadataBlock -FilePath 'C:\Path\To\File.md'
 
