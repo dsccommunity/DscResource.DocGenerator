@@ -42,4 +42,10 @@ ConvertFrom-StringData @'
     InvokeGitCommandDebug                = Command: git {0}
     InvokeGitWorkingDirectoryDebug       = git Working Directory: '{0}'
     ParsingOutCommentBasedHelpBlock      = Parsing out only the comment-based help block from the source file.
+
+    ## Remove-MarkdownMetadataBlock
+    RemoveMarkdownMetadataBlock_ShouldProcessVerboseDescription = Removing markdown metadata from markdown file '{0}'.
+    RemoveMarkdownMetadataBlock__ShouldProcessVerboseWarning = Are you sure you want to removing markdown metadata from markdown file '{0}'?
+    # This string shall not end with full stop (.) since it is used as a title of ShouldProcess messages.
+    RemoveMarkdownMetadataBlock__ShouldProcessCaption = Remove markdown metadata from file
 '@

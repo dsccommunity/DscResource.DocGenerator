@@ -18,27 +18,42 @@
 
 function Remove-MarkdownMetadataBlock
 {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'This function is a private helper function and is not exported publicly.')]
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     param
     (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [ValidateScript({Test-Path $_ -PathType 'Leaf'})]
         [System.IO.FileInfo]
-        $FilePath
+        $FilePath,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $Force
     )
 
     process
     {
+        if ($Force.IsPresent)
+        {
+            $ConfirmPreference = 'None'
+        }
+
         $content = Get-Content -Path $FilePath.FullName -Raw
 
         $metadataPattern = '(?s)---.*?---[\r|\n]*'
 
         if ($content -match $metadataPattern)
         {
-            $content = $content -replace $metadataPattern
+            $verboseDescriptionMessage = $script:localizedData.RemoveMarkdownMetadataBlock_ShouldProcessVerboseDescription -f $FilePath.FullName
+            $verboseWarningMessage = $script:localizedData.RemoveMarkdownMetadataBlock_ShouldProcessVerboseWarning -f $AuditObject.Name
+            $captionMessage = $script:localizedData.RemoveMarkdownMetadataBlock_ShouldProcessCaption
 
-            Set-Content -Path $FilePath.FullName -Value $content
+            if ($PSCmdlet.ShouldProcess($verboseDescriptionMessage, $verboseWarningMessage, $captionMessage))
+            {
+                $content = $content -replace $metadataPattern
+
+                Set-Content -Path $FilePath.FullName -Value $content
+            }
         }
     }
 }
