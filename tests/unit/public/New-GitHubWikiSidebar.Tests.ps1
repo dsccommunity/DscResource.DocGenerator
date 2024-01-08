@@ -35,7 +35,7 @@ Describe 'New-GitHubWikiSidebar' {
                 } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Out-File -ParameterFilter {
-                    $Path -eq $outputFilePath -and $Force -eq $false
+                    $FilePath -eq $outputFilePath -and $Force -eq $false
                 } -Exactly -Times 1 -Scope It -ModuleName $script:moduleName
             }
         }
@@ -45,7 +45,7 @@ Describe 'New-GitHubWikiSidebar' {
                 New-GitHubWikiSidebar -DocumentationPath $documentationPath -OutputPath $TestDrive -SidebarFileName 'CustomSidebar.md' -Confirm:$false
 
                 Assert-MockCalled -CommandName Out-File -ParameterFilter {
-                    $Path -eq $outputFilePath -and $Force -eq $false
+                    $FilePath -eq $outputFilePath -and $Force -eq $false
                 } -Exactly -Times 1 -Scope It -ModuleName $script:moduleName
             }
         }
@@ -55,7 +55,7 @@ Describe 'New-GitHubWikiSidebar' {
                 New-GitHubWikiSidebar -DocumentationPath $documentationPath -OutputPath $TestDrive -SidebarFileName 'CustomSidebar.md' -ReplaceExisting -Force
 
                 Assert-MockCalled -CommandName Out-File -ParameterFilter {
-                    $Path -eq $outputFilePath -and $Force -eq $true
+                    $FilePath -eq $outputFilePath -and $Force -eq $true
                 } -Exactly -Times 1 -Scope It -ModuleName $script:moduleName
             }
         }

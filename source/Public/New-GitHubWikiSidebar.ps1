@@ -203,8 +203,16 @@ Get-MarkdownMetadata -Path $($file.FullName) -ErrorAction 'Stop'
     $outFileParameters = @{
         InputObject = $outputToWrite
         FilePath = $sidebarFilePath
-        Encoding = [System.Text.Encoding]::UTF8
         Force = $ReplaceExisting
+    }
+
+    if ($PSVersionTable.PSVersion -lt '6.0')
+    {
+        $outFileParameters.Encoding = 'UTF8'
+    }
+    else
+    {
+        $outFileParameters.Encoding = [System.Text.Encoding]::UTF8
     }
 
     $null = Out-File @outFileParameters
