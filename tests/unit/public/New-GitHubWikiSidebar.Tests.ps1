@@ -29,6 +29,10 @@ Describe 'New-GitHubWikiSidebar' {
 # MockModule
 '@
 
+        Set-Content -Path "$($TestDrive.FullName)/WikiContent/MockMarkdownWithoutMetadata.md" -Value @'
+# Some topic
+'@
+
         Set-Content -Path "$($TestDrive.FullName)/WikiContent/RandomHelpTopic.md" -Value @'
 ---
 Category: Help topics
@@ -64,6 +68,10 @@ Category: Resources
             BeforeAll {
                 $script:mockWikiContentOutput = @'
 [Home](Home)
+
+### General
+
+- [MockMarkdownWithoutMetadata](MockMarkdownWithoutMetadata)
 
 ### Commands
 
