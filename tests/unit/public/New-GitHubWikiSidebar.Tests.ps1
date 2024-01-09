@@ -20,8 +20,40 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 
 Describe 'New-GitHubWikiSidebar' {
     BeforeAll {
-        $documentationPath = "$script:projectPath\output\WikiContent"
+        $documentationPath = "$($TestDrive.FullName)/WikiContent"
         $outputFilePath = $TestDrive.FullName  | Join-Path -ChildPath 'CustomSidebar.md'
+
+        New-Item -Path $documentationPath -ItemType 'Directory' -Force | Out-Null
+
+        Set-Content -Path "$($TestDrive.FullName)/WikiContent/Home.md" -Value @'
+# MockModule
+'@
+
+        Set-Content -Path "$($TestDrive.FullName)/WikiContent/RandomHelpTopic.md" -Value @'
+---
+Category: Help topics
+---
+
+# RandomHelpTopic
+'@
+
+        Set-Content -Path "$($TestDrive.FullName)/WikiContent/Get-Something.md" -Value @'
+---
+Type: Command
+Category: Commands
+---
+
+# Get-Something
+'@
+
+        Set-Content -Path "$($TestDrive.FullName)/WikiContent/MockResource.md" -Value @'
+---
+Type: MofResource
+Category: Resources
+---
+
+# MockResource
+'@
 
         Mock -CommandName Out-File -ModuleName $script:moduleName
         Mock -CommandName Write-Information -ModuleName $script:moduleName
@@ -29,13 +61,39 @@ Describe 'New-GitHubWikiSidebar' {
 
     Context 'When provided with valid inputs' {
         Context 'When using parameter Force' {
+            BeforeAll {
+                $script:mockWikiContentOutput = @'
+[Home](Home)
+
+### Commands
+
+- [Get-Something](Get-Something)
+
+### Help topics
+
+- [RandomHelpTopic](RandomHelpTopic)
+
+### Resources
+
+- [MockResource](MockResource)
+'@  -replace '\r?\n', "`r`n"
+
+            }
             It 'Should not throw any exceptions and call Out-File with correct parameters' {
                 {
                     New-GitHubWikiSidebar -DocumentationPath $documentationPath -OutputPath $TestDrive -SidebarFileName 'CustomSidebar.md' -Force
                 } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Out-File -ParameterFilter {
-                    $FilePath -eq $outputFilePath -and $Force -eq $false
+                    # This is used to output the diff if the output is not as expected.
+                    if ($InputObject -ne $script:mockWikiContentOutput)
+                    {
+                        # Helper to output the diff.
+                        Out-Diff -Expected $script:mockWikiContentOutput -Actual $InputObject
+                    }
+
+                    $FilePath -eq $outputFilePath -and $Force -eq $false -and `
+                        $InputObject -eq $script:mockWikiContentOutput
                 } -Exactly -Times 1 -Scope It -ModuleName $script:moduleName
             }
         }
