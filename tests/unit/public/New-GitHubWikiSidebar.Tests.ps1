@@ -21,7 +21,7 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 Describe 'New-GitHubWikiSidebar' {
     BeforeAll {
         $documentationPath = "$($TestDrive.FullName)/WikiContent"
-        $outputFilePath = $TestDrive.FullName  | Join-Path -ChildPath 'CustomSidebar.md'
+        $outputFilePath = $documentationPath  | Join-Path -ChildPath 'CustomSidebar.md'
 
         New-Item -Path $documentationPath -ItemType 'Directory' -Force | Out-Null
 
@@ -89,7 +89,8 @@ Category: Resources
             }
             It 'Should not throw any exceptions and call Out-File with correct parameters' {
                 {
-                    New-GitHubWikiSidebar -DocumentationPath $documentationPath -OutputPath $TestDrive -SidebarFileName 'CustomSidebar.md' -Force
+                    #
+                    New-GitHubWikiSidebar -DocumentationPath $documentationPath -SidebarFileName 'CustomSidebar.md' -Force
                 } | Should -Not -Throw
 
                 Assert-MockCalled -CommandName Out-File -ParameterFilter {
@@ -108,7 +109,7 @@ Category: Resources
 
         Context 'When using parameter Confirm set to $false' {
             It 'Should call Out-File with Force parameter set to true' {
-                New-GitHubWikiSidebar -DocumentationPath $documentationPath -OutputPath $TestDrive -SidebarFileName 'CustomSidebar.md' -Confirm:$false
+                New-GitHubWikiSidebar -DocumentationPath $documentationPath -SidebarFileName 'CustomSidebar.md' -Confirm:$false
 
                 Assert-MockCalled -CommandName Out-File -ParameterFilter {
                     $FilePath -eq $outputFilePath -and $Force -eq $false
@@ -118,7 +119,7 @@ Category: Resources
 
         Context 'When ReplaceExisting parameter is used' {
             It 'Should call Out-File with Force parameter set to true' {
-                New-GitHubWikiSidebar -DocumentationPath $documentationPath -OutputPath $TestDrive -SidebarFileName 'CustomSidebar.md' -ReplaceExisting -Force
+                New-GitHubWikiSidebar -DocumentationPath $documentationPath -SidebarFileName 'CustomSidebar.md' -ReplaceExisting -Force
 
                 Assert-MockCalled -CommandName Out-File -ParameterFilter {
                     $FilePath -eq $outputFilePath -and $Force -eq $true
@@ -128,7 +129,7 @@ Category: Resources
     }
 
     It 'Should not call Out-File when using parameter WhatIf' {
-        New-GitHubWikiSidebar -DocumentationPath $documentationPath -OutputPath $TestDrive -SidebarFileName 'CustomSidebar.md' -ReplaceExisting -WhatIf
+        New-GitHubWikiSidebar -DocumentationPath $documentationPath -SidebarFileName 'CustomSidebar.md' -ReplaceExisting -WhatIf
 
         Assert-MockCalled -CommandName Out-File -Exactly -Times 0 -Scope It -ModuleName $script:moduleName
     }
