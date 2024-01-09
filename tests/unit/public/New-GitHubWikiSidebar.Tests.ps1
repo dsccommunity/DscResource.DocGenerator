@@ -147,4 +147,25 @@ Category: Resources
             } | Should -Throw
         }
     }
+
+    Context 'When sidebar filename already exist' {
+        BeforeAll {
+            Mock -CommandName Out-File -ModuleName $script:moduleName
+            Mock -CommandName Write-Warning -ModuleName $script:moduleName
+            Mock -CommandName Test-Path -ModuleName $script:moduleName -ParameterFilter {
+                $Path -match 'CustomSidebar.md'
+            } -MockWith {
+                return $true
+            }
+        }
+
+        It 'Should write a warning message and not call Out-File' {
+            {
+                New-GitHubWikiSidebar -DocumentationPath $documentationPath -OutputPath $documentationPath  -SidebarFileName 'CustomSidebar.md'
+            } | Should -Not -Throw
+
+            Assert-MockCalled -CommandName Out-File -Exactly -Times 0 -Scope It -ModuleName $script:moduleName
+            Assert-MockCalled -CommandName Write-Warning -Exactly -Times 1 -Scope It -ModuleName $script:moduleName
+        }
+    }
 }
