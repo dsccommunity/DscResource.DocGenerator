@@ -72,4 +72,22 @@ Describe 'Generate_Wiki_Sidebar' {
 
         Assert-MockCalled -CommandName New-GitHubWikiSidebar -Exactly -Times 1 -Scope 'It'
     }
+
+    It 'Should run the build task in debug mode without throwing' {
+        {
+            $taskParameters = @{
+                ProjectName = 'MockModule'
+                ProjectPath = $TestDrive.FullName
+                OutputDirectory = $TestDrive.FullName
+                # Using the markdown created when the project was built.
+                DocOutputFolder = $TestDrive.FullName | Join-Path -ChildPath 'WikiContent'
+                SourcePath = "$($TestDrive.FullName)/source"
+                DebugTask = $true
+            }
+
+            Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @taskParameters
+        } | Should -Not -Throw
+
+        Assert-MockCalled -CommandName New-GitHubWikiSidebar -Exactly -Times 1 -Scope 'It'
+    }
 }

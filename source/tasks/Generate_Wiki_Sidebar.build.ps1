@@ -65,21 +65,30 @@ param
     $DocOutputFolder = (property DocOutputFolder 'WikiContent'),
 
     [Parameter()]
+    [System.Management.Automation.SwitchParameter]
+    $DebugTask = (property DebugTask $false),
+
+    [Parameter()]
     [System.Collections.Hashtable]
     $BuildInfo = (property BuildInfo @{ })
 )
 
 # Synopsis: Generate wiki sidebar based on existing markdown files.
 task Generate_Wiki_Sidebar {
-    $debugTask = [System.Boolean] $BuildInfo.'DscResource.DocGenerator'.Generate_Wiki_Sidebar.Debug
+    if (-not $PSBoundParameters.ContainsKey('DebugTask'))
+    {
+        $debugTask = [System.Boolean] $BuildInfo.'DscResource.DocGenerator'.Generate_Wiki_Sidebar.Debug
+    }
 
-    # Only show debug information if Debug was set to 'true' in build configuration.
+    <#
+        Only show debug information if Debug was set to 'true' in build configuration
+        or if it was passed as a parameter.
+    #>
     if ($debugTask)
     {
-        'Running task with debug information.'
-
         $local:VerbosePreference = 'Continue'
         $local:DebugPreference = 'Continue'
+        Write-Verbose -Message 'Running task with debug information.' -Verbose
     }
 
     $alwaysOverwrite = [System.Boolean] $BuildInfo.'DscResource.DocGenerator'.Generate_Wiki_Sidebar.AlwaysOverwrite
