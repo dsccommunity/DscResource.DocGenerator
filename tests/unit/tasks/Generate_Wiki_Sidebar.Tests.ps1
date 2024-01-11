@@ -70,7 +70,11 @@ Describe 'Generate_Wiki_Sidebar' {
             Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @taskParameters
         } | Should -Not -Throw
 
-        Assert-MockCalled -CommandName New-GitHubWikiSidebar -Exactly -Times 1 -Scope 'It'
+        Assert-MockCalled -CommandName New-GitHubWikiSidebar -ParameterFilter {
+            Write-Verbose ($VerbosePreference | Out-String) -Verbose
+            Write-Verbose ($DebugPreference | Out-String) -Verbose
+            $true -eq $true
+        } -Exactly -Times 1 -Scope 'It'
     }
 
     It 'Should run the build task in debug mode without throwing' {
@@ -89,8 +93,14 @@ Describe 'Generate_Wiki_Sidebar' {
         } | Should -Not -Throw
 
         Assert-MockCalled -CommandName New-GitHubWikiSidebar -ParameterFilter {
+            Write-Verbose ($VerbosePreference | Out-String) -Verbose
+            Write-Verbose ($DebugPreference | Out-String) -Verbose
             $VerbosePreference -eq 'Continue' -and
-            $DebugPreference -eq 'Continue'
+            <#
+                Must negate from SilentlyContinu because DebugPreference is set to different
+                values on Windows PowerShell (Continue) and PowerShell (Inquire).
+            #>
+            $DebugPreference -ne 'SilentlyContinue'
         } -Exactly -Times 1 -Scope 'It'
     }
 }
