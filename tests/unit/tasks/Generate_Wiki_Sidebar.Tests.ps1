@@ -88,6 +88,9 @@ Describe 'Generate_Wiki_Sidebar' {
             Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @taskParameters
         } | Should -Not -Throw
 
-        Assert-MockCalled -CommandName New-GitHubWikiSidebar -Exactly -Times 1 -Scope 'It'
+        Assert-MockCalled -CommandName New-GitHubWikiSidebar -ParameterFilter {
+            $VerbosePreference -eq 'Continue' -and
+            $DebugPreference -eq 'Continue'
+        } -Exactly -Times 1 -Scope 'It'
     }
 }
