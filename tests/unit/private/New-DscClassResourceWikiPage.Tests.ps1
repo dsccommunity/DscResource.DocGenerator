@@ -861,6 +861,108 @@ Resource description.
                         -Exactly -Times 1 -Scope Context
                 }
             }
+
+            Context 'When adding metadata to the markdown file' {
+                BeforeAll {
+                    # The class DSC resource in the built module.
+                    $mockBuiltModuleScript = @'
+[DscResource()]
+class AzDevOpsProject
+{
+    [AzDevOpsProject] Get()
+    {
+        return [AzDevOpsProject] $this
+    }
+
+    [System.Boolean] Test()
+    {
+        return $true
+    }
+
+    [void] Set() {}
+
+    [DscProperty(Key)]
+    [System.String]$ProjectName
+}
+'@
+                    # Uses Microsoft.PowerShell.Utility\Out-File to override the stub that is needed for the mocks.
+                    $mockBuiltModuleScript | Microsoft.PowerShell.Utility\Out-File -FilePath "$mockBuiltModulePath\MyClassModule.psm1" -Encoding ascii -Force
+
+                    # The source file of class DSC resource.
+                    $mockSourceScript = @'
+<#
+    .SYNOPSIS
+        A DSC Resource for Azure DevOps that
+        represents the Project resource.
+
+        This is another row.
+#>
+[DscResource()]
+class AzDevOpsProject
+{
+    [AzDevOpsProject] Get()
+    {
+        return [AzDevOpsProject] $this
+    }
+
+    [System.Boolean] Test()
+    {
+        return $true
+    }
+
+    [void] Set() {}
+
+    [DscProperty(Key)]
+    [System.String]$ProjectName
+}
+'@
+                    # Uses Microsoft.PowerShell.Utility\Out-File to override the stub that is needed for the mocks.
+                    $mockSourceScript | Microsoft.PowerShell.Utility\Out-File -FilePath "$mockSourcePath\Classes\010.AzDevOpsProject.ps1" -Encoding ascii -Force
+
+                    $mockExpectedFileOutput = @'
+---
+Module: MyClassModule
+Type: ClassResource
+---
+
+# AzDevOpsProject
+
+## Parameters
+
+| Parameter | Attribute | DataType | Description | Allowed Values |
+| --- | --- | --- | --- | --- |
+| **ProjectName** | Key | System.String | | |
+
+## Description
+'@ -replace '\r?\n', "`r`n"
+
+                    $mockNewDscResourcePowerShellHelpParameters = @{
+                        SourcePath      = $mockSourcePath
+                        BuiltModulePath = $mockBuiltModulePath
+                        OutputPath      = $TestDrive
+                        Verbose         = $true
+                        Metadata        = @{
+                            Type = 'ClassResource'
+                            Module = 'MyClassModule'
+                        }
+                    }
+
+                    Mock -CommandName Out-File
+                }
+
+                It 'Should not throw an exception' {
+                    {
+                        New-DscClassResourceWikiPage @mockNewDscResourcePowerShellHelpParameters
+                    } | Should -Not -Throw
+                }
+
+                It 'Should produce the correct output' {
+                    Assert-MockCalled `
+                        -CommandName Out-File `
+                        -ParameterFilter $script:outFileContent_ParameterFilter `
+                        -Exactly -Times 1 -Scope Context
+                }
+            }
         }
     }
 }

@@ -909,6 +909,219 @@ Configuration Example
                         -Exactly -Times 0
                 }
             }
+
+            Context 'When adding metadata to the markdown file' {
+                BeforeAll {
+                    <#
+                        This is the mocked embedded schema that is to be returned
+                        together with the resource schema (which is mocked above)
+                        for the mocked function Get-CompositeSchemaObject.
+                    #>
+                    $script:mockEmbeddedSchemaObject = @{
+                        ClassName    = 'DSC_EmbeddedInstance'
+                        ClassVersion = '1.0.0'
+                        FriendlyName = 'EmbeddedInstance'
+                        Attributes   = @(
+                            @{
+                                State            = 'Key'
+                                DataType         = 'String'
+                                ValueMap         = @()
+                                IsArray          = $false
+                                Name             = 'EmbeddedId'
+                                Description      = 'Id Description'
+                                EmbeddedInstance = ''
+                            },
+                            @{
+                                State            = 'Write'
+                                DataType         = 'String'
+                                ValueMap         = @( 'Value1', 'Value2', 'Value3' )
+                                IsArray          = $false
+                                Name             = 'EmbeddedEnum'
+                                Description      = 'Enum Description.'
+                                EmbeddedInstance = ''
+                            },
+                            @{
+                                State            = 'Required'
+                                DataType         = 'Uint32'
+                                ValueMap         = @()
+                                IsArray          = $false
+                                Name             = 'EmbeddedInt'
+                                Description      = 'Int Description.'
+                                EmbeddedInstance = ''
+                            },
+                            @{
+                                State            = 'Read'
+                                DataType         = 'String'
+                                ValueMap         = @()
+                                IsArray          = $false
+                                Name             = 'EmbeddedRead'
+                                Description      = 'Read Description.'
+                                EmbeddedInstance = ''
+                            }
+                        )
+                    }
+
+                    $mockWikiContentOutput = '---
+Module: MyClassModule
+Type: CompositeResource
+---
+
+# MyCompositeResource
+
+## Parameters
+
+| Parameter | Attribute | DataType | Description | Allowed Values |
+| --- | --- | --- | --- | --- |
+| **StringProperty** | Required | String | Any description | |
+| **StringValueMapProperty** | Required | String | Any description | `Value1`, `Value2` |
+| **StringArrayWriteProperty** | Write | String[] | Any description | |
+
+## Description
+
+The description of the resource.
+Second row of description.
+
+## Examples
+
+.EXAMPLE 1
+
+Example description.
+
+Configuration Example
+{
+    Import-DSCResource -ModuleName MyModule
+    Node localhost
+    {
+        MyCompositeResource Something
+        {
+            Id    = ''MyId''
+            Enum  = ''Value1''
+            Int   = 1
+        }
+    }
+}
+' -replace '\r?\n', "`r`n"
+
+                    Mock `
+                        -CommandName Get-ChildItem `
+                        -ParameterFilter $script:getChildItemSchema_parameterFilter `
+                        -MockWith { $script:mockSchemaFiles }
+
+                    Mock `
+                        -CommandName Get-CompositeSchemaObject `
+                        -ParameterFilter $script:getCompositeSchemaObjectSchema_parameterFilter `
+                        -MockWith {
+                        return @(
+                            $script:mockGetCompositeSchemaObject
+                            $script:mockEmbeddedSchemaObject
+                        )
+                    }
+
+                    Mock `
+                        -CommandName Get-ChildItem `
+                        -ParameterFilter $script:getChildItemDescription_parameterFilter `
+                        -MockWith {
+                            return @(
+                                @{
+                                    Name = 'README.MD'
+                                    FullName = $script:mockReadmePath
+                                }
+                            )
+                        }
+
+                    Mock `
+                        -CommandName Get-Content `
+                        -ParameterFilter $script:getContentReadme_parameterFilter `
+                        -MockWith { $script:mockGetContentReadme }
+
+                    Mock `
+                        -CommandName Get-ChildItem `
+                        -ParameterFilter $script:getChildItemExample_parameterFilter `
+                        -MockWith { $script:mockExampleFiles }
+
+                    Mock `
+                        -CommandName Get-DscResourceWikiExampleContent `
+                        -ParameterFilter $script:getDscResourceWikiExampleContent_parameterFilter `
+                        -MockWith { $script:mockExampleContent }
+
+                    Mock `
+                        -CommandName Out-File
+
+                    Mock `
+                        -CommandName Write-Warning `
+                        -ParameterFilter $script:writeWarningExample_parameterFilter
+
+                    Mock `
+                        -CommandName Write-Warning `
+                        -ParameterFilter $script:writeWarningDescription_parameterFilter
+                }
+
+                It 'Should not throw an exception' {
+                    {
+                        New-DscCompositeResourceWikiPage @script:newDscResourceWikiPageOutput_parameters -Metadata @{
+                            Type = 'CompositeResource'
+                            Module = 'MyClassModule'
+                        }
+                    } | Should -Not -Throw
+                }
+
+                It 'Should produce the correct output' {
+                    Assert-MockCalled `
+                        -CommandName Out-File `
+                        -ParameterFilter {
+                            if ($InputObject -ne $mockWikiContentOutput)
+                            {
+                                # Helper to output the diff.
+                                Out-Diff -Expected $mockWikiContentOutput -Actual $InputObject
+                            }
+
+                            $InputObject -eq $mockWikiContentOutput
+                        } `
+                        -Exactly -Times 1
+                }
+
+                It 'Should call the expected mocks ' {
+                    Assert-MockCalled `
+                        -CommandName Get-ChildItem `
+                        -ParameterFilter $script:getChildItemSchema_parameterFilter `
+                        -Exactly -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Get-CompositeSchemaObject `
+                        -ParameterFilter $script:getCompositeSchemaObjectSchema_parameterFilter `
+                        -Exactly -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Get-ChildItem `
+                        -ParameterFilter $script:getChildItemDescription_parameterFilter `
+                        -Exactly -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Get-Content `
+                        -ParameterFilter $script:getContentReadme_parameterFilter `
+                        -Exactly -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Get-ChildItem `
+                        -ParameterFilter $script:getChildItemExample_parameterFilter `
+                        -Exactly -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Get-DscResourceWikiExampleContent `
+                        -ParameterFilter $script:getDscResourceWikiExampleContent_parameterFilter `
+                        -Exactly -Times 1
+
+                    Assert-MockCalled `
+                        -CommandName Write-Warning `
+                        -ParameterFilter $script:writeWarningExample_parameterFilter `
+                        -Exactly -Times 0
+
+                    Assert-MockCalled `
+                        -CommandName Write-Warning `
+                        -ParameterFilter $script:writeWarningDescription_parameterFilter `
+                        -Exactly -Times 0
+                }
+            }
         }
     }
 }

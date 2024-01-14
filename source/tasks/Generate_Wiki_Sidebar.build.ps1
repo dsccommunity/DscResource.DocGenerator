@@ -1,6 +1,7 @@
 <#
     .SYNOPSIS
-        This is a build task that generates an external help file for a module.
+        This is a build task that generates GitHub Wiki Sidebar file based on
+        markdown metadata in existing markdown files.
 
     .PARAMETER ProjectPath
         The root path to the project. Defaults to $BuildRoot.
@@ -28,11 +29,11 @@
         The path to the source folder name. Defaults to the empty string.
 
     .PARAMETER DocOutputFolder
-        The path to the where the markdown documentation is found. Defaults to the
+        The path to the where the markdown documentation is written. Defaults to the
         folder `./output/WikiContent`.
 
-    .PARAMETER HelpCultureInfo
-        Specifies the culture that documentation is generated for. Defaults to 'en-US'.
+    .PARAMETER DebugTask
+        Whether to run the task in debug mode. Defaults to `$false`.
 
     .PARAMETER BuildInfo
         The build info object from ModuleBuilder. Defaults to an empty hashtable.
@@ -72,50 +73,54 @@ param
     $DocOutputFolder = (property DocOutputFolder 'WikiContent'),
 
     [Parameter()]
-    [System.Globalization.CultureInfo]
-    $HelpCultureInfo = (property HelpCultureInfo 'en-US'),
+    [System.Management.Automation.SwitchParameter]
+    $DebugTask = (property DebugTask $false),
 
     [Parameter()]
     [System.Collections.Hashtable]
     $BuildInfo = (property BuildInfo @{ })
 )
 
-# Synopsis: Generate external help file for the public commands from the built module.
-Task Generate_External_Help_File_For_Public_Commands {
-    if (-not (Get-Module -Name 'PlatyPS' -ListAvailable))
+# Synopsis: Generate GitHub Wiki sidebar based on existing markdown files.
+task Generate_Wiki_Sidebar {
+    if (-not $script:PSBoundParameters.ContainsKey('DebugTask'))
     {
-        throw 'PlatyPS is not installed. Please make sure it is available in a path that is listed in $PSModulePath. It can be added to the configuration file RequiredModules.psd1 in the project.'
+        $DebugTask = [System.Management.Automation.SwitchParameter] $BuildInfo.'DscResource.DocGenerator'.Generate_Wiki_Sidebar.Debug
     }
+
+    <#
+        Only show debug information if Debug was set to 'true' in build configuration
+        or if it was passed as a parameter.
+    #>
+    if ($DebugTask.IsPresent)
+    {
+        $local:VerbosePreference = 'Continue'
+        $local:DebugPreference = 'Continue'
+
+        Write-Debug -Message 'Running task with debug information.'
+    }
+
+    $alwaysOverwrite = [System.Boolean] $BuildInfo.'DscResource.DocGenerator'.Generate_Wiki_Sidebar.AlwaysOverwrite
 
     # Get the values for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
     . Set-SamplerTaskVariable
 
     $DocOutputFolder = Get-SamplerAbsolutePath -Path $DocOutputFolder -RelativeTo $OutputDirectory
 
-    $builtModuleLocalePath = $BuiltModuleBase | Join-Path -ChildPath $HelpCultureInfo.Name
-
-    "`tDocs output folder path             = '$DocOutputFolder'"
-    "`tBuilt Module Locale Path            = '$builtModuleLocalePath'"
+    "`tDocs output folder path = '$DocOutputFolder'"
     ""
 
-    $generateMarkdownScript = @"
-`$env:PSModulePath = '$env:PSModulePath'
-# Generate the help file
-New-ExternalHelp -Path '$DocOutputFolder' -OutputPath '$builtModuleLocalePath' -Force
-"@
+    $newGitHubWikiSidebarParameters = @{
+        DocumentationPath = $DocOutputFolder
+        ReplaceExisting   = $alwaysOverwrite
+        Force             = $true
+    }
 
-    Write-Build -Color DarkGray -Text $generateMarkdownScript
+    if ($DebugTask.IsPresent)
+    {
+        $newGitHubWikiSidebarParameters.Verbose = $true
+        $newGitHubWikiSidebarParameters.Debug = $true
+    }
 
-    $generateMarkdownScriptBlock = [ScriptBlock]::Create($generateMarkdownScript)
-
-    $pwshPath = (Get-Process -Id $PID).Path
-
-    <#
-        The scriptblock is run in a separate process to avoid conflicts with
-        other modules that are loaded in the current process.
-    #>
-    & $pwshPath -Command $generateMarkdownScriptBlock -ExecutionPolicy 'ByPass' -NoProfile
-
-    # Add a newline to the end of the help file to pass HQRM tests.
-    Add-NewLine -FileInfo (Get-Item -Path "$builtModuleLocalePath/$ProjectName-help.xml") -AtEndOfFile
+    New-GitHubWikiSidebar @newGitHubWikiSidebarParameters
 }

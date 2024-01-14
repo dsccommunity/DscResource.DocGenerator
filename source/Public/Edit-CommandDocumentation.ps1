@@ -61,8 +61,6 @@ Get-MarkdownMetadata -Path $($FilePath.FullName) -ErrorAction 'Stop'
             {
                 Write-Information -MessageData "Cleaning documentation of '$($FilePath.BaseName)'." -InformationAction 'Continue'
 
-                Remove-MarkdownMetadataBlock -FilePath $FilePath
-
                 <#
                     Remove ProgressAction parameter from the documentation. The
                     parameter ProgressAction was introduced in PS 7.4 and is not

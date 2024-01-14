@@ -20,6 +20,9 @@
         The path to the root of the built DSC resource module, e.g.
         'output/MyResource/1.0.0'.
 
+    .PARAMETER Metadata
+        Specifies metadata that is added to the markdown file.
+
     .PARAMETER Force
         Overwrites any existing file when outputting the generated content.
 
@@ -30,6 +33,19 @@
             -OutputPath C:\repos\MyResource\output\WikiContent
 
         This example shows how to generate wiki documentation for a specific module.
+
+    .EXAMPLE
+        New-DscCompositeResourceWikiPage `
+            -SourcePath C:\repos\MyResource\source `
+            -BuiltModulePath C:\repos\MyResource\output\MyResource\1.0.0 `
+            -OutputPath C:\repos\MyResource\output\WikiContent `
+            -Metadata @{
+                Type = 'CompositeResource'
+                Category = 'Composites resources'
+            }
+
+        This example shows how to generate wiki documentation for a specific module
+        and passing in metadata for the markdown files.
 #>
 function New-DscCompositeResourceWikiPage
 {
@@ -49,6 +65,10 @@ function New-DscCompositeResourceWikiPage
         [Parameter(Mandatory = $true)]
         [System.String]
         $BuiltModulePath,
+
+        [Parameter()]
+        [System.Collections.Hashtable]
+        $Metadata,
 
         [Parameter()]
         [System.Management.Automation.SwitchParameter]
@@ -76,6 +96,21 @@ function New-DscCompositeResourceWikiPage
 
             $output = New-Object -TypeName System.Text.StringBuilder
 
+            # Add metadata to the top of the file.
+            if ($Metadata)
+            {
+                $null = $output.AppendLine('---')
+
+                foreach ($key in ($Metadata.Keys | Sort-Object))
+                {
+                    $null = $output.AppendLine("$($key): $($Metadata.$key)")
+                }
+
+                $null = $output.AppendLine('---')
+                $null = $output.AppendLine()
+            }
+
+            # Add the documentation for the resource.
             $null = $output.AppendLine("# $($compositeSchemaObject.Name)")
             $null = $output.AppendLine('')
             $null = $output.AppendLine('## Parameters')

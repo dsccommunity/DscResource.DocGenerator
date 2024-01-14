@@ -95,7 +95,7 @@ param
     $BuildInfo = (property BuildInfo @{ })
 )
 
-# Synopsis: This task publishes documentation to a GitHub Wiki repository.
+# Synopsis: Publish documentation to a GitHub Wiki repository.
 task Publish_GitHub_Wiki_Content {
     if ([System.String]::IsNullOrEmpty($GitHubToken))
     {

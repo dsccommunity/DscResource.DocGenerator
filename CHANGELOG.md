@@ -18,10 +18,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   generate the modules help files to support `Get-Help` for public commands.
   This task is dependent on the task `Generate_Markdown_For_Public_Commands`
   to have been run prior.
-- Task `Clean_Markdown_Of_Public_Commands` which will remove metadata and
-  wrongly added parameters in the command markdown documentation.
-- Private function `Remove-MarkdownMetadataBlock` that removes metadata from a
+- Task `Clean_Markdown_Of_Public_Commands` which will edit the the command
+  markdown documentation. For example it will remove the `ProgressAction`
+  parameter that PlatyPS remove wrongly add (due to a bug).
+- Task `Clean_Markdown_Metadata` which will remove the markdown metadata
+  block from the markdown documentation. The metadata block was used for
+  other tasks to know what type of content the markdown file contained.
+- Task `Generate_Wiki_Sidebar` - This task will generate the GitHub Wiki
+  Repository sidebar based on the files present in the built documentation
+  folder (defaults to `./output/WikiOutput`).
+- Public command `Remove-MarkdownMetadataBlock` that removes metadata from a
   Markdown file.
+- Public command `New-GitHubWikiSidebar` generate the GitHub Wiki
+  Repository sidebar based on the files present in the built documentation
+  folder (defaults to `./output/WikiOutput`).
 - Private function `Remove-ParameterFromMarkdown` that removes a parameter
   from a commands markdown documentation.
 - Private function `Remove-EscapedMarkdownCode` that removes a escape sequences
@@ -42,6 +52,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - The built module is now removed from the session when initiating a new
     build. The build pipeline is dogfooding functionality and leaving a
     previous version imported in the session do not use new code.
+- Task `Generate_Wiki_Content`
+  - Support passing metadata trough the build configuration file (`build.yaml`).
+- `New-DscResourceWikiPage`
+  - A new parameter `Metadata` that takes a hashtable of metadata. See
+    comment-based help for the format of the hashtable.
+- `New-DscClassResourceWikiPage`
+  - A new parameter `Metadata` that takes a hashtable of metadata. See
+    comment-based help for the format of the hashtable.
+- `New-DscCompositeResourceWikiPage`
+  - A new parameter `Metadata` that takes a hashtable of metadata. See
+    comment-based help for the format of the hashtable.
+- `New-DscMofResourceWikiPage`
+  - A new parameter `Metadata` that takes a hashtable of metadata. See
+    comment-based help for the format of the hashtable.
 
 ### Fixed
 

@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        This is a build task that generates conceptual help.
+        This is a build task that clean markdown meta data from markdown documentation.
 
     .PARAMETER ProjectPath
         The root path to the project. Defaults to $BuildRoot.
@@ -27,10 +27,9 @@
     .PARAMETER SourcePath
         The path to the source folder name. Defaults to the empty string.
 
-    .PARAMETER WikiSourceFolderName
-        The name of the folder that contains the source markdown files (e.g. 'Home.md')
-        to publish to the wiki. The name should be relative to the SourcePath.
-        Defaults to 'WikiSource'.
+    .PARAMETER DocOutputFolder
+        The path to the where the documentation is written. Defaults to
+        the folder `./output/WikiContent`.
 
     .PARAMETER BuildInfo
         The build info object from ModuleBuilder. Defaults to an empty hashtable.
@@ -38,12 +37,6 @@
     .NOTES
         This is a build task that is primarily meant to be run by Invoke-Build but
         wrapped by the Sampler project's build.ps1 (https://github.com/gaelcolas/Sampler).
-
-        The function Set-WikiModuleVersion needed to be made a public function
-        for the build task to find it. Set-WikiModuleVersion function does not
-        need to be public so if there is a way found in the future that makes it
-        possible to have it as a private function then this code should refactored
-        to make that happen.
 #>
 param
 (
@@ -73,55 +66,30 @@ param
 
     [Parameter()]
     [System.String]
-    $WikiSourceFolderName = (property WikiSourceFolderName 'WikiSource'),
+    $DocOutputFolder = (property DocOutputFolder 'WikiContent'),
 
     [Parameter()]
     [System.Collections.Hashtable]
     $BuildInfo = (property BuildInfo @{ })
 )
 
-# Synopsis: Generate wiki documentation for the DSC resources.
-task Generate_Wiki_Content {
+# Synopsis: Clean the markdown metdata block from the markdown documentation.
+Task Clean_Markdown_Metadata {
     # Get the values for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
     . Set-SamplerTaskVariable
 
-    $wikiOutputPath = Join-Path -Path $OutputDirectory -ChildPath 'WikiContent'
+    $DocOutputFolder = Get-SamplerAbsolutePath -Path $DocOutputFolder -RelativeTo $OutputDirectory
 
-    if ((Test-Path -Path $wikiOutputPath) -eq $false)
+    "`tDocs output folder path = '$DocOutputFolder'"
+    ""
+
+    # cSpell: disable-next-line
+    $markdownFiles = Get-ChildItem -Path "$DocOutputFolder/*.md" -Exclude @('[Hh]ome.md', '_[Ss]idebar.md', '_[Ff]ooter.md')
+
+    Write-Build -Color 'Magenta' -Text 'Cleaning the command documentation.'
+
+    foreach ($markdownFile in $markdownFiles)
     {
-        $null = New-Item -Path $wikiOutputPath -ItemType Directory
-    }
-
-    "`tWiki Output Path             = $wikiOutputPath"
-
-    $wikiSourcePath = Join-Path -Path $SourcePath -ChildPath $WikiSourceFolderName
-
-    $wikiSourceExist = Test-Path -Path $wikiSourcePath
-
-    if ($wikiSourceExist)
-    {
-        "`tWiki Source Path        = $wikiSourcePath"
-    }
-
-    Write-Build -Color 'Magenta' -Text 'Generating Wiki content for all DSC resources based on source and built module.'
-
-    $dscResourceMarkdownMetadata = $BuildInfo.'DscResource.DocGenerator'.Generate_Wiki_Content
-
-    New-DscResourceWikiPage -SourcePath $SourcePath -BuiltModulePath $builtModuleBase -OutputPath $wikiOutputPath -Metadata $dscResourceMarkdownMetadata -Force
-
-    if ($wikiSourceExist)
-    {
-        Write-Build -Color 'Magenta' -Text 'Copying Wiki content from the Wiki source folder.'
-
-        Copy-Item -Path (Join-Path $wikiSourcePath -ChildPath '*') -Destination $wikiOutputPath -Recurse -Force
-
-        $homeMarkdownFilePath = Join-Path -Path $wikiOutputPath -ChildPath 'Home.md'
-
-        if (Test-Path -Path $homeMarkdownFilePath)
-        {
-            Write-Build -Color 'Magenta' -Text 'Updating module version in Home.md if there are any placeholders found.'
-
-            Set-WikiModuleVersion -Path $homeMarkdownFilePath -ModuleVersion $moduleVersion
-        }
+        $markdownFile | Remove-MarkdownMetadataBlock -Force
     }
 }

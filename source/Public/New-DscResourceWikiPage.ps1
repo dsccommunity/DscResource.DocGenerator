@@ -34,6 +34,9 @@
     .PARAMETER Force
         Overwrites any existing file when outputting the generated content.
 
+    .PARAMETER Metadata
+        The metadata for the DSC resource markdown files.
+
     .EXAMPLE
         New-DscResourceWikiPage `
             -SourcePath C:\repos\MyResource\source `
@@ -41,6 +44,29 @@
             -OutputPath C:\repos\MyResource\output\WikiContent
 
         This example shows how to generate wiki documentation for a specific module.
+
+    .EXAMPLE
+        New-DscResourceWikiPage `
+            -SourcePath C:\repos\MyResource\source `
+            -BuiltModulePath C:\repos\MyResource\output\MyResource\1.0.0 `
+            -OutputPath C:\repos\MyResource\output\WikiContent `
+            -Metadata @{
+                MofResourceMetadata = @{
+                    Type = 'MofResource'
+                    Category = 'MOF-based resources'
+                }
+                ClassResourceMetadata = @{
+                    Type = 'ClassResource'
+                    Category = 'Class-based resources'
+                }
+                CompositeResourceMetadata = @{
+                    Type = 'CompositeResource'
+                    Category = 'Composites resources'
+                }
+            }
+
+        This example shows how to generate wiki documentation for a specific module
+        and passing in metadata for the markdown files.
 #>
 function New-DscResourceWikiPage
 {
@@ -61,6 +87,10 @@ function New-DscResourceWikiPage
         $BuiltModulePath,
 
         [Parameter()]
+        [System.Collections.Hashtable]
+        $Metadata,
+
+        [Parameter()]
         [System.Management.Automation.SwitchParameter]
         $Force
     )
@@ -68,12 +98,29 @@ function New-DscResourceWikiPage
     $newDscMofResourceWikiPageParameters = @{
         OutputPath = $OutputPath
         SourcePath = $SourcePath
+        Metadata   = $Metadata.MofResourceMetadata
         Force      = $Force
     }
 
     New-DscMofResourceWikiPage @newDscMofResourceWikiPageParameters
 
-    New-DscClassResourceWikiPage @PSBoundParameters
+    $newDscClassResourceWikiPageParameters = @{
+        OutputPath      = $OutputPath
+        SourcePath      = $SourcePath
+        BuiltModulePath = $BuiltModulePath
+        Metadata        = $Metadata.ClassResourceMetadata
+        Force           = $Force
+    }
 
-    New-DscCompositeResourceWikiPage @PSBoundParameters
+    New-DscClassResourceWikiPage @newDscClassResourceWikiPageParameters
+
+    $newDscCompositeResourceWikiPageParameters = @{
+        OutputPath      = $OutputPath
+        SourcePath      = $SourcePath
+        BuiltModulePath = $BuiltModulePath
+        Metadata        = $Metadata.CompositeResourceMetadata
+        Force           = $Force
+    }
+
+    New-DscCompositeResourceWikiPage @newDscCompositeResourceWikiPageParameters
 }
