@@ -1,6 +1,7 @@
 <#
     .SYNOPSIS
-        This is a build task that generates conceptual help.
+        This is a build task that generates GitHub Wiki Sidebar file based on
+        markdown metadata in existing markdown files.
 
     .PARAMETER ProjectPath
         The root path to the project. Defaults to $BuildRoot.
@@ -80,7 +81,7 @@ param
     $BuildInfo = (property BuildInfo @{ })
 )
 
-# Synopsis: Generate wiki sidebar based on existing markdown files.
+# Synopsis: Generate GitHub Wiki sidebar based on existing markdown files.
 task Generate_Wiki_Sidebar {
     if (-not $script:PSBoundParameters.ContainsKey('DebugTask'))
     {
