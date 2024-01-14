@@ -27,6 +27,13 @@
     .PARAMETER SourcePath
         The path to the source folder name. Defaults to the empty string.
 
+    .PARAMETER DocOutputFolder
+        The path to the where the markdown documentation is written. Defaults to the
+        folder `./output/WikiContent`.
+
+    .PARAMETER DebugTask
+        Whether to run the task in debug mode. Defaults to `$false`.
+
     .PARAMETER BuildInfo
         The build info object from ModuleBuilder. Defaults to an empty hashtable.
 
