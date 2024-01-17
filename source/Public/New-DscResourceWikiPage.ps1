@@ -1,4 +1,3 @@
-
 <#
     .SYNOPSIS
         New-DscResourceWikiPage generates wiki pages that can be uploaded to GitHub

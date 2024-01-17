@@ -18,7 +18,6 @@
 
         Removes the metadata from the specified Markdown file.
 #>
-
 function Remove-MarkdownMetadataBlock
 {
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]

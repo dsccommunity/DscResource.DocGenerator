@@ -1,4 +1,3 @@
-
 <#
     .SYNOPSIS
         Creates a GitHub Wiki sidebar based on existing markdown files and their metadata.

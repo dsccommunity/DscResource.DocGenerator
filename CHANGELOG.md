@@ -45,10 +45,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - DscResource.DocGenerator
   - Updated pipeline files to support resolving dependencies using ModuleFast
     or PSResourceGet.
-  - Add blank line at top of each public command source file for PlatyPS
-    to work. ModuleBuilder has no option to add a prefix per source file,
-    the only alternative would be to move the comment-based help inside the
-    function-block which is currently against the style guideline.
   - The built module is now removed from the session when initiating a new
     build. The build pipeline is dogfooding functionality and leaving a
     previous version imported in the session do not use new code.

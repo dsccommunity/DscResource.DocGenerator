@@ -1,4 +1,3 @@
-
 <#
     .SYNOPSIS
         Edits the documentation for a command by parsing the comment-based help from
