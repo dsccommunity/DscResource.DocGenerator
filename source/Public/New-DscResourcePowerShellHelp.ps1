@@ -1,4 +1,3 @@
-
 <#
     .SYNOPSIS
         New-DscResourcePowerShellHelp generates PowerShell compatible help files

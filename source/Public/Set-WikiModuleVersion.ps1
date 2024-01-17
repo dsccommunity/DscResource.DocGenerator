@@ -1,4 +1,3 @@
-
 <#
     .SYNOPSIS
         Changes all placeholders (#.#.#) in a markdown file to the specified
