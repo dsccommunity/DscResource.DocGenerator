@@ -42,7 +42,7 @@ function Remove-MarkdownMetadataBlock
 
         $content = Get-Content -Path $FilePath.FullName -Raw
 
-        $metadataPattern = '(?s)---.*?---[\r|\n]*'
+        $metadataPattern = '^(?s)---.*?---[\r|\n]*'
 
         if ($content -match $metadataPattern)
         {
