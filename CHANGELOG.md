@@ -67,6 +67,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Get-CommentBasedHelp` was fixed so it correctly filters out the comment-based
   help from a script file.
+- `Remove-MarkdownMetadataBlock` was fixed to only remove the metadata block
+  at the top of the file.
 
 ## [0.11.2] - 2023-01-03
 
