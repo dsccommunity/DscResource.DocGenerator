@@ -27,14 +27,23 @@ Describe 'Remove-MarkdownMetadataBlock' {
 title: Test Title
 ---
 # Test Content
+
+| A | B | C | D | E |
+| --- | --- | --- | --- | --- |
+| 1 | 2 | 3 | 4 | 5 |
 "@
 
         Remove-MarkdownMetadataBlock -FilePath $testFilePath -Force
 
         $content = Get-Content -Path $testFilePath -Raw
 
-        $content | Should -Not -Match '---'
-        $content | Should -Match '# Test Content'
+        $content | Should -Match @"
+# Test Content
+
+| A | B | C | D | E |
+| --- | --- | --- | --- | --- |
+| 1 | 2 | 3 | 4 | 5 |
+"@
     }
 
     It 'Should remove metadata from a markdown file when -Confirm:$false is used' {
