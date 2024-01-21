@@ -40,17 +40,39 @@ function Remove-EscapedMarkdownCode
 
         $escapedPatterns = @(
             @{
-                RegularExpression = '\\\`(.+?)\\\`' # Remove escaped inline code-blocks
+                # Remove escaped inline code-blocks, ingores escaped code-blocks.
+                RegularExpression = '\\\`(?!\\\`)(?!\`)(.+?)\\\`'
                 Replacement = '`$1`'
             }
             @{
-                RegularExpression = '\\\[(.+?)\\\]' # Remove escaped links
+                # Remove escaped links.
+                RegularExpression = '\\\[(.+?)\\\]'
                 Replacement = '[$1]'
             }
-
             @{
-                RegularExpression = '(?m)^\\\>' # Remove quoted blocks
+                 # Remove quoted blocks, if they start on each line.
+                RegularExpression = '(?m)^\\\>'
                 Replacement = '>'
+            }
+            @{
+                # Remove escaped code blocks.
+                RegularExpression = '\\\`\\\`\\\`'
+                Replacement = '```'
+            }
+            @{
+                # Remove escaped less than character.
+                RegularExpression = '\\\<'
+                Replacement = '<'
+            }
+            @{
+                # Remove escaped greater than character.
+                RegularExpression = '\\\>'
+                Replacement = '>'
+            }
+            @{
+                # Remove escaped path separator.
+                RegularExpression = '\\\\'
+                Replacement = '\'
             }
         )
 

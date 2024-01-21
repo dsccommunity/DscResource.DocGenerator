@@ -34,12 +34,18 @@ This is \`inline code 2\`
 
 Removes escaped links: \[MyLinkName\]
 
-Do not start at the beginning of the line: \> This quote block should be kept
+Greater than sign \>
+Less than sign \<
 
 Removes quoted blocks:
 \> This block should be changed
 \> This block should be changed
 \> This block should be changed
+
+\`\`\`code block 1\`\`\`e
+\`\`\`code block 2\`\`\`
+
+C:\\Path\\To\\File.ps1
 "@
 
             Set-Content -Path $testFilePath -Value $contentWithParameter
@@ -62,13 +68,45 @@ Removes quoted blocks:
             $content | Should -Not -Match '\\\[MyLinkName\\\]'
         }
 
-        It 'Should remove quoted blocks from the markdown file' {
+        It 'Should remove escaped quoted blocks from the markdown file' {
             Remove-EscapedMarkdownCode -FilePath $testFilePath
 
             $content = Get-Content -Path $testFilePath -Raw
 
             $content | Should -Not -Match '\\\> This block should be changed'
-            $content | Should -Match '\\\> This quote block should be kept' -Because 'the quote block does not start at the beginning of the line'
+        }
+
+        It 'Should remove escaped greater than character from the markdown file' {
+            Remove-EscapedMarkdownCode -FilePath $testFilePath
+
+            $content = Get-Content -Path $testFilePath -Raw
+
+            $content | Should -Not -Match '\\>'
+        }
+
+        It 'Should remove escaped less than character from the markdown file' {
+            Remove-EscapedMarkdownCode -FilePath $testFilePath
+
+            $content = Get-Content -Path $testFilePath -Raw
+
+            $content | Should -Not -Match '\\<'
+        }
+
+        It 'Should remove escaped code blocks from the markdown file' {
+            Remove-EscapedMarkdownCode -FilePath $testFilePath
+
+            $content = Get-Content -Path $testFilePath -Raw
+
+            $content | Should -Not -Match '\\\`\\\`\\\`'
+            $content | Should -Not -Match '\`\`\`'
+        }
+
+        It 'Should remove escaped path separator from the markdown file' {
+            Remove-EscapedMarkdownCode -FilePath $testFilePath
+
+            $content = Get-Content -Path $testFilePath -Raw
+
+            $content | Should -Match 'C:\\Path\\To\\File.ps1'
         }
     }
 }
