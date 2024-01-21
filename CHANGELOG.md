@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `Remove-EscapedMarkdownCode`
-  - Add additional escape sequences to remove.
+  - Add additional escape sequences to remove ([issue #140](https://github.com/dsccommunity/DscResource.DocGenerator/issues/140)).
 
 ## [0.12.0] - 2024-01-21
 
