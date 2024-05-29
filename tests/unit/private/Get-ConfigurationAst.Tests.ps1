@@ -16,6 +16,10 @@ $script:moduleName = Get-Module -Name $script:projectName -ListAvailable | Selec
 Remove-Module -Name $script:moduleName -Force -ErrorAction 'SilentlyContinue'
 
 Import-Module $script:moduleName -Force -ErrorAction 'Stop'
+
+if ($IsLinux) {
+    return
+}
 #endregion HEADER
 
 InModuleScope $script:moduleName {
