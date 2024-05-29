@@ -16,10 +16,14 @@ $script:moduleName = Get-Module -Name $script:projectName -ListAvailable | Selec
 Remove-Module -Name $script:moduleName -Force -ErrorAction 'SilentlyContinue'
 
 Import-Module $script:moduleName -Force -ErrorAction 'Stop'
+
+if ($IsLinux) {
+    return
+}
 #endregion HEADER
 
 InModuleScope $script:moduleName {
-    Describe Get-MofSchemaObject -Skip:$IsLinux {
+    Describe Get-MofSchemaObject {
         BeforeAll {
             $script:className = 'MSFT_MofHelperTest'
             $script:fileName = '{0}.schema.mof' -f $script:ClassName
