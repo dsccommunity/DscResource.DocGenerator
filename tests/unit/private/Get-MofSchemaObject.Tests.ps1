@@ -19,7 +19,7 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 #endregion HEADER
 
 InModuleScope $script:moduleName {
-    Describe Get-MofSchemaObject {
+    Describe Get-MofSchemaObject -Skip:$IsLinux {
         BeforeAll {
             $script:className = 'MSFT_MofHelperTest'
             $script:fileName = '{0}.schema.mof' -f $script:ClassName
