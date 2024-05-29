@@ -53,6 +53,8 @@ task Package_Wiki_Content {
         throw 'The Wiki Output Path does not exist. Please run the task Generate_Wiki_Content prior to running this task.'
     }
 
+    Write-Build Magenta 'Packaging Wiki content.'
+
     # Overwrites any existing archive.
     Compress-Archive -Path $wikiArchiveSourcePath -DestinationPath $wikiPackagePath -CompressionLevel 'Optimal' -Force -ErrorAction 'Stop'
 }
