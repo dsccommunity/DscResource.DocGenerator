@@ -19,7 +19,7 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 #endregion HEADER
 
 InModuleScope $script:moduleName {
-    Describe 'Get-CompositeResourceParameterValidateSet' {
+    Describe 'Get-CompositeResourceParameterValidateSet' -Skip:$IsLinux {
         BeforeAll {
             $script:tokens, $script:parseErrors = $null
 
