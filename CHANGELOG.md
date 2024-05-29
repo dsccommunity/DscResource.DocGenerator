@@ -5,6 +5,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Task `Package_Wiki_Content` - This task will compress generated documentation
+  into a .zip archive.
+
+### Changed
+
+- Skipped failing tests on Linux due to libmi.
+
 ## [0.12.1] - 2024-01-21
 
 ### Fixed

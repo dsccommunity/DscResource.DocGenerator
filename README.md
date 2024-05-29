@@ -420,3 +420,32 @@ DscResource.DocGenerator:
   Publish_GitHub_Wiki_Content:
     Debug: true
 ```
+
+### `Package_Wiki_Content`
+
+This build task runs the command `Compress-Archive`.
+
+Below is an example how the build task can be used when a repository is
+based on the [Sampler](https://github.com/gaelcolas/Sampler) project.
+
+>**NOTE:** This task is meant to be run after the task `Generate_Wiki_Content`
+>that is normally run in the docs phase. But this task can be used to upload
+>any content to a Wiki.
+
+```yaml
+BuildWorkflow:
+  '.':
+    - build
+
+  build:
+    - Clean
+    - Build_Module_ModuleBuilder
+    - Build_NestedModules_ModuleBuilder
+    - Create_changelog_release_output
+
+  docs:
+    - Generate_Conceptual_Help
+    - Generate_Wiki_Content
+    - Package_Wiki_Content
+
+```

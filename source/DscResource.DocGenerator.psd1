@@ -55,6 +55,7 @@
     AliasesToExport   = @(
         'Task.Generate_Conceptual_Help',
         'Task.Generate_Wiki_Content',
+        'Task.Package_Wiki_Content',
         'Task.Publish_GitHub_Wiki_Content'
     )
 
@@ -85,4 +86,3 @@
         } # End of PSData hashtable
     } # End of PrivateData hashtable
 }
-
