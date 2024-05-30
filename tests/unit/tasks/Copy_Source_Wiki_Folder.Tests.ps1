@@ -23,27 +23,6 @@ Describe 'Copy_Source_Wiki_Folder' {
         Mock -CommandName Copy-Item
         Mock -CommandName Set-WikiModuleVersion
 
-        # Mock -Command Get-BuiltModuleVersion -MockWith {
-        #     return [PSCustomObject]@{
-        #         Version          = '1.0.0-preview1'
-        #         PreReleaseString = 'preview1'
-        #         ModuleVersion    = '1.0.0'
-        #     }
-        # }
-
-        # Mock -CommandName Get-Item -MockWith {
-        #     $Path =  [System.String] ($Path -replace '\*','1.0.0')
-
-        #     [PSCustomObject]@{
-        #         FullName = $Path
-        #     }
-        # }
-
-        # Mock -CommandName Get-SamplerModuleRootPath -MockWith {
-        #     # Return the path that was passed to the command.
-        #     return $BuiltModuleManifest
-        # }
-
         Mock -CommandName Test-Path -MockWith {
             return $true
         }

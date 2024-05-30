@@ -42,7 +42,5 @@ Describe 'Generate_Wiki_Content' {
 
             Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @taskParameters
         } | Should -Not -Throw
-
-        #Assert-MockCalled -CommandName New-DscResourceWikiPage -Exactly -Times 1 -Scope It
     }
 }
