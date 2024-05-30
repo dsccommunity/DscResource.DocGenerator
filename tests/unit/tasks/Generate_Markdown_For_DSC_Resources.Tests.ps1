@@ -18,9 +18,13 @@ Remove-Module -Name $script:moduleName -Force -ErrorAction 'SilentlyContinue'
 Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 #endregion HEADER
 
-Describe 'Generate_Wiki_Content' {
+Describe 'Generate_Markdown_For_DSC_Resources' {
+    BeforeAll {
+        Mock -CommandName New-DscResourceWikiPage
+    }
+
     It 'Should export the build script alias' {
-        $buildTaskName = 'Generate_Wiki_Content'
+        $buildTaskName = 'Generate_Markdown_For_DSC_Resources'
         $buildScriptAliasName = 'Task.{0}' -f $buildTaskName
 
         $script:buildScript = Get-Command -Name $buildScriptAliasName -Module $script:projectName
@@ -43,6 +47,6 @@ Describe 'Generate_Wiki_Content' {
             Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @taskParameters
         } | Should -Not -Throw
 
-        #Assert-MockCalled -CommandName New-DscResourceWikiPage -Exactly -Times 1 -Scope It
+        Assert-MockCalled -CommandName New-DscResourceWikiPage -Exactly -Times 1 -Scope It
     }
 }

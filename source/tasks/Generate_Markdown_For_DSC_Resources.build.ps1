@@ -76,12 +76,20 @@ param
     $WikiSourceFolderName = (property WikiSourceFolderName 'WikiSource'),
 
     [Parameter()]
-    [System.String]
-    $WikiOutputPath = (property WikiOutputPath ''),
-
-    [Parameter()]
     [System.Collections.Hashtable]
     $BuildInfo = (property BuildInfo @{ })
 )
 
-Task Generate_Wiki_Content Create_Wiki_Output_Folder, Copy_Source_Wiki_Folder, Generate_Markdown_For_DSC_Resources, Generate_Markdown_For_Public_Commands, Generate_External_Help_File_For_Public_Commands, Clean_Markdown_Of_Public_Commands
+# Synopsis: Generate wiki documentation for the DSC resources.
+Task Generate_Markdown_For_DSC_Resources {
+    # Get the values for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
+    . Set-SamplerTaskVariable
+
+    $wikiOutputPath = Join-Path -Path $OutputDirectory -ChildPath 'WikiContent'
+
+    Write-Build -Color 'Magenta' -Text 'Generating Wiki content for all DSC resources based on source and built module.'
+
+    $dscResourceMarkdownMetadata = $BuildInfo.'DscResource.DocGenerator'.Generate_Markdown_For_DSC_Resources
+
+    New-DscResourceWikiPage -SourcePath $SourcePath -BuiltModulePath $builtModuleBase -OutputPath $wikiOutputPath -Metadata $dscResourceMarkdownMetadata -Force
+}

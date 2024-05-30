@@ -84,4 +84,34 @@ param
     $BuildInfo = (property BuildInfo @{ })
 )
 
-Task Generate_Wiki_Content Create_Wiki_Output_Folder, Copy_Source_Wiki_Folder, Generate_Markdown_For_DSC_Resources, Generate_Markdown_For_Public_Commands, Generate_External_Help_File_For_Public_Commands, Clean_Markdown_Of_Public_Commands
+# Synopsis: Generate wiki documentation for the DSC resources.
+Task Copy_Source_Wiki_Folder {
+    # Get the values for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
+    . Set-SamplerTaskVariable
+
+    $wikiSourcePath = Join-Path -Path $SourcePath -ChildPath $WikiSourceFolderName
+    $wikiOutputPath = Join-Path -Path $OutputDirectory -ChildPath 'WikiContent'
+
+    $wikiSourceExist = Test-Path -Path $wikiSourcePath
+
+    if ($wikiSourceExist)
+    {
+        "`tWiki Source Path        = $wikiSourcePath"
+    }
+
+    if ($wikiSourceExist)
+    {
+        Write-Build -Color 'Magenta' -Text 'Copying Wiki content from the Wiki source folder.'
+
+        Copy-Item -Path (Join-Path $wikiSourcePath -ChildPath '*') -Destination $wikiOutputPath -Recurse -Force
+
+        $homeMarkdownFilePath = Join-Path -Path $wikiOutputPath -ChildPath 'Home.md'
+
+        if (Test-Path -Path $homeMarkdownFilePath)
+        {
+            Write-Build -Color 'Magenta' -Text 'Updating module version in Home.md if there are any placeholders found.'
+
+            Set-WikiModuleVersion -Path $homeMarkdownFilePath -ModuleVersion $moduleVersion
+        }
+    }
+}
