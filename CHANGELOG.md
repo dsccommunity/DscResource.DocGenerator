@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Skipped failing tests on Linux due to libmi.
+- Task `Generate_Wiki_Content` converted to a metatask. Existing
+  functionality split into smaller tasks. Fixes ([Issue #135](https://github.com/dsccommunity/DscResource.DocGenerator/issues/135))
 
 ## [0.12.1] - 2024-01-21
 

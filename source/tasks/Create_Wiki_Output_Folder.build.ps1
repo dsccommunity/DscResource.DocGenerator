@@ -76,12 +76,21 @@ param
     $WikiSourceFolderName = (property WikiSourceFolderName 'WikiSource'),
 
     [Parameter()]
-    [System.String]
-    $WikiOutputPath = (property WikiOutputPath ''),
-
-    [Parameter()]
     [System.Collections.Hashtable]
     $BuildInfo = (property BuildInfo @{ })
 )
 
-Task Generate_Wiki_Content Create_Wiki_Output_Folder, Copy_Source_Wiki_Folder, Generate_Markdown_For_DSC_Resources, Generate_Markdown_For_Public_Commands, Generate_External_Help_File_For_Public_Commands, Clean_Markdown_Of_Public_Commands
+# Synopsis: Create documentation output diretory for the DSC resources.
+Task Create_Wiki_Output_Folder {
+    # Get the values for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
+    . Set-SamplerTaskVariable
+
+    $wikiOutputPath = Join-Path -Path $OutputDirectory -ChildPath 'WikiContent'
+
+    if ((Test-Path -Path $wikiOutputPath) -eq $false)
+    {
+        $null = New-Item -Path $wikiOutputPath -ItemType Directory
+    }
+
+    "`tWiki Output Path             = $wikiOutputPath"
+}
