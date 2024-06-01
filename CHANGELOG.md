@@ -5,6 +5,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `Generate_Markdown_For_Public_Commands.build`
+  - Now the task will not try to generate markdown if the module does not
+    have any publicly exported commands ([issue #135](https://github.com/dsccommunity/DscResource.DocGenerator/issues/147)).
+  - Now has error handling if the script that is called using the call
+    operator `&` fails.
+`Generate_External_Help_File_For_Public_Commands`
+  - Now the task will not fail if there are no extern help file generated,
+    which is the case for modules that does not have any publicly exported
+    commands ([issue #135](https://github.com/dsccommunity/DscResource.DocGenerator/issues/147)).
+  - Now has error handling if the script that is called using the call
+    operator `&` fails.
+
 ## [0.12.2] - 2024-05-31
 
 ### Added

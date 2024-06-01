@@ -116,6 +116,25 @@ New-ExternalHelp -Path '$DocOutputFolder' -OutputPath '$builtModuleLocalePath' -
     #>
     & $pwshPath -Command $generateMarkdownScriptBlock -ExecutionPolicy 'ByPass' -NoProfile
 
-    # Add a newline to the end of the help file to pass HQRM tests.
-    Add-NewLine -FileInfo (Get-Item -Path "$builtModuleLocalePath/$ProjectName-help.xml") -AtEndOfFile
+
+    if (-not $?)
+    {
+        throw "Failed to generate external help file for the module '$ProjectName'."
+    }
+    else
+    {
+        Write-Build -Color 'Green' -Text "External help file generated for the module '$ProjectName'."
+    }
+
+    $externalHelpFile = Get-Item -Path "$builtModuleLocalePath/$ProjectName-help.xml" -ErrorAction 'Ignore'
+
+    if ($externalHelpFile)
+    {
+        # Add a newline to the end of the help file to pass HQRM tests.
+        Add-NewLine -FileInfo (Get-Item -Path "$builtModuleLocalePath/$ProjectName-help.xml") -AtEndOfFile
+    }
+    else
+    {
+        Write-Warning -Message "External help file not found at '$builtModuleLocalePath/$ProjectName-help.xml'. This is normal if there were no exported commands in the module."
+    }
 }
