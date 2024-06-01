@@ -138,4 +138,31 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
         Should -Exist -ActualValue (Join-Path -Path $TestDrive.FullName -ChildPath 'en-US/MockModule-help.xml') -Because 'the task should have generated the external help file from the markdown.'
     }
+
+    Context 'When there is no external help file created' {
+        It 'Should run the build task without throwing' {
+            Mock -CommandName Write-Warning
+            Mock -CommandName Get-Item -ParameterFilter {
+                $Path -eq (Join-Path -Path $TestDrive.FullName -ChildPath 'en-US/MockModule-help.xml')
+            } -MockWith {
+                return $null
+            }
+
+            {
+                $taskParameters = @{
+                    ProjectName = 'MockModule'
+                    ProjectPath = $TestDrive.FullName
+                    OutputDirectory = $TestDrive.FullName
+                    # Using the markdown created when the project was built.
+                    DocOutputFolder = $TestDrive.FullName | Join-Path -ChildPath 'WikiContent'
+                    SourcePath = "$($TestDrive.FullName)/source"
+                    HelpCultureInfo = 'en-US'
+                }
+
+                Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @taskParameters
+            } | Should -Not -Throw
+
+            Assert-MockCalled -CommandName Write-Warning -Exactly -Times 1 -Scope It
+        }
+    }
 }

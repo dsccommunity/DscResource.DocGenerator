@@ -166,8 +166,19 @@ Import-Module -name '$DependentModule'
     }
 
     $generateMarkdownScript += @"
-`n# Import the module to generate help for
-Import-Module -Name '$ProjectName' -ErrorAction Stop
+`n# Import the module that help is generate for
+`$importModule = Import-Module -Name '$ProjectName' -Passthru -ErrorAction 'Stop'
+
+if (-not `$importModule)
+{
+    throw 'Failed to import the module ''$ProjectName''.'
+}
+elseif (`$importModule.ExportedCommands.Count -eq 0)
+{
+    Write-Warning -Message 'No public commands found in the module ''$ProjectName''. Skipping'
+
+    return
+}
 
 `$newMarkdownHelpParams = @{
     Module                = '$ProjectName'
@@ -200,4 +211,13 @@ New-MarkdownHelp @newMarkdownHelpParams
         other modules that are loaded in the current process.
     #>
     & $pwshPath -Command $generateMarkdownScriptBlock -ExecutionPolicy 'ByPass' -NoProfile
+
+    if (-not $?)
+    {
+        throw "Failed to generate markdown documentation for the public commands for module '$ProjectName'."
+    }
+    else
+    {
+        Write-Build -Color 'Green' -Text 'Markdown for command documentation created for module '$ProjectName'.'
+    }
 }
