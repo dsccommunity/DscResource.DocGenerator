@@ -123,7 +123,9 @@ param
 Task Generate_Markdown_For_Public_Commands {
     if (-not (Get-Module -Name 'PlatyPS' -ListAvailable))
     {
-        throw 'PlatyPS is not installed. Please make sure it is available in a path that is listed in $PSModulePath. It can be added to the configuration file RequiredModules.psd1 in the project.'
+        Write-Warning -Message 'PlatyPS is not installed. Skipping. If public command documentation should be created please make sure PlatyPS is available in a path that is listed in $PSModulePath. It can be added to the configuration file RequiredModules.psd1 in the project.'
+
+        return
     }
 
     # Get the values for task variables, see https://github.com/gaelcolas/Sampler#task-variables.

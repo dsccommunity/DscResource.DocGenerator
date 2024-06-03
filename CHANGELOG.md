@@ -5,6 +5,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `Generate_Markdown_For_Public_Commands.build`
+  - Now the task will skip if PlatyPS is not available.
+`Generate_External_Help_File_For_Public_Commands`
+  - Now the task will skip if PlatyPS is not available.
+
 ## [0.12.3] - 2024-06-01
 
 ### Fixed
