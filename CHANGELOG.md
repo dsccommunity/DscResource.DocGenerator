@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 - `Get-ClassResourceProperty`
-  - Check for a prefixed and non-prefixed class names.
+  - Check for a prefixed and non-prefixed class names [issue #132](https://github.com/dsccommunity/DscResource.DocGenerator/issues/132).
 
 ## [0.12.4] - 2024-06-03
 
