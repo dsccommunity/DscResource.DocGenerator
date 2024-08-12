@@ -44,13 +44,30 @@ function Get-ClassResourceProperty
     {
         $dscResourceAst = Get-ClassAst -ClassName $currentClassName -ScriptFile $BuiltModuleScriptFilePath
 
-        $sourceFilePath = Join-Path -Path $SourcePath -ChildPath ('Classes/???.{0}.ps1' -f $currentClassName)
+        $classExists = $false
+        $sourceFilePath = ''
+        $childPaths = @(
+            ('Classes/???.{0}.ps1' -f $currentClassName)
+            ('Classes/{0}.ps1' -f $currentClassName)
+        )
+
+        foreach ($childPath in $childPaths)
+        {
+            if ($classExists) { continue }
+
+            $sourceFilePath = Join-Path -Path $SourcePath -ChildPath $childPath
+
+            if ((Test-Path -Path $sourceFilePath))
+            {
+                $classExists = $true
+            }
+        }
 
         <#
-            Skip if the class's source file does not exist. Thi can happen if the
+            Skip if the class's source file does not exist. This can happen if the
             class uses a parent class from a different module.
         #>
-        if (-not (Test-Path -Path $sourceFilePath))
+        if (-not $classExists)
         {
             continue
         }
