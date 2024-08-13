@@ -58,9 +58,8 @@ function Get-ClassResourceProperty
             if ((Test-Path -Path $sourceFilePath))
             {
                 $classExists = $true
+                break
             }
-
-            if ($classExists) { break }
         }
 
         <#
