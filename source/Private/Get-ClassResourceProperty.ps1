@@ -53,14 +53,14 @@ function Get-ClassResourceProperty
 
         foreach ($childPath in $childPaths)
         {
-            if ($classExists) { continue }
-
             $sourceFilePath = Join-Path -Path $SourcePath -ChildPath $childPath
 
             if ((Test-Path -Path $sourceFilePath))
             {
                 $classExists = $true
             }
+
+            if ($classExists) { break }
         }
 
         <#
