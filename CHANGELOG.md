@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `azure-pipelines`
   - Pin gitversion to V5.
 - Update README with the tasks that were not documented.
-- `Package_Wiki_Content`
+- `Generate_Wiki_Content`
   - Change the order of the tasks to avoid getting and exception when
     `source/WikiSource` contain additional markdown files that are copied
     to `output/WikiContent`.
