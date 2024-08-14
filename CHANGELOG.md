@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Check for a prefixed and non-prefixed class names [issue #132](https://github.com/dsccommunity/DscResource.DocGenerator/issues/132).
 - `azure-pipelines`
   - Pin gitversion to V5.
+- Update README with the tasks that were not documented.
+- `Package_Wiki_Content`
+  - Change the order of the tasks to avoid getting and exception when
+    `source/WikiSource` contain additional markdown files that are copied
+    to `output/WikiContent`.
 
 ## [0.12.4] - 2024-06-03
 

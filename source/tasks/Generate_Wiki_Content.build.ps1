@@ -84,4 +84,4 @@ param
     $BuildInfo = (property BuildInfo @{ })
 )
 
-Task Generate_Wiki_Content Create_Wiki_Output_Folder, Copy_Source_Wiki_Folder, Generate_Markdown_For_DSC_Resources, Generate_Markdown_For_Public_Commands, Generate_External_Help_File_For_Public_Commands, Clean_Markdown_Of_Public_Commands
+Task Generate_Wiki_Content Create_Wiki_Output_Folder, Generate_Markdown_For_Public_Commands, Generate_External_Help_File_For_Public_Commands, Clean_Markdown_Of_Public_Commands, Generate_Markdown_For_DSC_Resources, Copy_Source_Wiki_Folder
