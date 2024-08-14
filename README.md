@@ -136,6 +136,42 @@ BuildWorkflow:
     - Publish_GitHub_Wiki_Content
 ```
 
+### `Copy_Source_Wiki_Folder`
+
+This build task will copy the content of the wiki source folder if it exist
+(the parameter `WikiSourceFolderName` defaults to `WikiSource`). The wiki
+source folder should be located under the source folder, e.g. `source/WikiSource`.
+The wiki source folder is meant to contain additional documentation that
+will be added to folder `WikiOutput` during build, and then published to
+the wiki during the deploy stage (if either the command `Publish-WikiContent`
+or the task `Publish_GitHub_Wiki_Content` is used).
+
+if the `Home.md` is present in the folder specified in `WikiSourceFolderName`
+it will be copied to `WikiOutput` and all module version placeholders (`#.#.#`)
+of the content the file will be replaced with the built module version.
+
+### `Create_Wiki_Output_Folder`
+
+This build task creates the folder `output/WikiContent`.
+
+Below is an example how the build task can be used when a repository is
+based on the [Sampler](https://github.com/gaelcolas/Sampler) project.
+
+```yaml
+BuildWorkflow:
+  '.':
+    - build
+
+  docs:
+    - Create_Wiki_Output_Folder
+    - Generate_Markdown_For_Public_Commands
+    - Clean_Markdown_Of_Public_Commands
+    - Copy_Source_Wiki_Folder
+    - Generate_Wiki_Sidebar
+    - Clean_Markdown_Metadata
+    - Package_Wiki_Content
+```
+
 ### `Generate_Conceptual_Help`
 
 This build task runs the command `New-DscResourcePowerShellHelp`.
@@ -304,22 +340,14 @@ BuildWorkflow:
 
 ### `Generate_Wiki_Content`
 
-This build task runs the command `New-DscResourceWikiPage` to build
-documentation for DSC resources.
+This is a metatask that runs the task (in order):
 
-The task will also copy the content of the wiki source folder if it exist
-(the parameter `WikiSourceFolderName` defaults to `WikiSource`). The wiki
-source folder should be located under the source folder, e.g. `source/WikiSource`.
-The wiki source folder is meant to contain additional documentation that
-will be added to folder `WikiOutput` during build, and then published to
-the wiki during the deploy stage (if either the command `Publish-WikiContent`
-or the task `Publish_GitHub_Wiki_Content` is used).
-
-if the `Home.md` is present in the folder specified in `WikiSourceFolderName`
-it will be copied to `WikiOutput` and all module version placeholders (`#.#.#`)
-of the content the file will be replaced with the built module version.
-
-See the command `New-DscResourceWikiPage` for more information.
+- `Create_Wiki_Output_Folder`
+- `Generate_Markdown_For_Public_Commands`
+- `Generate_External_Help_File_For_Public_Commands`
+- `Clean_Markdown_Of_Public_Commands`
+- `Generate_Markdown_For_DSC_Resources`
+- `Copy_Source_Wiki_Folder`
 
 Below is an example how the build task can be used when a repository is
 based on the [Sampler](https://github.com/gaelcolas/Sampler) project.
@@ -335,6 +363,29 @@ BuildWorkflow:
     - Build_NestedModules_ModuleBuilder
     - Create_changelog_release_output
     - Generate_Wiki_Content
+```
+
+### `Generate_Markdown_For_DSC_Resources`
+
+This build task runs the command `New-DscResourceWikiPage` to build
+documentation for DSC resources.
+
+See the command `New-DscResourceWikiPage` for more information.
+
+Below is an example how the build task can be used when a repository is
+based on the [Sampler](https://github.com/gaelcolas/Sampler) project.
+
+```yaml
+BuildWorkflow:
+  '.':
+    - build
+
+  docs:
+    - Generate_Conceptual_Help
+    - Create_Wiki_Output_Folder
+    - Generate_Markdown_For_DSC_Resources
+    - Copy_Source_Wiki_Folder
+    - Package_Wiki_Content
 ```
 
 ### `Generate_Wiki_Sidebar`
