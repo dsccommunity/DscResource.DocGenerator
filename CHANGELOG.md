@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.12.5] - 2024-08-14
+
 - `Get-ClassResourceProperty`
   - Check for a prefixed and non-prefixed class names [issue #132](https://github.com/dsccommunity/DscResource.DocGenerator/issues/132).
 - `azure-pipelines`
