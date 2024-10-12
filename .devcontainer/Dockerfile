@@ -10,15 +10,11 @@ ENV UBUNTU_VERSION=22.04
 ENV DOTNET_SDK_VERSION=8.0
 ENV POWERSHELL_VERSION=7.4.5
 ENV POWERSHELL_PACKAGE_REVISION=1
+ENV GITVERSION_VERSION=5.*
 
 # Install necessary packages
-# hadolint ignore=DL3008
-RUN wget https://packages.microsoft.com/config/ubuntu/$UBUNTU_VERSION/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
-    sudo dpkg -i packages-microsoft-prod.deb && \
-    rm packages-microsoft-prod.deb && \
-    sudo apt-get update && \
-    sudo apt-get install -y --no-install-recommends \
-    dotnet-sdk-$DOTNET_SDK_VERSION \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     git \
     wget \
     curl \
@@ -31,6 +27,24 @@ RUN wget https://packages.microsoft.com/config/ubuntu/$UBUNTU_VERSION/packages-m
     gpg \
     gnupg2 \
     software-properties-common && \
+    apt-get clean -y && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install .NET SDK
+# hadolint ignore=DL3008
+RUN wget https://packages.microsoft.com/config/ubuntu/$UBUNTU_VERSION/packages-microsoft-prod.deb -O packages-microsoft-prod.deb && \
+    dpkg -i packages-microsoft-prod.deb && \
+    rm packages-microsoft-prod.deb && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends dotnet-sdk-$DOTNET_SDK_VERSION && \
+    apt-get clean -y && \
+    rm -rf /var/lib/apt/lists/*
+
+# Remove the existing powershell-lts package to prevent conflicts instead of forcing
+# dpkg to overwrite the existing files. Forcing dpkg is generally not recommended
+# as it can lead to package management issues down the line.
+RUN apt-get update && \
+    apt-get remove -y powershell-lts && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*
 
@@ -73,7 +87,9 @@ USER $USERNAME
 WORKDIR /workspace
 
 # Install GitVersion as a dotnet tool for the vscode user
-RUN dotnet tool install --global GitVersion.Tool
+RUN dotnet tool install --global GitVersion.Tool --version $GITVERSION_VERSION
 
 # Add alias for gitversion, ensuring a newline before the alias
-RUN printf "\nalias gitversion=\"dotnet-gitversion\"\n" >> /home/$USERNAME/.bashrc
+RUN printf "\nalias gitversion=\"dotnet-gitversion\"\n" >> /home/$USERNAME/.bashrc && \
+    mkdir -p /home/$USERNAME/.config/powershell && \
+    echo 'New-Alias -Name gitversion -Value dotnet-gitversion' >> /home/$USERNAME/.config/powershell/Microsoft.PowerShell_profile.ps1
