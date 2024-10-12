@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added a devcontainer for development.
 
+### Changed
+
+- `New-GitHubWikiSidebar`
+  - Replaces ASCII hyphens from Wiki sidebar.
+
 ### Fixed
 
 - Fix Dockerfile to include GitVersion alias for PowerShell Extension profile script.

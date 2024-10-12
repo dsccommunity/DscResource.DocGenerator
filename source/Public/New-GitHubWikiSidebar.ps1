@@ -169,7 +169,9 @@ Get-MarkdownMetadata -Path $($file.FullName) -ErrorAction 'Stop'
 
             foreach ($link in $sortedListItem)
             {
-                $null = $output.AppendLine('- [' + $link + '](' + $link + ')')
+                $linkWithoutAsciiHyphen = $link -replace '-', ' '
+
+                $null = $output.AppendLine('- [' + $linkWithoutAsciiHyphen + '](' + $link + ')')
             }
 
             $null = $output.AppendLine()
@@ -188,7 +190,9 @@ Get-MarkdownMetadata -Path $($file.FullName) -ErrorAction 'Stop'
 
         foreach ($link in $sidebarCategories.$category | Sort-Object)
         {
-            $null = $output.AppendLine('- [' + $link + '](' + $link + ')')
+            $linkWithoutAsciiHyphen = $link -replace '-', ' '
+
+            $null = $output.AppendLine('- [' + $linkWithoutAsciiHyphen + '](' + $link + ')')
         }
 
         $null = $output.AppendLine()
