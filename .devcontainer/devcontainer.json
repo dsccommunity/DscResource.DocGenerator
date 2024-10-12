@@ -1,0 +1,38 @@
+{
+    "name": "DscResource.DocGenerator PowerShell Development Container",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "..",
+        "args": {
+            // Add any build arguments here if needed
+        }
+    },
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "terminal.integrated.shell.linux": "/usr/bin/pwsh",
+                "security.workspace.trust.enabled": true,
+                "security.workspace.trust.untrustedFiles": "open",
+                "security.workspace.trust.trustedFolders": [
+                    "/workspaces"
+                ],
+                "security.workspace.trust.startupPrompt": "never"
+            },
+            "extensions": [
+                "streetsidesoftware.code-spell-checker",
+                "usernamehw.errorlens",
+                "davidanson.vscode-markdownlint",
+                "pspester.pester-test",
+                "ms-vscode.powershell",
+                "redhat.vscode-yaml",
+                "gruntfuggly.todo-tree",
+                "codecov.codecov"
+            ]
+        }
+    },
+    "postCreateCommand": "",
+    "remoteUser": "vscode",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/DscResource.DocGenerator,type=bind,consistency=cached",
+    "workspaceFolder": "/workspaces/DscResource.DocGenerator",
+    "shutdownAction": "stopContainer"
+}
