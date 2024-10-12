@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added a devcontainer for development.
 
+### Fixed
+
+- Fix Dockerfile to include GitVersion alias for PowerShell Extension profile script.
+- Fix `.vscode/settings.json` file to exclude unrecognized words.
+
 ## [0.12.5] - 2024-08-14
 
 - `Get-ClassResourceProperty`
@@ -340,7 +345,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated tasks to use the Sampler functions `Get-SamplerProjectName` and `Get-SamplerSourcePath`.
 - Made Sampler a required Modules.
-- Updated the `build.yaml` & `RequiredModules.psd1` to use `Sampler.GitHubTasks` for automation.
+- Updated the `build.yaml` & `RequiredModules.psd1` to use `Sampler.GitHubTasks`
+  for automation.
 
 ## [0.8.0] - 2021-02-08
 
@@ -544,6 +550,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   To make the task available for `Invoke-Build` in a repository that is based
   on [Sampler](https://github.com/gaelcolas/Sampler) add this module to
   required modules, and then in the `build.yaml` add the following.
+
   ```yaml
   ModuleBuildTasks:
     DscResource.DocGenerator:
@@ -567,6 +574,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `build.ps1`. To make the task available for `Invoke-Build` in a repository
   that is based on [Sampler](https://github.com/gaelcolas/Sampler) add this
   module to required modules, and then in the `build.yaml` add the following.
+
   ```yaml
   ModuleBuildTasks:
     DscResource.DocGenerator:
