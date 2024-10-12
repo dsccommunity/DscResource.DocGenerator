@@ -5,6 +5,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added a devcontainer for development.
+
 ## [0.12.5] - 2024-08-14
 
 - `Get-ClassResourceProperty`
