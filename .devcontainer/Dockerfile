@@ -92,4 +92,5 @@ RUN dotnet tool install --global GitVersion.Tool --version $GITVERSION_VERSION
 # Add alias for gitversion, ensuring a newline before the alias
 RUN printf "\nalias gitversion=\"dotnet-gitversion\"\n" >> /home/$USERNAME/.bashrc && \
     mkdir -p /home/$USERNAME/.config/powershell && \
-    echo 'New-Alias -Name gitversion -Value dotnet-gitversion' >> /home/$USERNAME/.config/powershell/Microsoft.PowerShell_profile.ps1
+    echo 'New-Alias -Name gitversion -Value dotnet-gitversion' >> /home/$USERNAME/.config/powershell/Microsoft.PowerShell_profile.ps1 && \
+    echo ". /home/$USERNAME/.config/powershell/Microsoft.PowerShell_profile.ps1" >> /home/$USERNAME/.config/powershell/Microsoft.VSCode_profile.ps1

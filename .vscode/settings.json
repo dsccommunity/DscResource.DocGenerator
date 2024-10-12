@@ -39,10 +39,20 @@
         "notin",
         "notlike",
         "pscmdlet",
-        "steppable"
+        "steppable",
+        "libmi",
+        "devcontainer",
+        "johanringman",
+        "DontShow",
+        "metatask",
+        "dogfood",
+        "dogfooding",
+        "subfolders",
+        "ulinux"
     ],
     "cSpell.ignorePaths": [
-        ".git"
+        ".git",
+        ".vscode/settings.json"
     ],
     "cSpell.ignoreRegExpList": [
         "/HKCU:/g",
