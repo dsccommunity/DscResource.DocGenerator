@@ -1,0 +1,47 @@
+name: Lint Dockerfile
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    # cSpell: ignore hadolint .devcontainer sarif codeql
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Hadolint
+        run: sudo wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.8.0/hadolint-Linux-x86_64 && sudo chmod +x /bin/hadolint
+
+      - name: Create testResults directory
+        run: mkdir -p testResults
+
+      - name: Lint Dockerfile
+        run: hadolint .devcontainer/Dockerfile --failure-threshold warning --format sarif > testResults/hadolint-results.sarif
+        continue-on-error: true
+
+      - name: Check if SARIF file exists
+        id: check_sarif
+        run: |
+          if [ -f testResults/hadolint-results.sarif ]; then
+            echo "file_exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "file_exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        if: always() && steps.check_sarif.outputs.file_exists == 'true'
+        with:
+          sarif_file: testResults/hadolint-results.sarif
+
+      - name: Upload testResults
+        uses: actions/upload-artifact@v4
+        if: always() && steps.check_sarif.outputs.file_exists == 'true'
+        with:
+          name: hadolint-results
+          path: testResults/hadolint-results.sarif
