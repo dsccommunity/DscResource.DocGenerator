@@ -136,6 +136,29 @@ BuildWorkflow:
     - Publish_GitHub_Wiki_Content
 ```
 
+### `Clean_WikiContent_For_GitHub_Publish`
+
+This build task will clean the markdown files for publishing to the GitHub Wiki.
+It can be controlled by parameter `RemoveTopLevelHeader` in the task, which
+defaults to `$true`.
+
+Below is an example how the build task can be used when a repository is
+based on the [Sampler](https://github.com/gaelcolas/Sampler) project.
+
+```yaml
+BuildWorkflow:
+  '.':
+    - build
+
+  build:
+    - Clean
+    - Build_Module_ModuleBuilder
+    - Build_NestedModules_ModuleBuilder
+    - Create_changelog_release_output
+    - Generate_Markdown_For_Public_Commands
+    - Clean_WikiContent_For_GitHub_Publish
+```
+
 ### `Copy_Source_Wiki_Folder`
 
 This build task will copy the content of the wiki source folder if it exist
@@ -345,9 +368,11 @@ This is a metatask that runs the task (in order):
 - `Create_Wiki_Output_Folder`
 - `Generate_Markdown_For_Public_Commands`
 - `Generate_External_Help_File_For_Public_Commands`
+- `Prepare_Markdown_FileNames_For_GitHub_Publish`
 - `Clean_Markdown_Of_Public_Commands`
 - `Generate_Markdown_For_DSC_Resources`
 - `Copy_Source_Wiki_Folder`
+- `Clean_WikiContent_For_GitHub_Publish`
 
 Below is an example how the build task can be used when a repository is
 based on the [Sampler](https://github.com/gaelcolas/Sampler) project.
@@ -428,6 +453,29 @@ BuildWorkflow:
     - Publish_release_to_GitHub
     - publish_module_to_gallery
     - Publish_GitHub_Wiki_Content
+```
+
+### `Prepare_Markdown_FileNames_For_GitHub_Publish`
+
+This build task will replace the hyphen in the markdown filenames with the
+unicode non-breaking hyphen. It can be controlled by parameter
+`ReplaceHyphen` in the task, which defaults to `$true`.
+
+Below is an example how the build task can be used when a repository is
+based on the [Sampler](https://github.com/gaelcolas/Sampler) project.
+
+```yaml
+BuildWorkflow:
+  '.':
+    - build
+
+  build:
+    - Clean
+    - Build_Module_ModuleBuilder
+    - Build_NestedModules_ModuleBuilder
+    - Create_changelog_release_output
+    - Generate_Markdown_For_Public_Commands
+    - Prepare_Markdown_FileNames_For_GitHub_Publish
 ```
 
 ### `Publish_GitHub_Wiki_Content`
