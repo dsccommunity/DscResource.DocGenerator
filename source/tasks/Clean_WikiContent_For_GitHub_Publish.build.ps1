@@ -1,6 +1,7 @@
 <#
     .SYNOPSIS
-        This is a build task that generates markdown for a modules public commands.
+        This is a build task that modifies the wiki content to enhance the content
+        for use in GitHub repository Wikis.
 
     .PARAMETER ProjectPath
         The root path to the project. Defaults to $BuildRoot.
