@@ -5,9 +5,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- Removed `build.psd1` as it is no longer required to build the project.
+
 ### Added
 
 - Added a devcontainer for development.
+- Added private function `ConvertTo-WikiSidebarLinkName` that converts a
+  name to a format suitable for use as a Wiki sidebar link.
+- New tasks:
+  - `Prepare_Markdown_FileNames_For_GitHub_Publish` - This task will prepare
+    the markdown file names for publishing to the GitHub Wiki by replacing
+    hyphens with spaces and converting Unicode hyphens to standard hyphens.
+    It can be controlled by parameter `ReplaceHyphen` in the task, which
+    defaults to `$true`.
+  - `Clean_WikiContent_For_GitHub_Publish` - This task will remove the top
+    level header from any markdown file where the top level header equals the
+    filename (converting Unicode hyphen to ASCII hyphen before comparison).
+    It can be controlled by parameter `RemoveTopLevelHeader` in the task, which
+    defaults to `$true`.
+
+### Changed
+
+- `New-GitHubWikiSidebar`
+  - Replaces ASCII hyphens for the Wiki sidebar.
+  - Replaces Unicode hyphens with standard hyphens for the Wiki sidebar.
+- Task `Generate_Wiki_Content`
+  - Now calls `Prepare_Markdown_FileNames_For_GitHub_Publish` after the
+    markdown files and external help file for command help has been generated.
+  - Now calls `Clean_WikiContent_For_GitHub_Publish` as the last step to
+    remove the top level header from any markdown file where the top level
+    header equals the filename.
+- Task `Generate_Markdown_For_Public_Commands`
+  - Verbose output of the markdown files that was created.
 
 ### Fixed
 

@@ -169,7 +169,7 @@ Import-Module -name '$DependentModule'
 
     $generateMarkdownScript += @"
 `n# Import the module that help is generate for
-`$importModule = Import-Module -Name '$ProjectName' -Passthru -ErrorAction 'Stop'
+`$importModule = Import-Module -Name '$ProjectName' -PassThru -ErrorAction 'Stop'
 
 if (-not `$importModule)
 {
@@ -212,7 +212,13 @@ New-MarkdownHelp @newMarkdownHelpParams
         The scriptblock is run in a separate process to avoid conflicts with
         other modules that are loaded in the current process.
     #>
-    & $pwshPath -Command $generateMarkdownScriptBlock -ExecutionPolicy 'ByPass' -NoProfile
+    $markdownFiles = & $pwshPath -Command $generateMarkdownScriptBlock -ExecutionPolicy 'ByPass' -NoProfile
+
+    Write-Build -Color DarkGray -Text "Generated markdown files:"
+
+    $markdownFiles | ForEach-Object -Process {
+        Write-Build -Color DarkGray -Text ("`t{0}" -f $_.FullName)
+    }
 
     if (-not $?)
     {
@@ -220,6 +226,6 @@ New-MarkdownHelp @newMarkdownHelpParams
     }
     else
     {
-        Write-Build -Color 'Green' -Text 'Markdown for command documentation created for module '$ProjectName'.'
+        Write-Build -Color Green -Text 'Markdown for command documentation created for module '$ProjectName'.'
     }
 }
