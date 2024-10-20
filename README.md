@@ -138,6 +138,10 @@ BuildWorkflow:
 
 ### `Clean_WikiContent_For_GitHub_Publish`
 
+>[!IMPORTANT]
+>This task does not work in Windows PowerShell due to it not supporting
+>unicode in filenames.
+
 This build task will clean the markdown files for publishing to the GitHub Wiki.
 It can be controlled by parameter `RemoveTopLevelHeader` in the task, which
 defaults to `$true`.
@@ -456,6 +460,10 @@ BuildWorkflow:
 ```
 
 ### `Prepare_Markdown_FileNames_For_GitHub_Publish`
+
+>[!IMPORTANT]
+>This task does not work in Windows PowerShell due to it not supporting
+>unicode in filenames.
 
 This build task will replace the hyphen in the markdown filenames with the
 unicode non-breaking hyphen. It can be controlled by parameter
