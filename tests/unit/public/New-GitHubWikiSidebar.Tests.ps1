@@ -75,7 +75,7 @@ Category: Resources
 
 ### Commands
 
-- [Get-Something](Get-Something)
+- [Get-Something](Get‑Something)
 
 ### Help topics
 
