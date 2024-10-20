@@ -29,7 +29,7 @@ InModuleScope $script:moduleName {
 
         Context 'When converting a name with Unicode hyphens' {
             It 'Should replace Unicode hyphens with standard hyphens' {
-                $result = ConvertTo-WikiSidebarLinkName -Name 'Unicode‑Hyphen'  # Note: The hyphen here is a Unicode hyphen (U+2010)
+                $result = ConvertTo-WikiSidebarLinkName -Name ('Unicode{0}Hyphen' -f [System.Char]::ConvertFromUtf32(0x2011))  # Note: The hyphen here is a Unicode hyphen (U+2010)
                 $result | Should -Be 'Unicode-Hyphen'
             }
         }
@@ -42,7 +42,7 @@ InModuleScope $script:moduleName {
 
         Context 'When the input contains multiple types of hyphens' {
             It 'Should replace all hyphens appropriately' {
-                $result = ConvertTo-WikiSidebarLinkName -Name 'Multiple‑Hyphens-Here'  # Contains both Unicode and standard hyphens
+                $result = ConvertTo-WikiSidebarLinkName -Name ('Multiple{0}Hyphens-Here' -f [System.Char]::ConvertFromUtf32(0x2011))  # Contains both Unicode and standard hyphens
                 $result | Should -Be 'Multiple-Hyphens Here'
             }
         }

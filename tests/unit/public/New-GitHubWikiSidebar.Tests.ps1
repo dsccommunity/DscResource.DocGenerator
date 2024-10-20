@@ -75,7 +75,7 @@ Category: Resources
 
 ### Commands
 
-- [Get-Something](Get‑Something)
+- [Get-Something](Get{0}Something)
 
 ### Help topics
 
@@ -84,12 +84,14 @@ Category: Resources
 ### Resources
 
 - [MockResource](MockResource)
-'@  -replace '\r?\n', "`r`n"
+'@
 
+                $script:mockWikiContentOutput = $script:mockWikiContentOutput -replace '\r?\n', "`r`n"
+                $script:mockWikiContentOutput = $script:mockWikiContentOutput -f [System.Char]::ConvertFromUtf32(0x2011)
             }
+
             It 'Should not throw any exceptions and call Out-File with correct parameters' {
                 {
-                    #
                     New-GitHubWikiSidebar -DocumentationPath $documentationPath -SidebarFileName 'CustomSidebar.md' -Force
                 } | Should -Not -Throw
 
