@@ -20,6 +20,15 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 
 Describe 'New-GitHubWikiSidebar' {
     BeforeAll {
+        if ($PSVersionTable.PSVersion -ge '6.0')
+        {
+            $mockHyphen = [System.Char]::ConvertFromUtf32(0x2011)
+        }
+        else
+        {
+            $mockHyphen = '-'
+        }
+
         $documentationPath = "$($TestDrive.FullName)/WikiContent"
         $outputFilePath = $documentationPath  | Join-Path -ChildPath 'CustomSidebar.md'
 
@@ -41,7 +50,7 @@ Category: Help topics
 # RandomHelpTopic
 '@
 
-        Set-Content -Path "$($TestDrive.FullName)/WikiContent/Get-Something.md" -Value @'
+        Set-Content -Path ("$($TestDrive.FullName)/WikiContent/Get{0}Something.md" -f $mockHyphen) -Value @'
 ---
 Type: Command
 Category: Commands
@@ -75,7 +84,7 @@ Category: Resources
 
 ### Commands
 
-- [Get-Something](Get-Something)
+- [Get-Something](Get{0}Something)
 
 ### Help topics
 
@@ -84,12 +93,14 @@ Category: Resources
 ### Resources
 
 - [MockResource](MockResource)
-'@  -replace '\r?\n', "`r`n"
+'@
 
+                $script:mockWikiContentOutput = $script:mockWikiContentOutput -replace '\r?\n', "`r`n"
+                $script:mockWikiContentOutput = $script:mockWikiContentOutput -f $mockHyphen
             }
+
             It 'Should not throw any exceptions and call Out-File with correct parameters' {
                 {
-                    #
                     New-GitHubWikiSidebar -DocumentationPath $documentationPath -SidebarFileName 'CustomSidebar.md' -Force
                 } | Should -Not -Throw
 

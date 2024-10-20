@@ -169,7 +169,9 @@ Get-MarkdownMetadata -Path $($file.FullName) -ErrorAction 'Stop'
 
             foreach ($link in $sortedListItem)
             {
-                $null = $output.AppendLine('- [' + $link + '](' + $link + ')')
+                $linkName = ConvertTo-WikiSidebarLinkName -Name $link
+
+                $null = $output.AppendLine('- [' + $linkName + '](' + $link + ')')
             }
 
             $null = $output.AppendLine()
@@ -188,7 +190,9 @@ Get-MarkdownMetadata -Path $($file.FullName) -ErrorAction 'Stop'
 
         foreach ($link in $sidebarCategories.$category | Sort-Object)
         {
-            $null = $output.AppendLine('- [' + $link + '](' + $link + ')')
+            $linkName = ConvertTo-WikiSidebarLinkName -Name $link
+
+            $null = $output.AppendLine('- [' + $linkName + '](' + $link + ')')
         }
 
         $null = $output.AppendLine()
