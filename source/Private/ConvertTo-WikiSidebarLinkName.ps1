@@ -17,7 +17,7 @@
         Returns: "My Page Name"
 
     .EXAMPLE
-        PS C:\> "Unicode‐Hyphen" | ConvertTo-WikiSidebarLinkName
+        PS C:\> ('Unicode{0}Hyphen' -f [System.Char]::ConvertFromUtf32(0x2011)) | ConvertTo-WikiSidebarLinkName
 
         Returns: "Unicode-Hyphen"
 
@@ -47,7 +47,7 @@ function ConvertTo-WikiSidebarLinkName
         $convertedName = $Name -replace '-', ' '
 
         # Replace Unicode hyphen (U+2010) with a standard hyphen
-        $convertedName = $convertedName -replace [System.Char]::ConvertFromUtf32(0x2010), '-'
+        $convertedName = $convertedName -replace [System.Char]::ConvertFromUtf32(0x2011), '-'
 
         return $convertedName
     }

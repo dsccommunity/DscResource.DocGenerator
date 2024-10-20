@@ -41,7 +41,7 @@ Category: Help topics
 # RandomHelpTopic
 '@
 
-        Set-Content -Path "$($TestDrive.FullName)/WikiContent/Get-Something.md" -Value @'
+        Set-Content -Path "$($TestDrive.FullName)/WikiContent/Get‑Something.md" -Value @'
 ---
 Type: Command
 Category: Commands

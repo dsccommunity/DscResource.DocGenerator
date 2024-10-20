@@ -109,7 +109,7 @@ Task Prepare_Markdown_FileNames_For_GitHub_Publish {
         $markdownFiles |
             Where-Object -Property 'Name' -Match '-' |
             ForEach-Object -Process {
-                $newName = $_.Name -replace '-', [System.Char]::ConvertFromUtf32(0x2010)
+                $newName = $_.Name -replace '-', [System.Char]::ConvertFromUtf32(0x2011)
 
                 Write-Build -Color DarkGray -Text ('Renaming: {0} -> {1}' -f $_.Name, $newName)
 

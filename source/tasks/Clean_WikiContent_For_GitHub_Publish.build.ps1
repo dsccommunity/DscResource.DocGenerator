@@ -106,7 +106,7 @@ Task Clean_WikiContent_For_GitHub_Publish {
 
                 $hasTopHeader = $content -match '(?m)^#\s+([^\r\n]+)'
 
-                $baseNameWithoutNonBreakingHyphen = $_.BaseName -replace [System.Char]::ConvertFromUtf32(0x2010), '-'
+                $baseNameWithoutNonBreakingHyphen = $_.BaseName -replace [System.Char]::ConvertFromUtf32(0x2011), '-'
 
                 if ($hasTopHeader -and $Matches[1] -eq $baseNameWithoutNonBreakingHyphen)
                 {
