@@ -90,6 +90,13 @@ param
 
 # Synopsis: Modifies the markdown filenames to enhance the content for use in GitHub repository Wikis.
 Task Prepare_Markdown_FileNames_For_GitHub_Publish {
+    if ($PSVersionTable.PSVersion -lt '6.0')
+    {
+        Write-Warning -Message 'This task is not supported in Windows PowerShell.'
+
+        return
+    }
+
     # Get the values for task variables, see https://github.com/gaelcolas/Sampler#task-variables.
     . Set-SamplerTaskVariable
 

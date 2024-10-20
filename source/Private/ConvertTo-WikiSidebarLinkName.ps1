@@ -43,11 +43,18 @@ function ConvertTo-WikiSidebarLinkName
 
     process
     {
-        # Replace hyphens with spaces
-        $convertedName = $Name -replace '-', ' '
+        if ($PSVersionTable.PSVersion -ge '6.0')
+        {
+            # Replace hyphens with spaces
+            $convertedName = $Name -replace '-', ' '
 
-        # Replace Unicode hyphen (U+2010) with a standard hyphen
-        $convertedName = $convertedName -replace [System.Char]::ConvertFromUtf32(0x2011), '-'
+            # Replace Unicode hyphen (U+2010) with a standard hyphen
+            $convertedName = $convertedName -replace [System.Char]::ConvertFromUtf32(0x2011), '-'
+        }
+        else
+        {
+            $convertedName = $Name
+        }
 
         return $convertedName
     }
