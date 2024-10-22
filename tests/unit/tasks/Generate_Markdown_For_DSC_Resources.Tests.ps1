@@ -67,4 +67,22 @@ Describe 'Generate_Markdown_For_DSC_Resources' {
 
         Assert-MockCalled -CommandName New-DscResourceWikiPage -Exactly -Times 1 -Scope It
     }
+
+    It 'Should run the build task with new configuration key without throwing' {
+        {
+            $taskParameters = @{
+                ProjectName = 'DscResource.DocGenerator'
+                SourcePath  = $TestDrive
+                BuildInfo   = @{
+                    'DscResource.DocGenerator' = @{
+                        Generate_Markdown_For_DSC_Resources = @{}
+                    }
+                }
+            }
+
+            Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @taskParameters
+        } | Should -Not -Throw
+
+        Assert-MockCalled -CommandName New-DscResourceWikiPage -Exactly -Times 1 -Scope It
+    }
 }
