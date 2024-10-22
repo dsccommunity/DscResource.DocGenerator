@@ -39,6 +39,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     header equals the filename.
 - Task `Generate_Markdown_For_Public_Commands`
   - Verbose output of the markdown files that was created.
+- Task `Generate_Markdown_For_DSC_Resources`
+  - Outputs a warning message if the old configuration key is used in the
+    build configuration but keeps using the old configuration key.
 
 ### Fixed
 

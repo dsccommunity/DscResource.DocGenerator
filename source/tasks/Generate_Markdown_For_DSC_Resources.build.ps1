@@ -89,7 +89,16 @@ Task Generate_Markdown_For_DSC_Resources {
 
     Write-Build -Color 'Magenta' -Text 'Generating Wiki content for all DSC resources based on source and built module.'
 
-    $dscResourceMarkdownMetadata = $BuildInfo.'DscResource.DocGenerator'.Generate_Markdown_For_DSC_Resources
+    if ($BuildInfo.'DscResource.DocGenerator'.Generate_Wiki_Content)
+    {
+        Write-Warning -Message 'Build configuration is using the old configuration key ''Generate_Wiki_Content''. Update the build configuration to use the new configuration key ''Generate_Markdown_For_DSC_Resources'''
+
+        $dscResourceMarkdownMetadata = $BuildInfo.'DscResource.DocGenerator'.Generate_Wiki_Content
+    }
+    else
+    {
+        $dscResourceMarkdownMetadata = $BuildInfo.'DscResource.DocGenerator'.Generate_Markdown_For_DSC_Resources
+    }
 
     New-DscResourceWikiPage -SourcePath $SourcePath -BuiltModulePath $builtModuleBase -OutputPath $wikiOutputPath -Metadata $dscResourceMarkdownMetadata -Force
 }
