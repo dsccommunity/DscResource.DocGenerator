@@ -35,6 +35,13 @@ BuildWorkflow:
     - Build_Module_ModuleBuilder
     - Build_NestedModules_ModuleBuilder
     - Create_changelog_release_output
+
+  pack:
+    - build
+    - docs
+    - package_module_nupkg
+
+  docs:
     - Generate_Conceptual_Help
     - Generate_Wiki_Content
     - Generate_Markdown_For_Public_Commands
@@ -42,10 +49,6 @@ BuildWorkflow:
     - Generate_Wiki_Sidebar
     - Clean_Markdown_Of_Public_Commands
     - Clean_Markdown_Metadata
-
-  pack:
-    - build
-    - package_module_nupkg
 
   hqrmtest:
     - DscResource_Tests_Stop_On_Fail
@@ -138,16 +141,6 @@ DscResource.DocGenerator:
       - '\*(.+?)\*' # Match Italic (asterisk)
   Publish_GitHub_Wiki_Content:
     Debug: true
-  Generate_Wiki_Content:
-    MofResourceMetadata:
-      Type: MofResource
-      Category: Resources
-    ClassResourceMetadata:
-      Type: ClassResource
-      Category: Resources
-    CompositeResourceMetadata:
-      Type: CompositeResource
-      Category: Resources
   Generate_Wiki_Sidebar:
-     Debug: false
-     AlwaysOverwrite: true
+    Debug: false
+    AlwaysOverwrite: true
