@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Removed `build.psd1` as it is no longer required to build the project.
+- Removed ClassAst functions
+  - `Get-ClassResourceProperty`
+  - `Get-ClassAst`
+  - `Get-ClassResourceAst`
 
 ### Added
 
@@ -42,6 +46,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Task `Generate_Markdown_For_DSC_Resources`
   - Outputs a warning message if the old configuration key is used in the
     build configuration but keeps using the old configuration key.
+- `New-DscClassResourcePage`
+  - Remove using Ast to generate documentation. Fixes [#116](https://github.com/dsccommunity/DscResource.DocGenerator/issues/116).
+  - Order properties correctly fixes [#126](https://github.com/dsccommunity/DscResource.DocGenerator/issues/126).
 
 ### Fixed
 
