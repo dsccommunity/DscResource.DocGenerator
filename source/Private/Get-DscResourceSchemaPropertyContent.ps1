@@ -50,7 +50,20 @@ function Get-DscResourceSchemaPropertyContent
     $stringArray += '| Parameter | Attribute | DataType | Description | Allowed Values |'
     $stringArray += '| --- | --- | --- | --- | --- |'
 
-    foreach ($currentProperty in $Property)
+    # Order the properties
+    $orderedProperties = @()
+    $sortOrder = @(
+        'Key'
+        'Required'
+        'Write'
+        'Read'
+    )
+
+    foreach ($key in $sortOrder) {
+        $orderedProperties += $Property.GetEnumerator() | Where-Object {$_.State -eq $key} | Sort-Object {$_.Name}
+    }
+
+    foreach ($currentProperty in $orderedProperties)
     {
         if ($currentProperty.EmbeddedInstance -eq 'MSFT_Credential')
         {
