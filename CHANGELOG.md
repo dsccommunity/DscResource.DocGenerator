@@ -22,9 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     defaults to `$true`.
   - `Clean_WikiContent_For_GitHub_Publish` - This task will remove the top
     level header from any markdown file where the top level header equals the
-    filename (converting Unicode hyphen to ASCII hyphen before comparison).
-    It can be controlled by parameter `RemoveTopLevelHeader` in the task, which
-    defaults to `$true`.
+    filename. The task will convert standard hyphens to spaces and Unicode
+    hyphens to standard hyphens before comparison. The task can be controlled
+    by parameter `RemoveTopLevelHeader` in the task, which defaults to `$true`.
 
 ### Changed
 

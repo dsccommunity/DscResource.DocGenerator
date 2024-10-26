@@ -35,9 +35,14 @@ Describe 'Clean_WikiContent_For_GitHub_Publish' {
 
         New-Item -Path "$($TestDrive.FullName)/WikiContent" -ItemType 'Directory' -Force | Out-Null
 
-        Set-Content -Path "$($TestDrive.FullName)/WikiContent/Get-Something.md" -Value 'Mock markdown file 1'
+        # Will not be modified
+        Set-Content -Path "$($TestDrive.FullName)/WikiContent/Get-Something.md" -Value '# Get-Something`nMock markdown file 1'
 
-        Set-Content -Path "$($TestDrive.FullName)/WikiContent/home.md" -Value 'Mock markdown file 1'
+        # Will be modified
+        Set-Content -Path "$($TestDrive.FullName)/WikiContent/Credential-overview.md" -Value "# Credential overview`nMock markdown file 3"
+
+        # Will not be modified
+        Set-Content -Path "$($TestDrive.FullName)/WikiContent/Home.md" -Value "# My Module Name`nMock markdown file 4"
     }
 
     It 'Should export the build script alias' {
