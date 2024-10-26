@@ -113,9 +113,10 @@ Task Clean_WikiContent_For_GitHub_Publish {
 
                 $hasTopHeader = $content -match '(?m)^#\s+([^\r\n]+)'
 
-                $baseNameWithoutNonBreakingHyphen = $_.BaseName -replace [System.Char]::ConvertFromUtf32(0x2011), '-'
+                $convertedBaseName = $_.BaseName -replace '-', ' '
+                $convertedBaseName = $convertedBaseName -replace [System.Char]::ConvertFromUtf32(0x2011), '-'
 
-                if ($hasTopHeader -and $Matches[1] -eq $baseNameWithoutNonBreakingHyphen)
+                if ($hasTopHeader -and $Matches[1] -eq $convertedBaseName)
                 {
                     Write-Build -Color DarkGray -Text ('Top level header is the same as the filename. Removing top level header from: {0}' -f $_.Name)
 

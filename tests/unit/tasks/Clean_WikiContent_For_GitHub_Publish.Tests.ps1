@@ -35,9 +35,18 @@ Describe 'Clean_WikiContent_For_GitHub_Publish' {
 
         New-Item -Path "$($TestDrive.FullName)/WikiContent" -ItemType 'Directory' -Force | Out-Null
 
-        Set-Content -Path "$($TestDrive.FullName)/WikiContent/Get-Something.md" -Value 'Mock markdown file 1'
+        # Will not be modified
+        Set-Content -Path "$($TestDrive.FullName)/WikiContent/Get-Something.md" -Value '# Get-Something`nMock markdown file 1'
 
-        Set-Content -Path "$($TestDrive.FullName)/WikiContent/home.md" -Value 'Mock markdown file 1'
+        # Will be modified
+        Set-Content -Path "$($TestDrive.FullName)/WikiContent/Credential-overview.md" -Value "# Credential overview`nMock markdown file 3"
+
+        # Will not be modified
+        Set-Content -Path "$($TestDrive.FullName)/WikiContent/Home.md" -Value "# My Module Name`nMock markdown file 4"
+
+        Mock -CommandName Set-Content -MockWith {
+            Write-Verbose -Message ('Setting content of: {0}' -f $Path) -Verbose
+        }
     }
 
     It 'Should export the build script alias' {
@@ -67,5 +76,9 @@ Describe 'Clean_WikiContent_For_GitHub_Publish' {
 
             Invoke-Build -Task $buildTaskName -File $script:buildScript.Definition @taskParameters
         } | Should -Not -Throw
+
+        Assert-MockCalled -CommandName Set-Content -ParameterFilter {
+            $Path -eq "$($TestDrive.FullName)/WikiContent/Credential-overview.md"
+        } -Exactly -Times 1 -Scope It
     }
 }
