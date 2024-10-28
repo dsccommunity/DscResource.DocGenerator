@@ -1,4 +1,5 @@
-function Get-ClassPropertyCustomAttribute {
+function Get-ClassPropertyCustomAttribute
+{
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
@@ -10,7 +11,8 @@ function Get-ClassPropertyCustomAttribute {
         $AttributeType
     )
 
-    process {
-        return $Attributes | Where-Object {$_.AttributeType.Name -eq $AttributeType}
+    process
+    {
+        return $Attributes | Where-Object { $_.AttributeType.Name -eq $AttributeType }
     }
 }

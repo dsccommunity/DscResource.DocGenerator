@@ -59,8 +59,9 @@ function Get-DscResourceSchemaPropertyContent
         'Read'
     )
 
-    foreach ($key in $sortOrder) {
-        $orderedProperties += $Property.GetEnumerator() | Where-Object {$_.State -eq $key} | Sort-Object {$_.Name}
+    foreach ($key in $sortOrder)
+    {
+        $orderedProperties += $Property.GetEnumerator() | Where-Object { $_.State -eq $key } | Sort-Object { $_.Name }
     }
 
     foreach ($currentProperty in $orderedProperties)

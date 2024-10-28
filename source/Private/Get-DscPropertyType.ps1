@@ -23,7 +23,7 @@ function Get-DscPropertyType
         {
             return $PropertyType.GenericTypeArguments.Name
         }
-        Default
+        default
         {
             return $PropertyType.Name
         }
