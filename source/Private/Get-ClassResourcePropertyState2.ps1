@@ -7,12 +7,11 @@
         This function returns the property state value of an DSC class-based
         resource property.
 
-    .PARAMETER Ast
-        The Abstract Syntax Tree (AST) for class-based DSC resource property.
-        The passed value must be an AST of the type 'PropertyMemberAst'.
+    .PARAMETER PropertyInfo
+        The PropertyInfo of a class-based DSC resource property.
 
     .EXAMPLE
-        Get-ClassResourcePropertyState -Ast {
+        Get-ClassResourcePropertyState2 -Ast {
             [DscResource()]
             class NameOfResource {
                 [DscProperty(Key)]
@@ -47,9 +46,6 @@ function Get-ClassResourcePropertyState2
         Check for Key first since it it possible to use both Key and Mandatory
         on a property and in that case we want to return just 'Key'.
     #>
-    # Data lives in $PropertyInfo.CustomProperties.NamedArguments
-    # Need to check attribute type is correct
-    # TODO: Need to deal with Attribute = False??
 
     $attributeParams = @{
         PropertyAttributes = $PropertyInfo.CustomAttributes
