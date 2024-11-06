@@ -166,8 +166,8 @@ Second row of description.
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
 | **Id** | Key | String | Id Description | |
-| **Enum** | Write | String | Enum Description. | `Value1`, `Value2`, `Value3` |
 | **Int** | Required | Uint32 | Int Description. | |
+| **Enum** | Write | String | Enum Description. | `Value1`, `Value2`, `Value3` |
 | **Read** | Read | String | Read Description. | |
 
 ## Description
@@ -777,8 +777,8 @@ Configuration Example
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
 | **Id** | Key | String | Id Description | |
-| **Enum** | Write | String | Enum Description. | `Value1`, `Value2`, `Value3` |
 | **Int** | Required | Uint32 | Int Description. | |
+| **Enum** | Write | String | Enum Description. | `Value1`, `Value2`, `Value3` |
 | **Read** | Read | String | Read Description. | |
 
 ### DSC_EmbeddedInstance
@@ -788,8 +788,8 @@ Configuration Example
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
 | **EmbeddedId** | Key | String | Id Description | |
-| **EmbeddedEnum** | Write | String | Enum Description. | `Value1`, `Value2`, `Value3` |
 | **EmbeddedInt** | Required | Uint32 | Int Description. | |
+| **EmbeddedEnum** | Write | String | Enum Description. | `Value1`, `Value2`, `Value3` |
 | **EmbeddedRead** | Read | String | Read Description. | |
 
 ## Description
@@ -997,8 +997,8 @@ Type: MofResource
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
 | **Id** | Key | String | Id Description | |
-| **Enum** | Write | String | Enum Description. | `Value1`, `Value2`, `Value3` |
 | **Int** | Required | Uint32 | Int Description. | |
+| **Enum** | Write | String | Enum Description. | `Value1`, `Value2`, `Value3` |
 | **Read** | Read | String | Read Description. | |
 
 ### DSC_EmbeddedInstance
@@ -1008,8 +1008,8 @@ Type: MofResource
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
 | **EmbeddedId** | Key | String | Id Description | |
-| **EmbeddedEnum** | Write | String | Enum Description. | `Value1`, `Value2`, `Value3` |
 | **EmbeddedInt** | Required | Uint32 | Int Description. | |
+| **EmbeddedEnum** | Write | String | Enum Description. | `Value1`, `Value2`, `Value3` |
 | **EmbeddedRead** | Read | String | Read Description. | |
 
 ## Description
