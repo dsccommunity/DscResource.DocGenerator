@@ -100,7 +100,6 @@ function New-DscClassResourceWikiPage
             Write-Verbose -Message ($script:localizedData.FoundClassBasedMessage -f $dscClassesInModule.Count, $builtModuleScriptFile.FullName)
 
             # Looping through each class-based resource.
-            # TODO: Should this include non Dsc Classes?
             foreach ($dscClassInModule in $dscClassesInModule)
             {
                 Write-Verbose -Message ($script:localizedData.GenerateWikiPageMessage -f $dscClassInModule.Name)
@@ -131,11 +130,8 @@ function New-DscClassResourceWikiPage
 
                 $dscProperties = $dscClassInModule.GetProperties() | Where-Object {'DscPropertyAttribute' -in $_.CustomAttributes.AttributeType.Name}
 
-                #$className = ($dscProperties | Select-Object -Unique DeclaringType).DeclaringType.Name
-
                 # Returns the properties for class and any existing parent class(es).
-                $resourceProperty = Get-ClassResourcePropertyNew -Properties $dscProperties -SourcePath $SourcePath
-                #$resourceProperty = Get-ClassResourcePropertyNew -ClassName $className -SourcePath $SourcePath -BuiltModuleScriptFilePath $builtModuleScriptFile.FullName
+                $resourceProperty = Get-ClassResourceProperty -Properties $dscProperties -SourcePath $SourcePath
 
                 $propertyContent = Get-DscResourceSchemaPropertyContent -Property $resourceProperty -UseMarkdown
 
