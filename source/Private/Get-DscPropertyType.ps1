@@ -1,11 +1,21 @@
+<#
+    .SYNOPSIS
+        Retrieves the property type from a System.Type PropertyType object.
 
+    .DESCRIPTION
+        This function returns the property type as a string. This unwaps any string that has the Nullable property attribute.
 
-# takes a System.RuntimeType - a System.Reflection.PropertyInfo .PropertyType
+    .PARAMETER PropertyType
+        The property to retrieve the property name from.
 
-# Check PropertyType.Name = 'Nullable`1'
-# Get value from GenericTypeArgument.FullName
+    .OUTPUTS
+        System.String
 
-# else return FullName
+    .EXAMPLE
+        Get-DscPropertyType -PropertyType $VariableOfProperty.
+
+        Returns the property type as a string.
+#>
 
 function Get-DscPropertyType
 {
@@ -21,11 +31,11 @@ function Get-DscPropertyType
     {
         'Nullable`1'
         {
-            return $PropertyType.GenericTypeArguments.Name
+            return $PropertyType.GenericTypeArguments.FullName
         }
         default
         {
-            return $PropertyType.Name
+            return $PropertyType.FullName
         }
     }
 }
