@@ -101,7 +101,6 @@ function Get-ClassResourceProperty
             }
 
             $propertyAttribute.State = Get-ClassResourcePropertyState2 -PropertyInfo $propertyMember
-            Write-Warning ('Property {0} State = {1}' -f $propertyMember.Name, $propertyAttribute.State)
 
             $valueMapValues = $null
             if ($propertyMember.PropertyType.IsEnum)
