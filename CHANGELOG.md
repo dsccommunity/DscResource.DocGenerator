@@ -29,6 +29,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     filename. The task will convert standard hyphens to spaces and Unicode
     hyphens to standard hyphens before comparison. The task can be controlled
     by parameter `RemoveTopLevelHeader` in the task, which defaults to `$true`.
+- Added Helper functions as part of [#163] (https://github.com/dsccommunity/DscResource.DocGenerator/pull/163).
+  - `Get-ClassPropertyCustomAttribute`
+  - `Get-ClassResourcePropertyState2`
+  - `Get-DscPropertyType`
+  - `Test-ClassPropertyDscAttributeArgument`
 
 ### Changed
 
