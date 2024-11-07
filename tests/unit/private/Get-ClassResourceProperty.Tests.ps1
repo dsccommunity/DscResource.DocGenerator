@@ -18,8 +18,8 @@ Remove-Module -Name $script:moduleName -Force -ErrorAction 'SilentlyContinue'
 Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 #endregion HEADER
 
-Describe 'Get-ClassResourceProperty' {
-    InModuleScope $script:moduleName {
+InModuleScope $script:moduleName {
+    Describe 'Get-ClassResourceProperty' {
         Context 'When the resource has a parent class that also has a DSC property' {
             BeforeAll {
                 $mockBuiltModulePath = Join-Path -Path $TestDrive -ChildPath 'output\MyClassModule\1.0.0'
@@ -175,9 +175,7 @@ class ResourceBase
                 $ensurePropertyResult.ValueMap | Should -Contain 'Down'
             }
         }
-    }
 
-    InModuleScope $script:moduleName {
         Context 'When the resource has a parent class that does not have a source file (part of another module)' {
             BeforeAll {
                 $mockBuiltModulePath = Join-Path -Path $TestDrive -ChildPath 'output\MyClassModule\1.0.0'
@@ -274,6 +272,7 @@ class MyDscResource
 
                 $dscProperties = $dscClassInModule.GetProperties() | Where-Object { 'DscPropertyAttribute' -in $_.CustomAttributes.AttributeType.Name }
             }
+
             It 'Should return the expected DSC class resource properties' {
                 $mockGetClassResourcePropertyParameters = @{
                     SourcePath = $mockSourcePath
@@ -301,9 +300,7 @@ class MyDscResource
                 $ensurePropertyResult.ValueMap | Should -Contain 'Down'
             }
         }
-    }
 
-    InModuleScope $script:moduleName {
         Context 'When a base class is missing comment-based help' {
             BeforeAll {
                 $mockBuiltModulePath = Join-Path -Path $TestDrive -ChildPath 'output\MyClassModule\1.0.0'
@@ -451,9 +448,7 @@ DescriptionTestProperty description. This is a second row with various tests lik
                 $ensurePropertyResult.IsArray | Should -BeFalse
             }
         }
-    }
 
-    InModuleScope $script:moduleName {
         Context 'When two script file names end with similar name' {
             BeforeAll {
                 $mockBuiltModulePath = Join-Path -Path $TestDrive -ChildPath 'output\MyClassModule\1.0.0'
@@ -566,7 +561,7 @@ $Ensure
                 $mockBaseClassSourceScript | Microsoft.PowerShell.Utility\Out-File -FilePath "$mockSourcePath\Classes\001.BaseMyDscResource.ps1" -Encoding ascii -Force
 
                 [System.IO.FileInfo] $mockBuiltModuleFile = Join-Path -Path $mockBuiltModulePath -ChildPath 'MyClassModule.psm1'
-                Import-Module -Name $mockBuiltModuleFile.FullName
+                Import-Module -Name $mockBuiltModuleFile.FullName -Force
 
                 $classesInModule = (Get-Module $mockBuiltModuleFile.BaseName).ImplementingAssembly.DefinedTypes | Where-Object { $_.IsClass -and $_.IsPublic }
                 $dscClassInModule = $classesInModule | Where-Object { 'DscResourceAttribute' -in $_.CustomAttributes.AttributeType.Name }
