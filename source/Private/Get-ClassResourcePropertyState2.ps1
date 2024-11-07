@@ -11,23 +11,7 @@
         The PropertyInfo of a class-based DSC resource property.
 
     .EXAMPLE
-        Get-ClassResourcePropertyState2 -Ast {
-            [DscResource()]
-            class NameOfResource {
-                [DscProperty(Key)]
-                [string] $KeyName
-
-                [NameOfResource] Get() {
-                    return $this
-                }
-
-                [void] Set() {}
-
-                [bool] Test() {
-                    return $true
-                }
-            }
-        }.Ast.Find({$args[0] -is [System.Management.Automation.Language.PropertyMemberAst]}, $false)
+        Get-ClassResourcePropertyState2 -PropertyInfo $properties
 
         Returns the property state for the property 'KeyName'.
 #>
