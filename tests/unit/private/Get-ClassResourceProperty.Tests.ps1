@@ -30,6 +30,13 @@ InModuleScope $script:moduleName {
 
                 # The class DSC resource in the built module.
                 $mockBuiltModuleScript = @'
+enum ResourceEnum
+{
+    Value1
+    Value2
+    Value3
+}
+
 class ResourceBase
 {
     hidden [System.String] $NotADscProperty
@@ -60,6 +67,9 @@ class MyDscResource : ResourceBase
     [DscProperty()]
     [ValidateSet('Up', 'Down')]
     [System.String[]] $ValidateSetProperty
+
+    [DscProperty()]
+    [ResourceEnum] $EnumProperty
 }
 '@
                 # Uses Microsoft.PowerShell.Utility\Out-File to override the stub that is needed for the mocks.
@@ -72,6 +82,13 @@ class MyDscResource : ResourceBase
                     to be able to test missing description.
                 #>
                 $mockResourceSourceScript = @'
+enum ResourceEnum
+{
+    Value1
+    Value2
+    Value3
+}
+
 <#
     .SYNOPSIS
     Resource synopsis.
@@ -103,6 +120,9 @@ class MyDscResource
     [DscProperty()]
     [ValidateSet('Up', 'Down')]
     [System.String[]] $ValidateSetProperty
+
+    [DscProperty()]
+    [ResourceEnum] $EnumProperty
 }
 '@
                 # Uses Microsoft.PowerShell.Utility\Out-File to override the stub that is needed for the mocks.
@@ -147,10 +167,11 @@ class ResourceBase
                 }
 
                 $getClassResourcePropertyResult = Get-ClassResourceProperty @mockGetClassResourcePropertyParameters
-                $getClassResourcePropertyResult | Should -HaveCount 3
+                $getClassResourcePropertyResult | Should -HaveCount 4
                 $getClassResourcePropertyResult.Name | Should -Contain 'Ensure'
                 $getClassResourcePropertyResult.Name | Should -Contain 'ProjectName'
                 $getClassResourcePropertyResult.Name | Should -Contain 'ValidateSetProperty'
+                $getClassResourcePropertyResult.Name | Should -Contain 'EnumProperty'
 
                 $ensurePropertyResult = $getClassResourcePropertyResult.Where({ $_.Name -eq 'Ensure' })
                 $ensurePropertyResult.State | Should -Be 'Write'
@@ -173,6 +194,15 @@ class ResourceBase
                 $ensurePropertyResult.IsArray | Should -BeFalse
                 $ensurePropertyResult.ValueMap | Should -Contain 'Up'
                 $ensurePropertyResult.ValueMap | Should -Contain 'Down'
+
+                $ensurePropertyResult = $getClassResourcePropertyResult.Where({ $_.Name -eq 'EnumProperty' })
+                $ensurePropertyResult.State | Should -Be 'Write'
+                $ensurePropertyResult.Description | Should -BeNullOrEmpty
+                $ensurePropertyResult.DataType | Should -Be 'ResourceEnum'
+                $ensurePropertyResult.IsArray | Should -BeFalse
+                $ensurePropertyResult.ValueMap | Should -Contain 'Value1'
+                $ensurePropertyResult.ValueMap | Should -Contain 'Value2'
+                $ensurePropertyResult.ValueMap | Should -Contain 'Value3'
             }
         }
 
