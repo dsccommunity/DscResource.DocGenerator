@@ -528,7 +528,7 @@ class AzDevOpsProject
 | **MandatoryProperty** | Required | System.String | MandatoryProperty description. | |
 | **ProjectId** | Write | System.String | ProjectId description. Second row with text. | |
 | **ValidateSetProperty** | Write | System.String | | `Up`, `Down` |
-| **Reasons** | Read | String[] | Reasons description. | |
+| **Reasons** | Read | System.String[] | Reasons description. | |
 
 ## Description
 
@@ -709,7 +709,7 @@ class ResourceBase
 | **Ensure** | Write | System.String | Ensure description. | |
 | **ProjectId** | Write | System.String | ProjectId description. Second row with text. | |
 | **ValidateSetProperty** | Write | System.String | | `Up`, `Down` |
-| **Reasons** | Read | String[] | Reasons description. | |
+| **Reasons** | Read | System.String[] | Reasons description. | |
 
 ## Description
 
