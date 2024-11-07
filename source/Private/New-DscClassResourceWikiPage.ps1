@@ -92,7 +92,7 @@ function New-DscClassResourceWikiPage
         # Looping through each module file (normally just one).
         foreach ($builtModuleScriptFile in $builtModuleScriptFiles)
         {
-            Import-Module $builtModuleScriptFile.FullName
+            Import-Module $builtModuleScriptFile.FullName -Force
 
             $classesInModule = (Get-Module $builtModuleScriptFile.BaseName).ImplementingAssembly.DefinedTypes | Where-Object { $_.IsClass -and $_.IsPublic }
             $dscClassesInModule = $classesInModule | Where-Object {'DscResourceAttribute' -in $_.CustomAttributes.AttributeType.Name}
