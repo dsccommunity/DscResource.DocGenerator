@@ -606,7 +606,7 @@ $Ensure
                 }
 
                 $getClassResourcePropertyResult = Get-ClassResourceProperty @mockGetClassResourcePropertyParameters
-                #$getClassResourcePropertyResult | Should -HaveCount 3
+                $getClassResourcePropertyResult | Should -HaveCount 3
                 $getClassResourcePropertyResult.Name | Should -Contain 'Ensure'
                 $getClassResourcePropertyResult.Name | Should -Contain 'ProjectName'
                 $getClassResourcePropertyResult.Name | Should -Contain 'ValidateSetProperty'
