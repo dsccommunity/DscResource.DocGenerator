@@ -19,7 +19,7 @@ Import-Module $script:moduleName -Force -ErrorAction 'Stop'
 #endregion HEADER
 
 InModuleScope $script:moduleName {
-    Describe 'Get-ClassResourcePropertyType' {
+    Describe 'Get-DscResourceAttributeProperty' {
         Context 'When a property have the named attribute argument ''Key''' {
             BeforeAll {
                 $mockClassBasedScript = {
@@ -51,7 +51,7 @@ InModuleScope $script:moduleName {
             }
 
             It 'Should return the state as ''Key''' {
-                $result = Get-ClassResourcePropertyType -PropertyInfo $mockProperties[0] -Verbose
+                $result = Get-DscResourceAttributeProperty -PropertyInfo $mockProperties[0] -Verbose
 
                 $result | Should -Be 'Key'
             }
@@ -92,7 +92,7 @@ InModuleScope $script:moduleName {
 
             It 'Should return the state as ''Write''' {
                 # Makes sure to test the second property (since Key is always needed)
-                $result = Get-ClassResourcePropertyType -PropertyInfo $mockProperties[1] -Verbose
+                $result = Get-DscResourceAttributeProperty -PropertyInfo $mockProperties[1] -Verbose
 
                 $result | Should -Be 'Write'
             }
@@ -133,7 +133,7 @@ InModuleScope $script:moduleName {
 
             It 'Should return the state as ''Required''' {
                 # Makes sure to test the second property (since Key is always needed)
-                $result = Get-ClassResourcePropertyType -PropertyInfo $mockProperties[1] -Verbose
+                $result = Get-DscResourceAttributeProperty -PropertyInfo $mockProperties[1] -Verbose
 
                 $result | Should -Be 'Required'
             }
@@ -174,7 +174,7 @@ InModuleScope $script:moduleName {
 
             It 'Should return the state as ''Read''' {
                 # Makes sure to test the second property (since Key is always needed)
-                $result = Get-ClassResourcePropertyType -PropertyInfo $mockProperties[1] -Verbose
+                $result = Get-DscResourceAttributeProperty -PropertyInfo $mockProperties[1] -Verbose
 
                 $result | Should -Be 'Read'
             }

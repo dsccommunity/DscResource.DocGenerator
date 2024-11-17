@@ -11,11 +11,11 @@
         The PropertyInfo object of a class-based DSC resource property.
 
     .EXAMPLE
-        Get-ClassResourcePropertyType -PropertyInfo $properties
+        Get-DscResourceAttributeProperty -PropertyInfo $properties
 
         Returns the property state for the property 'KeyName'.
 #>
-function Get-ClassResourcePropertyType
+function Get-DscResourceAttributeProperty
 {
     [CmdletBinding()]
     [OutputType([System.String])]
