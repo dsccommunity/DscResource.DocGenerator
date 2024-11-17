@@ -89,10 +89,10 @@ InModuleScope $script:moduleName {
             $result[1] | Should -Be '| --- | --- | --- | --- | --- |'
             $result[2] | Should -Be '| **StringProperty** | Key | String | Any description | |'
             $result[3] | Should -Be '| **StringValueMapProperty** | Key | String | Any description | Value1, Value2 |'
-            $result[4] | Should -Be '| **StringArrayProperty** | Write | String[] | Any description | |'
-            $result[5] | Should -Be '| **CredentialProperty** | Write | PSCredential | Any description | |'
+            $result[4] | Should -Be '| **CredentialProperty** | Write | PSCredential | Any description | |'
+            $result[5] | Should -Be '| **EmbeddedInstanceArrayProperty** | Write | DSC_Embedded2[] | Any description | |'
             $result[6] | Should -Be '| **EmbeddedInstanceProperty** | Write | DSC_Embedded1 | Any description | |'
-            $result[7] | Should -Be '| **EmbeddedInstanceArrayProperty** | Write | DSC_Embedded2[] | Any description | |'
+            $result[7] | Should -Be '| **StringArrayProperty** | Write | String[] | Any description | |'
         }
     }
 }

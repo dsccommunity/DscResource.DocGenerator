@@ -92,14 +92,17 @@ function New-DscClassResourceWikiPage
         # Looping through each module file (normally just one).
         foreach ($builtModuleScriptFile in $builtModuleScriptFiles)
         {
-            $dscResourceAsts = Get-ClassResourceAst -ScriptFile $builtModuleScriptFile.FullName
+            Import-Module $builtModuleScriptFile.FullName -Force
 
-            Write-Verbose -Message ($script:localizedData.FoundClassBasedMessage -f $dscResourceAsts.Count, $builtModuleScriptFile.FullName)
+            $classesInModule = (Get-Module $builtModuleScriptFile.BaseName).ImplementingAssembly.DefinedTypes | Where-Object { $_.IsClass -and $_.IsPublic }
+            $dscClassesInModule = $classesInModule | Where-Object {'DscResourceAttribute' -in $_.CustomAttributes.AttributeType.Name}
+
+            Write-Verbose -Message ($script:localizedData.FoundClassBasedMessage -f $dscClassesInModule.Count, $builtModuleScriptFile.FullName)
 
             # Looping through each class-based resource.
-            foreach ($dscResourceAst in $dscResourceAsts)
+            foreach ($dscClassInModule in $dscClassesInModule)
             {
-                Write-Verbose -Message ($script:localizedData.GenerateWikiPageMessage -f $dscResourceAst.Name)
+                Write-Verbose -Message ($script:localizedData.GenerateWikiPageMessage -f $dscClassInModule.Name)
 
                 $output = New-Object -TypeName 'System.Text.StringBuilder'
 
@@ -118,24 +121,17 @@ function New-DscClassResourceWikiPage
                 }
 
                 # Add the documentation for the resource.
-                $null = $output.AppendLine("# $($dscResourceAst.Name)")
+                $null = $output.AppendLine("# $($dscClassInModule.Name)")
                 $null = $output.AppendLine()
                 $null = $output.AppendLine('## Parameters')
                 $null = $output.AppendLine()
 
-                $sourceFilePath = Join-Path -Path $SourcePath -ChildPath ('Classes/*{0}.ps1' -f $dscResourceAst.Name)
+                $sourceFilePath = Join-Path -Path $SourcePath -ChildPath ('Classes/*{0}.ps1' -f $dscClassInModule.Name)
 
-                $className = @()
-
-                if ($dscResourceAst.BaseTypes.Count -gt 0)
-                {
-                    $className += @($dscResourceAst.BaseTypes.TypeName.Name)
-                }
-
-                $className += $dscResourceAst.Name
+                $dscProperties = $dscClassInModule.GetProperties() | Where-Object {'DscPropertyAttribute' -in $_.CustomAttributes.AttributeType.Name}
 
                 # Returns the properties for class and any existing parent class(es).
-                $resourceProperty = Get-ClassResourceProperty -ClassName $className -SourcePath $SourcePath -BuiltModuleScriptFilePath $builtModuleScriptFile.FullName
+                $resourceProperty = Get-ClassResourceProperty -Properties $dscProperties -SourcePath $SourcePath
 
                 $propertyContent = Get-DscResourceSchemaPropertyContent -Property $resourceProperty -UseMarkdown
 
@@ -156,7 +152,7 @@ function New-DscClassResourceWikiPage
                 $null = $output.AppendLine($description)
                 $null = $output.AppendLine()
 
-                $examplesPath = Join-Path -Path $SourcePath -ChildPath ('Examples\Resources\{0}' -f $dscResourceAst.Name)
+                $examplesPath = Join-Path -Path $SourcePath -ChildPath ('Examples\Resources\{0}' -f $dscClassInModule.Name)
 
                 $examplesOutput = Get-ResourceExampleAsMarkdown -Path $examplesPath
 
@@ -165,7 +161,7 @@ function New-DscClassResourceWikiPage
                     $null = $output.Append($examplesOutput)
                 }
 
-                $outputFileName = '{0}.md' -f $dscResourceAst.Name
+                $outputFileName = '{0}.md' -f $dscClassInModule.Name
 
                 $savePath = Join-Path -Path $OutputPath -ChildPath $outputFileName
 

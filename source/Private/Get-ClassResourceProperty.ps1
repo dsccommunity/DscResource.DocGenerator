@@ -1,21 +1,21 @@
 <#
     .SYNOPSIS
-        Returns DSC class resource properties from the provided class or classes.
+        Returns DSC class resource properties from the provided PropertyInfo properties.
 
     .DESCRIPTION
-        Returns DSC class resource properties from the provided class or classes.
+        Returns DSC class resource properties from the provided PropertyInfo properties.
 
     .PARAMETER SourcePath
         The path to the source folder (in which the child folder 'Classes' exist).
 
-    .PARAMETER BuiltModuleScriptFilePath
-        The path to the built module script file that contains the class.
+    .PARAMETER Properties
+        One or more PropertyInfo objects return properties for.
 
-    .PARAMETER ClassName
-        One or more class names to return properties for.
+    .OUTPUTS
+        System.Collections.Hashtable[]
 
     .EXAMPLE
-        Get-ClassResourceProperty -ClassName @('myParentClass', 'myClass') -BuiltModuleScriptFilePath '.\output\MyModule\1.0.0\MyModule.psm1' -SourcePath '.\source'
+        Get-ClassResourceProperty -Properties $PropertyInfos -SourcePath '.\source'
 
         Returns all DSC class resource properties.
 #>
@@ -30,20 +30,16 @@ function Get-ClassResourceProperty
         $SourcePath,
 
         [Parameter(Mandatory = $true)]
-        [System.String]
-        $BuiltModuleScriptFilePath,
-
-        [Parameter(Mandatory = $true)]
-        [System.String[]]
-        $ClassName
+        [System.Reflection.PropertyInfo[]]
+        $Properties
     )
 
     $resourceProperty = [System.Collections.Hashtable[]] @()
 
-    foreach ($currentClassName in $ClassName)
-    {
-        $dscResourceAst = Get-ClassAst -ClassName $currentClassName -ScriptFile $BuiltModuleScriptFilePath
+    $className = ($dscProperties | Select-Object -Unique DeclaringType).DeclaringType.Name
 
+    foreach ($currentClassName in $className)
+    {
         $classExists = $false
         $sourceFilePath = ''
         $childPaths = @(
@@ -73,12 +69,7 @@ function Get-ClassResourceProperty
 
         $dscResourceCommentBasedHelp = Get-CommentBasedHelp -Path $sourceFilePath
 
-        $astFilter = {
-            $args[0] -is [System.Management.Automation.Language.PropertyMemberAst] `
-                -and $args[0].Attributes.TypeName.Name -eq 'DscProperty'
-        }
-
-        $propertyMemberAsts = $dscResourceAst.FindAll($astFilter, $true)
+        $propertyMembers = $Properties | Where-Object { $_.DeclaringType.Name -eq $currentClassName }
 
         <#
             Looping through each resource property to build the resulting
@@ -94,13 +85,13 @@ function Get-ClassResourceProperty
                 ValueMap         = @(<System.String> | ...)
             }
         #>
-        foreach ($propertyMemberAst in $propertyMemberAsts)
+        foreach ($propertyMember in $propertyMembers)
         {
-            Write-Verbose -Message ($script:localizedData.FoundClassResourcePropertyMessage -f $propertyMemberAst.Name, $dscResourceAst.Name)
+            Write-Verbose -Message ($script:localizedData.FoundClassResourcePropertyMessage -f $propertyMember.Name, $currentClassName)
 
             $propertyAttribute = @{
-                Name             = $propertyMemberAst.Name
-                DataType         = $propertyMemberAst.PropertyType.TypeName.FullName
+                Name             = $propertyMember.Name
+                DataType         = Get-DscPropertyType -PropertyType $propertyMember.PropertyType
 
                 # Always set to null, correct type name is set in DataType.
                 EmbeddedInstance = $null
@@ -109,24 +100,29 @@ function Get-ClassResourceProperty
                 IsArray          = $false
             }
 
-            $propertyAttribute['State'] = Get-ClassResourcePropertyState -Ast $propertyMemberAst
+            $propertyAttribute.State = Get-DscResourceAttributeProperty -PropertyInfo $propertyMember
 
-            $astFilter = {
-                $args[0] -is [System.Management.Automation.Language.AttributeAst] `
-                    -and $args[0].TypeName.Name -eq 'ValidateSet'
+            $valueMapValues = $null
+            if ($propertyMember.PropertyType.IsEnum)
+            {
+                $valueMapValues = $propertyMember.PropertyType.GetEnumNames()
             }
 
-            $propertyAttributeAsts = $propertyMemberAst.FindAll($astFilter, $true)
-
-            if ($propertyAttributeAsts)
+            $validateSet = Get-ClassPropertyCustomAttribute -Attributes $propertyMember.CustomAttributes -AttributeType 'ValidateSetAttribute'
+            if ($validateSet)
             {
-                $propertyAttribute['ValueMap'] = $propertyAttributeAsts.PositionalArguments.Value
+                $valueMapValues = $validateSet.ConstructorArguments.Value.Value
+            }
+
+            if ($valueMapValues)
+            {
+                $propertyAttribute.ValueMap = $valueMapValues
             }
 
             if ($dscResourceCommentBasedHelp -and $dscResourceCommentBasedHelp.Parameters.Count -gt 0)
             {
                 # The key name must be upper-case for it to match the right item in the list of parameters.
-                $propertyDescription = $dscResourceCommentBasedHelp.Parameters[$propertyMemberAst.Name.ToUpper()]
+                $propertyDescription = $dscResourceCommentBasedHelp.Parameters[$propertyMember.Name.ToUpper()]
 
                 if ($propertyDescription)
                 {
@@ -145,7 +141,7 @@ function Get-ClassResourceProperty
                 $propertyDescription = ''
             }
 
-            $propertyAttribute['Description'] = $propertyDescription
+            $propertyAttribute.Description = $propertyDescription
 
             $resourceProperty += $propertyAttribute
         }

@@ -525,10 +525,10 @@ class AzDevOpsProject
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
 | **ProjectName** | Key | System.String | ProjectName description. | |
+| **MandatoryProperty** | Required | System.String | MandatoryProperty description. | |
 | **ProjectId** | Write | System.String | ProjectId description. Second row with text. | |
 | **ValidateSetProperty** | Write | System.String | | `Up`, `Down` |
-| **MandatoryProperty** | Required | System.String | MandatoryProperty description. | |
-| **Reasons** | Read | String[] | Reasons description. | |
+| **Reasons** | Read | System.String[] | Reasons description. | |
 
 ## Description
 
@@ -704,12 +704,12 @@ class ResourceBase
 
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
-| **Ensure** | Write | System.String | Ensure description. | |
 | **ProjectName** | Key | System.String | ProjectName description. | |
+| **MandatoryProperty** | Required | System.String | MandatoryProperty description. | |
+| **Ensure** | Write | System.String | Ensure description. | |
 | **ProjectId** | Write | System.String | ProjectId description. Second row with text. | |
 | **ValidateSetProperty** | Write | System.String | | `Up`, `Down` |
-| **MandatoryProperty** | Required | System.String | MandatoryProperty description. | |
-| **Reasons** | Read | String[] | Reasons description. | |
+| **Reasons** | Read | System.String[] | Reasons description. | |
 
 ## Description
 
@@ -830,8 +830,8 @@ class ResourceBase
 
 | Parameter | Attribute | DataType | Description | Allowed Values |
 | --- | --- | --- | --- | --- |
-| **Ensure** | Write | System.String | | |
 | **ProjectName** | Key | System.String | ProjectName description. | |
+| **Ensure** | Write | System.String | | |
 
 ## Description
 
