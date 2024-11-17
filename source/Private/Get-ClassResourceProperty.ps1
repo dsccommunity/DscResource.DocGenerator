@@ -100,7 +100,7 @@ function Get-ClassResourceProperty
                 IsArray          = $false
             }
 
-            $propertyAttribute.State = Get-ClassResourcePropertyState2 -PropertyInfo $propertyMember
+            $propertyAttribute.State = Get-ClassResourcePropertyType -PropertyInfo $propertyMember
 
             $valueMapValues = $null
             if ($propertyMember.PropertyType.IsEnum)

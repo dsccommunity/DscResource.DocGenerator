@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     by parameter `RemoveTopLevelHeader` in the task, which defaults to `$true`.
 - Added Helper functions as part of [#163] (https://github.com/dsccommunity/DscResource.DocGenerator/pull/163).
   - `Get-ClassPropertyCustomAttribute`
-  - `Get-ClassResourcePropertyState2`
+  - `Get-ClassResourcePropertyType`
   - `Get-DscPropertyType`
   - `Test-ClassPropertyDscAttributeArgument`
 

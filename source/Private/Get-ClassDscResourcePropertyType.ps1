@@ -1,21 +1,21 @@
 <#
     .SYNOPSIS
-        This function returns the property state value of an class-based DSC
+        This function returns the property type of a class-based DSC
         resource property.
 
     .DESCRIPTION
-        This function returns the property state value of an DSC class-based
+        This function returns the property type value of a DSC class-based
         resource property.
 
     .PARAMETER PropertyInfo
-        The PropertyInfo of a class-based DSC resource property.
+        The PropertyInfo object of a class-based DSC resource property.
 
     .EXAMPLE
-        Get-ClassResourcePropertyState2 -PropertyInfo $properties
+        Get-ClassResourcePropertyType -PropertyInfo $properties
 
         Returns the property state for the property 'KeyName'.
 #>
-function Get-ClassResourcePropertyState2
+function Get-ClassResourcePropertyType
 {
     [CmdletBinding()]
     [OutputType([System.String])]
@@ -37,20 +37,20 @@ function Get-ClassResourcePropertyState2
 
     if ((Test-ClassPropertyDscAttributeArgument -IsKey @attributeParams))
     {
-        $propertyState = 'Key'
+        $propertyType = 'Key'
     }
     elseif ((Test-ClassPropertyDscAttributeArgument -IsMandatory @attributeParams))
     {
-        $propertyState = 'Required'
+        $propertyType = 'Required'
     }
     elseif ((Test-ClassPropertyDscAttributeArgument -IsRead @attributeParams))
     {
-        $propertyState = 'Read'
+        $propertyType = 'Read'
     }
     elseif ((Test-ClassPropertyDscAttributeArgument -IsWrite @attributeParams))
     {
-        $propertyState = 'Write'
+        $propertyType = 'Write'
     }
 
-    return $propertyState
+    return $propertyType
 }
