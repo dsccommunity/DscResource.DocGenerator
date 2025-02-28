@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.13.0] - 2025-02-28
+
 ### Removed
 
 - Removed `build.psd1` as it is no longer required to build the project.
