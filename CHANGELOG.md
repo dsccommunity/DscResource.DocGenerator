@@ -59,6 +59,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fix Dockerfile to include GitVersion alias for PowerShell Extension profile script.
 - Fix `.vscode/settings.json` file to exclude unrecognized words.
+- Fix pipeline issues on Windows PowerShell due to the issue https://github.com/PoshCode/ModuleBuilder/pull/136.
+
 
 ## [0.12.5] - 2024-08-14
 
