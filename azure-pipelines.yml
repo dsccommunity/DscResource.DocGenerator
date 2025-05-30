@@ -59,7 +59,7 @@ stages:
       displayName: 'HQRM'
       pool:
         vmImage: 'windows-latest'
-      timeoutInMinutes: 0
+      timeoutInMinutes: '0'
       steps:
         - task: DownloadPipelineArtifact@2
           displayName: 'Download Build Artifact'
@@ -86,7 +86,7 @@ stages:
       displayName: 'Unit Windows (WPS)'
       pool:
         vmImage: 'windows-latest'
-      timeoutInMinutes: 0
+      timeoutInMinutes: '0'
       steps:
         - task: DownloadPipelineArtifact@2
           displayName: 'Download Build Artifact'
@@ -125,13 +125,12 @@ stages:
           inputs:
             targetPath: '$(buildFolderName)/$(testResultFolderName)/'
             artifactName: 'CodeCoverageWindowsWPS'
-            parallel: true
 
     - job: test_windows_ps
       displayName: 'Unit Windows (PS)'
       pool:
         vmImage: 'windows-latest'
-      timeoutInMinutes: 0
+      timeoutInMinutes: '0'
       steps:
         - task: DownloadPipelineArtifact@2
           displayName: 'Download Build Artifact'
@@ -159,13 +158,12 @@ stages:
           inputs:
             targetPath: '$(buildFolderName)/$(testResultFolderName)/'
             artifactName: 'CodeCoverageWindowsPS'
-            parallel: true
 
     - job: test_linux
       displayName: 'Unit Linux'
       pool:
-        vmImage: 'ubuntu-20.04'
-      timeoutInMinutes: 0
+        vmImage: 'ubuntu-latest'
+      timeoutInMinutes: '0'
       steps:
         - task: DownloadPipelineArtifact@2
           displayName: 'Download Build Artifact'
@@ -203,13 +201,12 @@ stages:
           inputs:
             targetPath: '$(buildFolderName)/$(testResultFolderName)/'
             artifactName: 'CodeCoverageLinux'
-            parallel: true
 
     - job: test_macos
       displayName: 'Unit macOS'
       pool:
         vmImage: 'macos-latest'
-      timeoutInMinutes: 0
+      timeoutInMinutes: '0'
       steps:
         - task: DownloadPipelineArtifact@2
           displayName: 'Download Build Artifact'
@@ -237,13 +234,12 @@ stages:
           inputs:
             targetPath: '$(buildFolderName)/$(testResultFolderName)/'
             artifactName: 'CodeCoverageMacOS'
-            parallel: true
 
     - job: Test_Integration
       displayName: 'Integration'
       pool:
         vmImage: 'windows-latest'
-      timeoutInMinutes: 0
+      timeoutInMinutes: '0'
       steps:
         - task: DownloadPipelineArtifact@2
           displayName: 'Download Build Artifact'
@@ -283,7 +279,7 @@ stages:
       condition: succeededOrFailed()
       pool:
         vmImage: 'ubuntu-latest'
-      timeoutInMinutes: 0
+      timeoutInMinutes: '0'
       steps:
         - task: DownloadPipelineArtifact@2
           displayName: 'Download Build Artifact'
