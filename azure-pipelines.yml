@@ -160,16 +160,16 @@ stages:
             buildType: 'current'
             artifactName: $(buildArtifactName)
             targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
-        - script: |
-              wget https://github.com/microsoft/omi/releases/download/v1.9.1-0/omi-1.9.1-0.ssl_110.ulinux.s.x64.deb
-              wget https://github.com/microsoft/PowerShell-DSC-for-Linux/releases/download/v1.2.4-0/dsc-1.2.4-0.ssl_110.x64.deb
+        # - script: |
+        #       wget https://github.com/microsoft/omi/releases/download/v1.9.1-0/omi-1.9.1-0.ssl_110.ulinux.s.x64.deb
+        #       wget https://github.com/microsoft/PowerShell-DSC-for-Linux/releases/download/v1.2.4-0/dsc-1.2.4-0.ssl_110.x64.deb
 
-              sudo dpkg -i omi-1.9.1-0.ssl_110.ulinux.s.x64.deb dsc-1.2.4-0.ssl_110.x64.deb
+        #       sudo dpkg -i omi-1.9.1-0.ssl_110.ulinux.s.x64.deb dsc-1.2.4-0.ssl_110.x64.deb
 
-              # This is a fix to the following DSC for Linux issue: https://github.com/microsoft/PowerShell-DSC-for-Linux/issues/674
-              sudo mv /etc/opt/omi/conf/dsc/configuration/baseregistration /etc/opt/omi/conf/dsc/configuration/BaseRegistration
-              sudo mv /etc/opt/omi/conf/dsc/configuration/BaseRegistration/baseresource.schema.mof /etc/opt/omi/conf/dsc/configuration/BaseRegistration/BaseResource.schema.mof
-          displayName: 'Install DSC for Linux'
+        #       # This is a fix to the following DSC for Linux issue: https://github.com/microsoft/PowerShell-DSC-for-Linux/issues/674
+        #       sudo mv /etc/opt/omi/conf/dsc/configuration/baseregistration /etc/opt/omi/conf/dsc/configuration/BaseRegistration
+        #       sudo mv /etc/opt/omi/conf/dsc/configuration/BaseRegistration/baseresource.schema.mof /etc/opt/omi/conf/dsc/configuration/BaseRegistration/BaseResource.schema.mof
+        #   displayName: 'Install DSC for Linux'
         - task: PowerShell@2
           name: test
           displayName: 'Run Unit Test'
