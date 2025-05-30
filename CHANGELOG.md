@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `azure-pipelines.yml`
+  - Fix linting errors.
+  - Move from ubuntu-20.04 to ubuntu-latest.
+
 ## [0.13.0] - 2025-02-28
 
 ### Removed
