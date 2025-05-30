@@ -94,17 +94,6 @@ stages:
             buildType: 'current'
             artifactName: $(buildArtifactName)
             targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
-        # This is a workaround for the issue: https://github.com/PoshCode/ModuleBuilder/pull/136
-        - task: PowerShell@2
-          name: patch_module
-          displayName: 'Patch module ModuleBuilder'
-          inputs:
-            targetType: 'inline'
-            script: |
-              ./build.ps1 -Task noop
-              Install-PSResource -Name 'Viscalyx.Common' -Repository 'PSGallery' -TrustRepository -Quiet -Confirm:$false
-              Install-ModulePatch -Uri 'https://raw.githubusercontent.com/viscalyx/Viscalyx.Common/refs/heads/main/patches/ModuleBuilder_3.1.7_patch.json' -Force
-            pwsh: true
         - task: PowerShell@2
           name: test
           displayName: 'Run Unit Test'
@@ -172,10 +161,10 @@ stages:
             artifactName: $(buildArtifactName)
             targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
         - script: |
-              wget https://github.com/microsoft/omi/releases/download/v1.6.8-1/omi-1.6.8-1.ssl_110.ulinux.x64.deb
-              wget https://github.com/microsoft/PowerShell-DSC-for-Linux/releases/download/v1.2.1-0/dsc-1.2.1-0.ssl_100.x64.deb
+              wget https://github.com/microsoft/omi/releases/download/v1.9.1-0/omi-1.9.1-0.ssl_110.ulinux.s.x64.deb
+              wget https://github.com/microsoft/PowerShell-DSC-for-Linux/releases/download/v1.2.4-0/dsc-1.2.4-0.ssl_110.x64.deb
 
-              sudo dpkg -i omi-1.6.8-1.ssl_110.ulinux.x64.deb dsc-1.2.1-0.ssl_100.x64.deb
+              sudo dpkg -i omi-1.9.1-0.ssl_110.ulinux.s.x64.deb dsc-1.2.4-0.ssl_110.x64.deb
 
               # This is a fix to the following DSC for Linux issue: https://github.com/microsoft/PowerShell-DSC-for-Linux/issues/674
               sudo mv /etc/opt/omi/conf/dsc/configuration/baseregistration /etc/opt/omi/conf/dsc/configuration/BaseRegistration
