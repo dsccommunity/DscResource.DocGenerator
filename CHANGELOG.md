@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fix linting errors.
   - Move from ubuntu-20.04 to ubuntu-latest.
   - Remove ModuleBuilder patch.
+  - Remove install DSC step on Linux.
 
 ## [0.13.0] - 2025-02-28
 
