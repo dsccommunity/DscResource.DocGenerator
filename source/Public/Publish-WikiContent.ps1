@@ -163,25 +163,33 @@ function Publish-WikiContent
         Invoke-Git -WorkingDirectory $tempPath `
             -Arguments @( 'remote', 'set-url', 'origin', "https://$($GitUserName):$($GitHubAccessToken)@github.com/$OwnerName/$RepositoryName.wiki.git" )
 
+
         Write-Verbose -Message $script:localizedData.AddWikiContentToGitRepoMessage
 
-        Invoke-Git -WorkingDirectory $tempPath -Arguments @( 'add', '*' )
+        $gitAddResult = Invoke-Git -WorkingDirectory $tempPath -Arguments @( 'add', '*' ) -PassThru
 
-        Write-Verbose -Message ($script:localizedData.CommitAndTagRepoChangesMessage -f $ModuleVersion)
+        if ($gitAddResult.ExitCode -eq 1)
+        {
+            Write-Verbose -Message $script:localizedData.GitAddFailedMessage
+        }
+        else
+        {
+            Write-Verbose -Message ($script:localizedData.CommitAndTagRepoChangesMessage -f $ModuleVersion)
 
-        Invoke-Git -WorkingDirectory $tempPath `
-            -Arguments @( 'commit', '--message', "`"$($script:localizedData.UpdateWikiCommitMessage -f $ModuleVersion)`"" )
+            Invoke-Git -WorkingDirectory $tempPath `
+                -Arguments @( 'commit', '--message', "`"$($script:localizedData.UpdateWikiCommitMessage -f $ModuleVersion)`"" )
 
-        Write-Verbose -Message $script:localizedData.PushUpdatedRepoMessage
+            Write-Verbose -Message $script:localizedData.PushUpdatedRepoMessage
 
-        Invoke-Git -WorkingDirectory $tempPath `
-            -Arguments @( 'tag', '--annotate', $ModuleVersion, '--message', $ModuleVersion )
+            Invoke-Git -WorkingDirectory $tempPath `
+                -Arguments @( 'tag', '--annotate', $ModuleVersion, '--message', $ModuleVersion )
 
-        Invoke-Git -WorkingDirectory $tempPath -Arguments @( 'push', 'origin' )
+            Invoke-Git -WorkingDirectory $tempPath -Arguments @( 'push', 'origin' )
 
-        Invoke-Git -WorkingDirectory $tempPath -Arguments @( 'push', 'origin', $ModuleVersion )
+            Invoke-Git -WorkingDirectory $tempPath -Arguments @( 'push', 'origin', $ModuleVersion )
 
-        Write-Verbose -Message $script:localizedData.PublishWikiContentCompleteMessage
+            Write-Verbose -Message $script:localizedData.PublishWikiContentCompleteMessage
+        }
     }
     finally
     {

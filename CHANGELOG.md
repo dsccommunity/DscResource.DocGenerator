@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Remove ModuleBuilder patch.
   - Remove install DSC step on Linux.
 
+### Fixed
+
+- `Publish-WikiContent`
+  - Check if git command is successful. Fixes [#172](https://github.com/dsccommunity/DscResource.DocGenerator/issues/172).
+
 ## [0.13.0] - 2025-02-28
 
 ### Removed

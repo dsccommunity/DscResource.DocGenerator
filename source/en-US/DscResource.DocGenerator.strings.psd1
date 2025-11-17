@@ -13,6 +13,7 @@ ConvertFrom-StringData @'
     ConfigLocalGitMessage                = Configuring local Git settings.
     CloneWikiGitRepoMessage              = Cloning the Wiki Git Repository '{0}'.
     AddWikiContentToGitRepoMessage       = Adding the Wiki Content to the Git Repository.
+    GitAddFailedMessage                  = Adding Git changes failed, Wiki will not be updated.
     CommitAndTagRepoChangesMessage       = Committing the changes to the Repository and adding build tag '{0}'.
     PushUpdatedRepoMessage               = Pushing the updated Repository to the Git Wiki.
     PublishWikiContentCompleteMessage    = Publish Wiki Content complete.
